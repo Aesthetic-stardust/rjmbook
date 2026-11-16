@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="RJM Beach Resort — Bongabong, Oriental Mindoro. Book rooms, cottages, and event spaces online.">
+  <meta name="theme-color" content="#0f766e">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome 6.5 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Google Fonts: Inter + Playfair Display -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+
+  <!-- Design system -->
+  <link rel="stylesheet" href="/css/narubook.css">
+
+  <!-- Tailwind config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Playfair Display', 'serif'],
+            body:    ['Inter', 'sans-serif'],
+          },
+          colors: {
+            teal: {
+              50:  '#f0fdfa', 100: '#ccfbf1', 200: '#99f6e4',
+              300: '#5eead4', 400: '#2dd4bf', 500: '#14b8a6',
+              600: '#0d9488', 700: '#0f766e', 800: '#115e59', 900: '#134e4a',
+            },
+          },
+          animation: {
+            'fade-in':    'fadeIn .4s ease both',
+            'fade-in-up': 'fadeInUp .55s ease both',
+            'float':      'float 3.5s ease-in-out infinite',
+            'pulse-slow': 'pulse 3s cubic-bezier(.4,0,.6,1) infinite',
+          },
+          keyframes: {
+            fadeIn:   { '0%': { opacity: '0' },                                 '100%': { opacity: '1' } },
+            fadeInUp: { '0%': { opacity: '0', transform: 'translateY(22px)' },  '100%': { opacity: '1', transform: 'translateY(0)' } },
+            float:    { '0%,100%': { transform: 'translateY(0)' },              '50%': { transform: 'translateY(-8px)' } },
+          },
+          boxShadow: {
+            'card':       '0 4px 16px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.05)',
+            'card-hover': '0 10px 40px rgba(0,0,0,.12), 0 4px 12px rgba(0,0,0,.07)',
+            'glow-teal':  '0 0 22px rgba(20,184,166,.32)',
+          },
+        },
+      },
+    };
+    window.sessionUserId = {{sessionUserId}};
+  </script>
+
+  <title>{{title}} — RJM Beach Resort</title>
+
+  <!-- ── Toast Notification System ── -->
+  <style>
+    #nb-toast-container {
+      position: fixed; top: 1.25rem; right: 1.25rem;
+      z-index: 9999; display: flex; flex-direction: column;
+      gap: .5rem; pointer-events: none;
+    }
+  </style>
+  <script>
+    (function () {
+      var _icons = { success: 'fa-circle-check', error: 'fa-circle-xmark', warning: 'fa-triangle-exclamation', info: 'fa-circle-info' };
+      var _dur   = { success: 4000, error: 6000, warning: 5000, info: 4500 };
+
+      function getContainer() {
+        var c = document.getElementById('nb-toast-container');
+        if (!c) { c = document.createElement('div'); c.id = 'nb-toast-container'; document.body.appendChild(c); }
+        return c;
+      }
+
+      window.showToast = function (message, type) {
+        type = type || 'info';
+        var dur = _dur[type] || 4000;
+        var toast = document.createElement('div');
+        toast.className = 'nb-toast nb-toast-' + type;
+        toast.innerHTML =
+          '<div class="nb-toast-icon"><i class="fa-solid ' + (_icons[type] || 'fa-circle-info') + '"></i></div>' +
+          '<div class="nb-toast-body">' + message + '</div>' +
+          '<button class="nb-toast-close" aria-label="Dismiss"><i class="fa-solid fa-xmark"></i></button>' +
+          '<div class="nb-toast-progress" style="animation-duration:' + dur + 'ms;"></div>';
+        getContainer().appendChild(toast);
+        function dismiss() {
+          toast.classList.add('nb-toast-out');
+          toast.addEventListener('animationend', function () { toast.remove(); }, { once: true });
+        }
+        toast.querySelector('.nb-toast-close').addEventListener('click', dismiss);
+        setTimeout(dismiss, dur);
+      };
+    })();
+  </script>
+
+  <script src="/js/reservations.js" defer></script>
+</head>

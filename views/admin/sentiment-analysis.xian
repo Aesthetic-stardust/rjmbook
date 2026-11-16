@@ -1,0 +1,1279 @@
+{{> head }}
+<body class="font-body">
+  <div class="flex h-screen overflow-hidden" style="background:#f1f5f9;">
+  <!-- ── New Dark Sidebar ── -->
+  <aside id="admin-sidebar"
+         class="flex-shrink-0 w-64 flex flex-col fixed md:relative top-0 left-0 h-screen z-40 transition-transform duration-300"
+         style="background: linear-gradient(180deg,#0f172a 0%,#134e4a 100%); box-shadow: 4px 0 24px rgba(0,0,0,.18);">
+
+    <div class="px-6 py-6 border-b" style="border-color: rgba(255,255,255,.08);">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+             style="background: linear-gradient(135deg,#0d9488,#0891b2);">
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-white font-display leading-none">RJMBook</h1>
+          <p class="text-xs mt-0.5" style="color: rgba(255,255,255,.4);">Admin Panel</p>
+        </div>
+      </div>
+    </div>
+
+    <nav class="flex-1 px-3 py-5 space-y-0.5 overflow-y-auto">
+      <p class="text-xs font-semibold uppercase tracking-widest px-3 mb-3" style="color: rgba(255,255,255,.3);">Management</p>
+      <a href="/admin"              class="sidebar-link "><i class="fa-solid fa-gauge w-4 text-center flex-shrink-0"></i><span>Dashboard</span></a>
+      <a href="/admin/reservations" class="sidebar-link "><i class="fa-solid fa-calendar-days w-4 text-center flex-shrink-0"></i><span>Reservations</span></a>
+      <a href="/admin/book"         class="sidebar-link"><i class="fa-solid fa-calendar-plus w-4 text-center flex-shrink-0"></i><span>Walk-in Booking</span></a>
+      <a href="/admin/reservation-calendar" class="sidebar-link"><i class="fa-solid fa-calendar w-4 text-center flex-shrink-0"></i><span>Reservation Calendar</span></a>
+      <a href="/admin/room-availability" class="sidebar-link"><i class="fa-solid fa-door-open w-4 text-center flex-shrink-0"></i><span>Room Availability</span></a>
+      <a href="/admin/rooms"        class="sidebar-link "><i class="fa-solid fa-bed w-4 text-center flex-shrink-0"></i><span>Rooms</span></a>
+      <a href="/admin/cottages"     class="sidebar-link "><i class="fa-solid fa-umbrella-beach w-4 text-center flex-shrink-0"></i><span>Cottages</span></a>
+      <a href="/guests"             class="sidebar-link"><i class="fa-solid fa-users w-4 text-center flex-shrink-0"></i><span>Guests</span></a>
+      <div class="my-3 border-t" style="border-color: rgba(255,255,255,.07);"></div>
+      <p class="text-xs font-semibold uppercase tracking-widest px-3 mb-3" style="color: rgba(255,255,255,.3);">Analytics</p>
+      <a href="/dashboard"                class="sidebar-link"><i class="fa-solid fa-chart-pie w-4 text-center flex-shrink-0"></i><span>Analytics</span></a>
+      <a href="/admin/reports"            class="sidebar-link "><i class="fa-solid fa-file-chart-column w-4 text-center flex-shrink-0"></i><span>Reports</span></a>
+      <a href="/admin/sentiment-analysis" class="sidebar-link active"><i class="fa-solid fa-brain w-4 text-center flex-shrink-0"></i><span>Sentiment Analysis</span></a>
+      <div class="my-3 border-t" style="border-color: rgba(255,255,255,.07);"></div>
+      <p class="text-xs font-semibold uppercase tracking-widest px-3 mb-3" style="color: rgba(255,255,255,.3);">Account</p>
+      <a href="/admin/payment-settings" class="sidebar-link"><i class="fa-solid fa-peso-sign w-4 text-center flex-shrink-0"></i><span>Payment Settings</span></a>
+      <a href="/admin/staff"        class="sidebar-link"><i class="fa-solid fa-user-tie w-4 text-center flex-shrink-0"></i><span>Manage Staff</span></a>
+      <a href="/account" class="sidebar-link"><i class="fa-solid fa-user-gear w-4 text-center flex-shrink-0"></i><span>Account Settings</span></a>
+    </nav>
+
+    <div class="px-3 py-4 border-t" style="border-color: rgba(255,255,255,.08);">
+      <div class="flex items-center gap-3 px-3 py-3 rounded-xl mb-3" style="background: rgba(255,255,255,.06);">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
+             style="background: linear-gradient(135deg,#0d9488,#0891b2);">
+          {{#if sessionUserName}}{{sessionUserName.[0]}}{{else}}A{{/if}}
+        </div>
+        <div class="min-w-0">
+          <p class="text-xs text-white font-semibold truncate">{{sessionUserName}}</p>
+          <p class="text-xs" style="color: rgba(255,255,255,.4);">Administrator</p>
+        </div>
+      </div>
+      <button id="adminLogoutBtn"
+              class="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-white transition-all cursor-pointer border-none"
+              style="background: rgba(220,38,38,.2); border: 1px solid rgba(220,38,38,.3);"
+>
+        <i class="fa-solid fa-right-from-bracket text-red-400"></i>
+        <span class="text-red-300">Sign Out</span>
+      </button>
+    </div>
+  </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+    <header class="flex-shrink-0 flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200" style="box-shadow: 0 1px 8px rgba(0,0,0,.06);">
+      <div class="flex items-center gap-4">
+        <button id="sidebar-toggle" class="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">Sentiment Analysis</h2>
+          <p class="text-xs text-gray-500 mt-0.5">Guest feedback insights and sentiment metrics</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="hidden sm:block text-right">
+          <p class="text-xs text-gray-500">Welcome back,</p>
+          <p class="text-sm font-semibold text-gray-800">{{sessionUserName}}</p>
+        </div>
+        <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white"
+             style="background: linear-gradient(135deg,#0d9488,#0891b2);">
+          {{#if sessionUserName}}{{sessionUserName.[0]}}{{else}}A{{/if}}
+        </div>
+      </div>
+    </header>
+      <!-- Page Content -->
+      <div class="flex-1 overflow-auto p-6" style="background:#f8fafc;">
+        <div class="sentiment-analysis-dashboard">
+          <div class="admin-header">
+            <div class="header-left">
+              <h1>Sentiment Analysis Dashboard</h1>
+              <p class="header-subtitle">AI-powered guest feedback insights and sentiment metrics</p>
+            </div>
+            <div class="header-actions">
+              <span class="last-updated">Last updated: {{lastUpdated}}</span>
+              <button onclick="exportSentimentData()" class="btn-export">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Export Report
+              </button>
+            </div>
+          </div>
+
+  <!-- Key Metrics Cards -->
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-value">{{totalFeedback}}</div>
+      <div class="metric-label">Total Feedback</div>
+    </div>
+    <div class="metric-card sentiment-positive">
+      <div class="metric-value">{{sentimentStats.positive.count}}</div>
+      <div class="metric-label">Positive Reviews</div>
+      <div class="metric-percentage">{{sentimentStats.positive.percentage}}%</div>
+    </div>
+    <div class="metric-card sentiment-negative">
+      <div class="metric-value">{{sentimentStats.negative.count}}</div>
+      <div class="metric-label">Negative Reviews</div>
+      <div class="metric-percentage">{{sentimentStats.negative.percentage}}%</div>
+    </div>
+    <div class="metric-card sentiment-neutral">
+      <div class="metric-value">{{sentimentStats.neutral.count}}</div>
+      <div class="metric-label">Neutral Reviews</div>
+      <div class="metric-percentage">{{sentimentStats.neutral.percentage}}%</div>
+    </div>
+    <div class="metric-card metric-rating">
+      <div class="metric-value">{{overallRating}}</div>
+      <div class="metric-label">Overall Rating</div>
+      <div class="metric-percentage">out of 5.0</div>
+    </div>
+  </div>
+
+  <!-- Recent Period Stats -->
+  <div class="period-stats-section">
+    <div class="period-stat-card">
+      <h3>Last 7 Days</h3>
+      <div class="stat-details">
+        <div class="stat-item">
+          <span class="stat-label">Total Feedback:</span>
+          <span class="stat-value">{{lastSevenDays.total}}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Positive:</span>
+          <span class="stat-value positive">{{lastSevenDays.positive}}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Negative:</span>
+          <span class="stat-value negative">{{lastSevenDays.negative}}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Avg Rating:</span>
+          <span class="stat-value">{{lastSevenDays.avgRating}}/5</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="period-stat-card">
+      <h3>Last 30 Days</h3>
+      <div class="stat-details">
+        <div class="stat-item">
+          <span class="stat-label">Total Feedback:</span>
+          <span class="stat-value">{{lastThirtyDays.total}}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Positive:</span>
+          <span class="stat-value positive">{{lastThirtyDays.positive}}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Negative:</span>
+          <span class="stat-value negative">{{lastThirtyDays.negative}}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Avg Rating:</span>
+          <span class="stat-value">{{lastThirtyDays.avgRating}}/5</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Aspect Ratings -->
+  <div class="aspect-ratings-section">
+    <h2>Guest Experience Ratings by Aspect</h2>
+    <div class="aspect-ratings-grid">
+      {{#each aspectRatings}}
+        <div class="aspect-card">
+          <div class="aspect-name">{{this.label}}</div>
+          <div class="aspect-score">{{this.average}}/5.0</div>
+          <div class="aspect-bar">
+            <div class="aspect-fill" style="width: {{this.percentage}}%">
+              <span class="aspect-fill-percent">{{this.percentage}}%</span>
+            </div>
+          </div>
+          <div class="aspect-count">{{this.count}} reviews</div>
+        </div>
+      {{/each}}
+    </div>
+  </div>
+
+  <!-- Weekly Trends -->
+  <div class="trends-section">
+    <h2>Weekly Sentiment Trends</h2>
+    <div class="weekly-trends">
+      {{#each weeklyTrends}}
+        <div class="trend-card">
+          <div class="trend-week">Week: {{this.week}}</div>
+          <div class="trend-stats">
+            <div class="trend-stat positive">
+              <span class="trend-label">Positive:</span>
+              <span class="trend-count">{{this.positive}}</span>
+            </div>
+            <div class="trend-stat negative">
+              <span class="trend-label">Negative:</span>
+              <span class="trend-count">{{this.negative}}</span>
+            </div>
+            <div class="trend-stat neutral">
+              <span class="trend-label">Total:</span>
+              <span class="trend-count">{{this.total}}</span>
+            </div>
+            <div class="trend-stat score">
+              <span class="trend-label">Total:</span>
+              <span class="trend-score">{{this.total}}</span>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  </div>
+
+  <!-- Room-wise Sentiment Analysis -->
+  {{#if roomSentimentAnalysis}}
+    <div class="room-sentiment-section">
+      <h2>Room-wise Sentiment Analysis</h2>
+      <div class="room-sentiment-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Room Type</th>
+              <th>Reviews</th>
+              <th>Positive</th>
+              <th>Negative</th>
+              <th>Neutral</th>
+              <th>Avg Rating</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each roomSentimentAnalysis}}
+              <tr>
+                <td><strong>{{this.name}}</strong></td>
+                <td>{{this.count}}</td>
+                <td class="positive">{{this.sentiments.positive}}</td>
+                <td class="negative">{{this.sentiments.negative}}</td>
+                <td class="neutral">{{this.sentiments.neutral}}</td>
+                <td>{{this.avgRating}}/5</td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {{/if}}
+
+  <!-- Top Positive Feedback -->
+  <div class="feedback-section positive-section">
+    <h2>⭐ Top Positive Feedback</h2>
+    <div class="feedback-cards">
+      {{#each topPositiveFeedback}}
+        <div class="feedback-card positive">
+          <div class="feedback-header">
+            <span class="guest-name">{{#if this.Guest}}{{this.Guest.firstName}} {{this.Guest.lastName}}{{else}}Anonymous Guest{{/if}}</span>
+            <span class="feedback-rating" style="color: #f59e0b; letter-spacing: 2px;">{{stars this.rating}}</span>
+            <span class="sentiment-badge positive">{{this.sentiment}}</span>
+          </div>
+          <div class="feedback-comment">{{this.comment}}</div>
+          <div class="feedback-footer">
+            <span class="feedback-date">{{formatDate this.createdAt}}</span>
+          </div>
+        </div>
+      {{else}}
+        <div class="no-data">No positive feedback available</div>
+      {{/each}}
+    </div>
+  </div>
+
+  <!-- Top Negative Feedback -->
+  <div class="feedback-section negative-section">
+    <h2>⚠️ Top Negative Feedback (Action Required)</h2>
+    <div class="feedback-cards">
+      {{#each topNegativeFeedback}}
+        <div class="feedback-card negative">
+          <div class="feedback-header">
+            <span class="guest-name">{{#if this.Guest}}{{this.Guest.firstName}} {{this.Guest.lastName}}{{else}}Anonymous Guest{{/if}}</span>
+            <span class="feedback-rating" style="color: #f59e0b; letter-spacing: 2px;">{{stars this.rating}}</span>
+            <span class="sentiment-badge negative">{{this.sentiment}}</span>
+          </div>
+          <div class="feedback-comment">{{this.comment}}</div>
+          <div class="feedback-footer">
+            <span class="feedback-date">{{formatDate this.createdAt}}</span>
+          </div>
+        </div>
+      {{else}}
+        <div class="no-data">No negative feedback available</div>
+      {{/each}}
+    </div>
+  </div>
+
+  <!-- Common Issues -->
+  {{#if commonIssues}}
+    <div class="issues-section">
+      <h2>🔴 Common Issues Reported</h2>
+      <div class="issues-list">
+        {{#each commonIssues}}
+          <div class="issue-item">
+            <span class="issue-name">{{this.issue}}</span>
+            <span class="issue-count">{{this.count}} mentions</span>
+            <div class="issue-bar">
+              <div class="issue-fill" style="width: {{#if (gt ../../commonIssues.0.count 0)}}{{divide (multiply this.count 100) ../../commonIssues.0.count}}{{else}}0{{/if}}%"></div>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+  {{/if}}
+
+  <!-- Recommendations -->
+  {{#if recommendations}}
+    <div class="recommendations-section">
+      <h2>💡 Recommendations</h2>
+      <div class="recommendations-grid">
+        {{#each recommendations}}
+          <div class="recommendation-card priority-{{this.priority}}">
+            <div class="rec-priority">{{this.priority}} Priority</div>
+            <div class="rec-category">{{this.category}}</div>
+            <div class="rec-message">{{this.message}}</div>
+            <div class="rec-action">
+              <strong>Action:</strong> {{this.action}}
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+  {{/if}}
+
+  <!-- Daily Trend Chart Data (for front-end charting) -->
+  <div class="trends-chart-section">
+    <h2>30-Day Sentiment Trends</h2>
+    <div class="chart-container">
+      <canvas id="sentimentChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<style>
+.sentiment-analysis-dashboard {
+  padding: 0;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding: 24px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafb 100%);
+  border-bottom: 1px solid #e5e7eb;
+  border-radius: 8px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.header-left h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.5px;
+}
+
+.header-subtitle {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 400;
+}
+
+.header-actions {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.last-updated {
+  font-size: 13px;
+  color: #9ca3af;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.btn-export {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #0d9488 0%, #06b6d4 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px rgba(13, 148, 136, 0.15);
+  text-decoration: none;
+}
+
+.btn-export:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 12px rgba(13, 148, 136, 0.25);
+  background: linear-gradient(135deg, #117a65 0%, #0897a5 100%);
+}
+
+.btn-export:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(13, 148, 136, 0.15);
+}
+
+.btn-export:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 4px 6px rgba(13, 148, 136, 0.15), 0 0 0 3px rgba(13, 148, 136, 0.1);
+}
+
+.btn-icon {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2.5;
+}
+
+/* Metrics Grid */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.metric-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+.metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+  border-color: #d1d5db;
+}
+
+.metric-value {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.metric-label {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 8px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metric-percentage {
+  font-size: 12px;
+  color: #d1d5db;
+  font-weight: 500;
+}
+
+.metric-card.sentiment-positive .metric-value {
+  color: #10b981;
+}
+
+.metric-card.sentiment-positive {
+  border-left: 4px solid #10b981;
+}
+
+.metric-card.sentiment-negative .metric-value {
+  color: #ef4444;
+}
+
+.metric-card.sentiment-negative {
+  border-left: 4px solid #ef4444;
+}
+
+.metric-card.sentiment-neutral .metric-value {
+  color: #f59e0b;
+}
+
+.metric-card.sentiment-neutral {
+  border-left: 4px solid #f59e0b;
+}
+
+.metric-card.metric-score .metric-value {
+  color: #06b6d4;
+}
+
+.metric-card.metric-score {
+  border-left: 4px solid #06b6d4;
+}
+
+.metric-card.metric-rating .metric-value {
+  color: #8b5cf6;
+}
+
+.metric-card.metric-rating {
+  border-left: 4px solid #8b5cf6;
+}
+
+/* Period Stats */
+.period-stats-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.period-stat-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: box-shadow 0.3s;
+}
+
+.period-stat-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.period-stat-card h3 {
+  margin: 0 0 16px 0;
+  color: #111827;
+  font-size: 16px;
+  font-weight: 600;
+  border-bottom: 2px solid #0d9488;
+  padding-bottom: 12px;
+}
+
+.stat-details {
+  display: grid;
+  gap: 12px;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.stat-item:last-child {
+  border-bottom: none;
+}
+
+.stat-label {
+  color: #6b7280;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.stat-value {
+  font-weight: 600;
+  color: #111827;
+  font-size: 14px;
+}
+
+.stat-value.positive {
+  color: #10b981;
+}
+
+.stat-value.negative {
+  color: #ef4444;
+}
+
+/* Aspect Ratings */
+.aspect-ratings-section {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.aspect-ratings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.aspect-card {
+  background: #f9f9f9;
+  border-left: 4px solid #2196F3;
+  padding: 15px;
+  border-radius: 4px;
+}
+
+.aspect-name {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.aspect-score {
+  font-size: 24px;
+  color: #2196F3;
+  margin-bottom: 10px;
+}
+
+.aspect-bar {
+  background: #e0e0e0;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.aspect-fill {
+  background: linear-gradient(90deg, #4CAF50, #81C784);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.aspect-fill-percent {
+  font-size: 10px;
+  color: white;
+  font-weight: bold;
+}
+
+.aspect-count {
+  font-size: 12px;
+  color: #999;
+}
+
+/* Trends */
+.trends-section {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.weekly-trends {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.trend-card {
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 15px;
+}
+
+.trend-week {
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.trend-stats {
+  display: grid;
+  gap: 8px;
+}
+
+.trend-stat {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  padding: 5px 0;
+}
+
+.trend-label {
+  color: #666;
+}
+
+.trend-count {
+  font-weight: bold;
+}
+
+.trend-stat.positive .trend-count {
+  color: #4CAF50;
+}
+
+.trend-stat.negative .trend-count {
+  color: #F44336;
+}
+
+.trend-stat.neutral .trend-count {
+  color: #FF9800;
+}
+
+.trend-stat.score .trend-score {
+  color: #2196F3;
+  font-weight: bold;
+}
+
+/* Room Sentiment */
+.room-sentiment-section {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.room-sentiment-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.room-sentiment-table th {
+  background: #f5f5f5;
+  padding: 12px;
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+  font-weight: bold;
+}
+
+.room-sentiment-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.room-sentiment-table tr:hover {
+  background: #f9f9f9;
+}
+
+.room-sentiment-table .positive {
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.room-sentiment-table .negative {
+  color: #F44336;
+  font-weight: bold;
+}
+
+/* Feedback Cards */
+.feedback-section {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.feedback-section h2 {
+  margin-top: 0;
+}
+
+.feedback-cards {
+  display: grid;
+  gap: 15px;
+}
+
+.feedback-card {
+  border-left: 4px solid #ddd;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 4px;
+}
+
+.feedback-card.positive {
+  border-left-color: #4CAF50;
+  background: #f1f8f6;
+}
+
+.feedback-card.negative {
+  border-left-color: #F44336;
+  background: #fef5f5;
+}
+
+.feedback-header {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.guest-name {
+  font-weight: bold;
+  color: #333;
+}
+
+.feedback-rating {
+  color: #FF9800;
+  font-weight: bold;
+}
+
+.sentiment-badge {
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.sentiment-badge.positive {
+  background: #4CAF50;
+  color: white;
+}
+
+.sentiment-badge.negative {
+  background: #F44336;
+  color: white;
+}
+
+.sentiment-badge.neutral {
+  background: #FF9800;
+  color: white;
+}
+
+.feedback-comment {
+  margin-bottom: 10px;
+  line-height: 1.5;
+  color: #555;
+}
+
+.feedback-footer {
+  display: flex;
+  gap: 20px;
+  font-size: 12px;
+  color: #999;
+}
+
+.no-data {
+  text-align: center;
+  padding: 30px;
+  color: #999;
+}
+
+/* Issues Section */
+.issues-section {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.issues-list {
+  display: grid;
+  gap: 12px;
+}
+
+.issue-item {
+  display: grid;
+  grid-template-columns: 120px 1fr 100px;
+  gap: 15px;
+  align-items: center;
+}
+
+.issue-name {
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.issue-bar {
+  background: #f5f5f5;
+  height: 24px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.issue-fill {
+  background: #F44336;
+  height: 100%;
+  transition: width 0.3s;
+}
+
+.issue-count {
+  text-align: right;
+  font-weight: bold;
+  color: #F44336;
+}
+
+/* Recommendations */
+.recommendations-section {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.recommendations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 15px;
+}
+
+.recommendation-card {
+  border-left: 4px solid #ddd;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 4px;
+}
+
+.recommendation-card.priority-high {
+  border-left-color: #F44336;
+  background: #fef5f5;
+}
+
+.recommendation-card.priority-medium {
+  border-left-color: #FF9800;
+  background: #fff8f5;
+}
+
+.recommendation-card.priority-low {
+  border-left-color: #4CAF50;
+  background: #f1f8f6;
+}
+
+.rec-priority {
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  color: #666;
+}
+
+.recommendation-card.priority-high .rec-priority {
+  color: #F44336;
+}
+
+.recommendation-card.priority-medium .rec-priority {
+  color: #FF9800;
+}
+
+.recommendation-card.priority-low .rec-priority {
+  color: #4CAF50;
+}
+
+.rec-category {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.rec-message {
+  margin-bottom: 10px;
+  line-height: 1.5;
+  color: #555;
+  font-size: 14px;
+}
+
+.rec-action {
+  padding-top: 10px;
+  border-top: 1px solid #ddd;
+  font-size: 13px;
+  color: #333;
+}
+
+/* Chart Section */
+.trends-chart-section {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.chart-container {
+  position: relative;
+  height: 300px;
+  margin-top: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .metrics-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+
+  .aspect-ratings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .satisfaction-bar {
+    grid-template-columns: 100px 1fr;
+  }
+
+  .bar-percentage {
+    grid-column: 2;
+    text-align: left;
+  }
+
+  .feedback-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .issue-item {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+<script>
+function exportSentimentData() {
+  // Create a temporary link and click it to trigger download
+  const link = document.createElement('a');
+  link.href = '/admin/sentiment-analysis/export';
+  link.click();
+}
+</script>
+
+<!-- Logout Confirmation Modal -->
+<div id="logoutConfirmModal"
+     class="hidden fixed inset-0 z-[500] flex items-center justify-center p-4"
+     style="background: rgba(15,23,42,.65); backdrop-filter: blur(6px);">
+  <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 animate-fade-in-up">
+    <div class="flex items-center gap-4 mb-5">
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
+           style="background: linear-gradient(135deg,#fef3c7,#fde68a);">
+        <i class="fa-solid fa-right-from-bracket text-amber-600 text-lg"></i>
+      </div>
+      <div>
+        <h3 class="text-lg font-bold text-gray-900">Sign Out?</h3>
+        <p class="text-sm text-gray-500">You'll need to sign in again to access your account.</p>
+      </div>
+    </div>
+    <div class="flex gap-3 mt-6">
+      <button id="logoutConfirmNo"
+              class="flex-1 px-4 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm transition-colors">
+        Cancel
+      </button>
+      <button id="logoutConfirmYes"
+              class="flex-1 px-4 py-2.5 rounded-xl font-semibold text-sm text-white transition-all"
+              style="background: linear-gradient(135deg,#dc2626,#ef4444); box-shadow: 0 4px 12px rgba(220,38,38,.3);">
+        Sign Out
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<script>
+(function () {
+  const toggle  = document.getElementById('sidebar-toggle');
+  const sidebar = document.getElementById('admin-sidebar');
+  if (toggle && sidebar) {
+    toggle.addEventListener('click', () => sidebar.classList.toggle('-translate-x-full'));
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth < 768 && !sidebar.contains(e.target) && !toggle.contains(e.target)) {
+        sidebar.classList.add('-translate-x-full');
+      }
+    });
+  }
+
+  // Logout functionality
+  let _logoutCb = null;
+
+  window.showLogoutConfirmation = function (cb) {
+    _logoutCb = cb;
+    const m = document.getElementById('logoutConfirmModal');
+    if (m) m.classList.remove('hidden');
+  };
+
+  window.confirmAdminLogout = function () {
+    showLogoutConfirmation(function () {
+      window.location.href = '/logout';
+    });
+  };
+
+  function closeModal() {
+    const modal = document.getElementById('logoutConfirmModal');
+    if (modal) modal.classList.add('hidden');
+    _logoutCb = null;
+  }
+
+  // Wire up logout button and modal
+  document.addEventListener('DOMContentLoaded', function () {
+    const logoutBtn = document.getElementById('adminLogoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', window.confirmAdminLogout);
+    }
+
+    const yes = document.getElementById('logoutConfirmYes');
+    const no = document.getElementById('logoutConfirmNo');
+    const modal = document.getElementById('logoutConfirmModal');
+
+    if (yes) yes.addEventListener('click', () => { if (_logoutCb) _logoutCb(); });
+    if (no) no.addEventListener('click', closeModal);
+    if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+    // Render Sentiment Trends Chart
+    renderSentimentTrendsChart();
+  });
+
+  // Render 30-Day Sentiment Trends Chart
+  function renderSentimentTrendsChart() {
+    const canvas = document.getElementById('sentimentChart');
+    if (!canvas) return;
+
+    // Get sentiment trends data from server
+    const sentimentTrends = {{{json sentimentTrends}}};
+    
+    if (!sentimentTrends || sentimentTrends.length === 0) {
+      // Show "No data" message
+      const container = canvas.parentElement;
+      container.innerHTML = '<div style="text-align: center; padding: 60px 20px; color: #999;"><p style="font-size: 16px; margin-bottom: 8px;">📊 No sentiment data available</p><p style="font-size: 14px;">Sentiment trends will appear here once feedback is submitted.</p></div>';
+      return;
+    }
+
+    // Prepare chart data
+    const labels = sentimentTrends.map(t => {
+      const date = new Date(t.date);
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    });
+    
+    const positiveData = sentimentTrends.map(t => t.positive);
+    const negativeData = sentimentTrends.map(t => t.negative);
+    const neutralData = sentimentTrends.map(t => t.neutral);
+
+    // Create chart
+    new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Positive',
+            data: positiveData,
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+            pointBackgroundColor: '#10b981',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2
+          },
+          {
+            label: 'Negative',
+            data: negativeData,
+            borderColor: '#ef4444',
+            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+            pointBackgroundColor: '#ef4444',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2
+          },
+          {
+            label: 'Neutral',
+            data: neutralData,
+            borderColor: '#f59e0b',
+            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+            pointBackgroundColor: '#f59e0b',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false
+        },
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+            labels: {
+              usePointStyle: true,
+              padding: 15,
+              font: {
+                size: 12,
+                weight: '600'
+              }
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            padding: 12,
+            titleFont: {
+              size: 13,
+              weight: 'bold'
+            },
+            bodyFont: {
+              size: 12
+            },
+            bodySpacing: 6,
+            usePointStyle: true,
+            callbacks: {
+              label: function(context) {
+                return context.dataset.label + ': ' + context.parsed.y + ' reviews';
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              display: false
+            },
+            ticks: {
+              font: {
+                size: 11
+              },
+              maxRotation: 45,
+              minRotation: 0
+            }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              font: {
+                size: 11
+              }
+            },
+            grid: {
+              color: 'rgba(0, 0, 0, 0.05)'
+            }
+          }
+        }
+      }
+    });
+  }
+})();
+</script>
+
+      </div>
+    </main>
+  </div>
+</body>

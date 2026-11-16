@@ -1,0 +1,313 @@
+{{> head }}
+<body class="font-body">
+<div class="flex h-screen overflow-hidden" style="background:#f1f5f9;">
+
+  <!-- ── Staff Sidebar ── -->
+  <aside id="staff-sidebar"
+         class="flex-shrink-0 w-64 flex flex-col fixed md:relative top-0 left-0 h-screen z-40 transition-transform duration-300"
+         style="background: linear-gradient(180deg,#1e1b4b 0%,#312e81 50%,#1e3a5f 100%); box-shadow: 4px 0 24px rgba(0,0,0,.2);">
+    <div class="px-6 py-6 border-b" style="border-color: rgba(255,255,255,.1);">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+             style="background: linear-gradient(135deg,#6366f1,#8b5cf6);">
+          <i class="fa-solid fa-user-tie text-white text-sm"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-white font-display leading-none">RJMBook</h1>
+          <p class="text-xs mt-0.5" style="color: rgba(255,255,255,.45);">Staff Panel</p>
+        </div>
+      </div>
+    </div>
+    <nav class="flex-1 px-3 py-5 space-y-0.5 overflow-y-auto">
+      <p class="text-xs font-semibold uppercase tracking-widest px-3 mb-3" style="color: rgba(255,255,255,.35);">Operations</p>
+      <a href="/staff" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/75 hover:text-white hover:bg-white/10 transition-all">
+        <i class="fa-solid fa-gauge w-4 text-center flex-shrink-0"></i><span>Dashboard</span>
+      </a>
+      <a href="/staff/reservations" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all"
+         style="background: linear-gradient(135deg,#6366f1,#8b5cf6); color:#fff; box-shadow: 0 4px 12px rgba(99,102,241,.35);">
+        <i class="fa-solid fa-calendar-days w-4 text-center flex-shrink-0"></i><span>Reservations</span>
+      </a>
+      <a href="/staff/reservation-calendar" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/75 hover:text-white hover:bg-white/10 transition-all">
+        <i class="fa-solid fa-calendar w-4 text-center flex-shrink-0"></i><span>Reservation Calendar</span>
+      </a>
+      <a href="/staff/room-status" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/75 hover:text-white hover:bg-white/10 transition-all">
+        <i class="fa-solid fa-bed w-4 text-center flex-shrink-0"></i><span>Room Status</span>
+      </a>
+      <a href="/staff/guests" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/75 hover:text-white hover:bg-white/10 transition-all">
+        <i class="fa-solid fa-users w-4 text-center flex-shrink-0"></i><span>Guests</span>
+      </a>
+      <a href="/staff/book" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/75 hover:text-white hover:bg-white/10 transition-all">
+        <i class="fa-solid fa-calendar-plus w-4 text-center flex-shrink-0"></i><span>Walk-in Booking</span>
+      </a>
+    </nav>
+    <div class="px-3 py-4 border-t" style="border-color: rgba(255,255,255,.08);">
+      <div class="flex items-center gap-3 px-3 py-3 rounded-xl mb-3" style="background: rgba(255,255,255,.07);">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
+             style="background: linear-gradient(135deg,#6366f1,#8b5cf6);">
+          {{#if sessionUserName}}{{sessionUserName.[0]}}{{else}}S{{/if}}
+        </div>
+        <div class="min-w-0">
+          <p class="text-xs text-white font-semibold truncate">{{sessionUserName}}</p>
+          <p class="text-xs" style="color: rgba(255,255,255,.4);">Staff Member</p>
+        </div>
+      </div>
+      <button id="staffLogoutBtn"
+              class="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-white transition-all cursor-pointer border-none"
+              style="background: rgba(220,38,38,.2); border: 1px solid rgba(220,38,38,.3);"
+>
+        <i class="fa-solid fa-right-from-bracket text-red-400"></i>
+        <span class="text-red-300">Sign Out</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── Main Content ── -->
+  <main class="flex-1 flex flex-col overflow-hidden">
+    <header class="flex-shrink-0 flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200"
+            style="box-shadow: 0 1px 8px rgba(0,0,0,.06);">
+      <div class="flex items-center gap-4">
+        <button id="sidebar-toggle" class="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">Reservation Details</h2>
+          <p class="text-xs text-gray-500 mt-0.5">Booking #{{booking.id}}</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white"
+             style="background: linear-gradient(135deg,#6366f1,#8b5cf6);">
+          {{#if sessionUserName}}{{sessionUserName.[0]}}{{else}}S{{/if}}
+        </div>
+      </div>
+    </header>
+
+    <div class="flex-1 overflow-auto p-6" style="background:#f8fafc;">
+      <div class="max-w-4xl">
+
+        <!-- Back link -->
+        <a href="/staff/reservations"
+           class="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-semibold text-sm mb-6 transition-colors group">
+          <i class="fa-solid fa-arrow-left text-xs group-hover:-translate-x-1 transition-transform"></i>
+          Back to Reservations
+        </a>
+
+        <!-- Status banner -->
+        <div class="card p-5 mb-5 flex items-center justify-between animate-fade-in-up">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
+                 style="background: linear-gradient(135deg,#6366f1,#8b5cf6);">
+              <i class="fa-solid fa-calendar-check text-white text-lg"></i>
+            </div>
+            <div>
+              <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Booking Reference</p>
+              <p class="text-2xl font-bold text-gray-800 font-display">#{{booking.id}}</p>
+            </div>
+          </div>
+          <span class="badge text-sm px-4 py-2
+            {{#if (eq booking.status 'pending')}}badge-warning
+            {{else if (eq booking.status 'confirmed')}}badge-success
+            {{else if (eq booking.status 'checked_in')}}badge-info
+            {{else if (eq booking.status 'checked_out')}}badge-neutral
+            {{else if (eq booking.status 'cancelled')}}badge-danger
+            {{else}}badge-neutral{{/if}}">
+            <i class="fa-solid
+              {{#if (eq booking.status 'pending')}}fa-clock
+              {{else if (eq booking.status 'confirmed')}}fa-circle-check
+              {{else if (eq booking.status 'checked_in')}}fa-door-open
+              {{else if (eq booking.status 'checked_out')}}fa-door-closed
+              {{else if (eq booking.status 'cancelled')}}fa-circle-xmark
+              {{else}}fa-circle{{/if}} mr-1.5"></i>
+            {{booking.status}}
+          </span>
+        </div>
+
+        <!-- Main grid -->
+        <div class="grid md:grid-cols-2 gap-5 mb-5">
+
+          <!-- Booking Details -->
+          <div class="card p-6 animate-fade-in-up">
+            <h3 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+              <i class="fa-solid fa-clipboard-list text-indigo-500"></i> Booking Details
+            </h3>
+            <div class="space-y-1">
+
+              <div class="flex items-center justify-between py-3 border-b border-gray-50">
+                <div class="flex items-center gap-2 text-gray-500 text-sm">
+                  <i class="fa-regular fa-calendar-check text-indigo-500 w-4 text-center"></i> Check-in
+                </div>
+                <p class="font-semibold text-gray-800 text-sm">{{booking.checkIn}}</p>
+              </div>
+
+              <div class="flex items-center justify-between py-3 border-b border-gray-50">
+                <div class="flex items-center gap-2 text-gray-500 text-sm">
+                  <i class="fa-regular fa-calendar-xmark text-indigo-500 w-4 text-center"></i> Check-out
+                </div>
+                <p class="font-semibold text-gray-800 text-sm">{{booking.checkOut}}</p>
+              </div>
+
+              <div class="flex items-center justify-between py-3 border-b border-gray-50">
+                <div class="flex items-center gap-2 text-gray-500 text-sm">
+                  <i class="fa-solid fa-users text-indigo-500 w-4 text-center"></i> Guests
+                </div>
+                <p class="font-semibold text-gray-800 text-sm">
+                  {{booking.adults}} Adult(s){{#if booking.children}}, {{booking.children}} Child(ren){{/if}}
+                </p>
+              </div>
+
+              <div class="flex items-center justify-between py-3">
+                <div class="flex items-center gap-2 text-gray-500 text-sm">
+                  <i class="fa-solid fa-peso-sign text-indigo-500 w-4 text-center"></i> Total Amount
+                </div>
+                <p class="text-xl font-bold text-indigo-700">₱{{booking.totalAmount}}</p>
+              </div>
+
+              {{#if booking.cancellationReason}}
+              <div class="mt-2 p-4 rounded-xl" style="background:#fef2f2; border-left: 3px solid #ef4444;">
+                <p class="text-xs font-bold text-red-600 uppercase tracking-wider mb-1">
+                  <i class="fa-solid fa-circle-xmark mr-1"></i> Cancellation Reason
+                </p>
+                <p class="text-sm text-red-800">{{booking.cancellationReason}}</p>
+              </div>
+              {{/if}}
+            </div>
+          </div>
+
+          <!-- Guest Info & Room Info -->
+          <div class="space-y-5">
+            {{#if booking.Guest}}
+            <div class="card p-6 animate-fade-in-up">
+              <h3 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-user text-indigo-500"></i> Guest Information
+              </h3>
+              <div class="space-y-3">
+                <div class="flex justify-between items-center py-2 border-b border-gray-50">
+                  <span class="text-sm text-gray-500">Name</span>
+                  <span class="font-bold text-gray-800">{{booking.Guest.firstName}} {{booking.Guest.lastName}}</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-50">
+                  <span class="text-sm text-gray-500">Email</span>
+                  <span class="text-sm text-gray-600">{{booking.Guest.email}}</span>
+                </div>
+                {{#if booking.Guest.phone}}
+                <div class="flex justify-between items-center py-2">
+                  <span class="text-sm text-gray-500">Phone</span>
+                  <span class="font-bold text-gray-800">{{booking.Guest.phone}}</span>
+                </div>
+                {{/if}}
+              </div>
+            </div>
+            {{/if}}
+
+            {{#if booking.Room}}
+            <div class="card p-6 animate-fade-in-up">
+              <h3 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-bed text-indigo-500"></i> Room / Cottage
+              </h3>
+              <div class="space-y-3">
+                <div class="flex justify-between items-center py-2 border-b border-gray-50">
+                  <span class="text-sm text-gray-500">Number</span>
+                  <span class="font-bold text-gray-800">{{booking.Room.roomNumber}}</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-50">
+                  <span class="text-sm text-gray-500">Type</span>
+                  <span class="badge badge-indigo text-xs">{{booking.Room.RoomType.name}}</span>
+                </div>
+                {{#if booking.Room.RoomType.description}}
+                <div class="pt-2">
+                  <p class="text-xs text-gray-400 mb-1">Description</p>
+                  <p class="text-sm text-gray-600 leading-relaxed">{{booking.Room.RoomType.description}}</p>
+                </div>
+                {{/if}}
+              </div>
+            </div>
+            {{/if}}
+          </div>
+        </div>
+
+        <!-- Special Requests -->
+        {{#if booking.specialRequests}}
+        <div class="card p-6 mb-5 animate-fade-in-up">
+          <h3 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-note-sticky text-amber-500"></i> Special Requests
+          </h3>
+          <p class="text-sm text-gray-700 leading-relaxed">{{booking.specialRequests}}</p>
+        </div>
+        {{/if}}
+
+        {{#if booking.roomNotes}}
+        <div class="card p-6 mb-5 animate-fade-in-up" style="border-left: 3px solid #3b82f6;">
+          <h3 class="text-sm font-bold text-blue-600 uppercase tracking-widest mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-circle-info"></i> Important Notes
+          </h3>
+          <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{{booking.roomNotes}}</p>
+        </div>
+        {{/if}}
+
+        <!-- Back button -->
+        <div class="text-center">
+          <a href="/staff/reservations"
+             class="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white transition-all"
+             style="background: linear-gradient(135deg,#6366f1,#8b5cf6);">
+            <i class="fa-solid fa-arrow-left text-xs"></i> Back to Reservations
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+(function () {
+  // Sidebar toggle
+  const toggle  = document.getElementById('sidebar-toggle');
+  const sidebar = document.getElementById('staff-sidebar');
+  if (toggle && sidebar) {
+    toggle.addEventListener('click', () => sidebar.classList.toggle('-translate-x-full'));
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth < 768 && !sidebar.contains(e.target) && !toggle.contains(e.target))
+        sidebar.classList.add('-translate-x-full');
+    });
+  }
+
+  // Logout functionality
+  let _logoutCb = null;
+
+  window.showLogoutConfirmation = function (cb) {
+    _logoutCb = cb;
+    const m = document.getElementById('logoutConfirmModal');
+    if (m) m.classList.remove('hidden');
+  };
+
+  window.confirmStaffLogout = function () {
+    showLogoutConfirmation(function () {
+      window.location.href = '/logout';
+    });
+  };
+
+  function closeModal() {
+    const modal = document.getElementById('logoutConfirmModal');
+    if (modal) modal.classList.add('hidden');
+    _logoutCb = null;
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const logoutBtn = document.getElementById('staffLogoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', window.confirmStaffLogout);
+    }
+
+    const yes = document.getElementById('logoutConfirmYes');
+    const no = document.getElementById('logoutConfirmNo');
+    const modal = document.getElementById('logoutConfirmModal');
+
+    if (yes) yes.addEventListener('click', () => { if (_logoutCb) _logoutCb(); });
+    if (no) no.addEventListener('click', closeModal);
+    if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+  });
+})();
+</script>
+
+{{> footer }}
+</body>

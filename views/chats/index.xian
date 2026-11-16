@@ -1,0 +1,306 @@
+{{> head }}
+<body class="bg-gradient-to-b from-slate-50 via-blue-50 to-slate-50 min-h-screen font-body flex flex-col">
+  {{> nav }}
+  
+  <main class="container mx-auto px-4 py-16 pt-24 flex-1">
+    <div class="max-w-7xl mx-auto">
+      <!-- Header -->
+      <div class="mb-8">
+        <h1 class="text-4xl md:text-5xl font-bold font-display text-gray-800 mb-2">
+          {{#if (eq sessionRole "admin")}}
+          Chats
+          {{else}}
+          Chat
+          {{/if}}
+        </h1>
+        <p class="text-lg text-gray-600">
+          {{#if (eq sessionRole "admin")}}
+          Manage conversations with your guests
+          {{else}}
+          Get support from our admin team
+          {{/if}}
+        </p>
+      </div>
+
+      <!-- Chat Container -->
+      <div class="grid md:grid-cols-4 gap-6 h-screen-80 bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+        
+        <!-- Users/Conversations List (Left Sidebar) -->
+        <div class="md:col-span-1 border-r border-gray-200 bg-gray-50 flex flex-col">
+          <div class="p-6 border-b border-gray-200">
+            <h2 class="text-lg font-bold text-gray-800 mb-4">
+              {{#if (eq sessionRole "admin")}}
+              Active Guests
+              {{else}}
+              Support
+              {{/if}}
+            </h2>
+            {{#if (eq sessionRole "admin")}}
+            <input type="text" placeholder="Search guests..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm" />
+            {{/if}}
+          </div>
+          
+          <div class="flex-1 overflow-y-auto">
+            {{#if (eq sessionRole "admin")}}
+            <!-- Admin: Show list of guests -->
+            <div class="chat-user-item cursor-pointer p-4 border-b border-gray-200 hover:bg-gray-100 transition-colors active" data-user-id="guest-1">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                  M
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="font-semibold text-gray-800 text-sm truncate">Maria Santos</p>
+                  <p class="text-xs text-gray-500">Guest • Room 101</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="chat-user-item cursor-pointer p-4 border-b border-gray-200 hover:bg-gray-100 transition-colors" data-user-id="guest-2">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                  J
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="font-semibold text-gray-800 text-sm truncate">James Wilson</p>
+                  <p class="text-xs text-gray-500">Guest • Room 205</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="chat-user-item cursor-pointer p-4 border-b border-gray-200 hover:bg-gray-100 transition-colors" data-user-id="guest-3">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-pink-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                  S
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="font-semibold text-gray-800 text-sm truncate">Sofia Garcia</p>
+                  <p class="text-xs text-gray-500">Guest • Room 312</p>
+                </div>
+              </div>
+            </div>
+            {{else}}
+            <!-- Guest: Show admin -->
+            <div class="chat-user-item cursor-pointer p-4 border-b border-gray-200 hover:bg-gray-100 transition-colors active" data-user-id="admin-1">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-teal-700 to-teal-600 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                  A
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="font-semibold text-gray-800 text-sm">RJMBook Support</p>
+                  <p class="text-xs text-green-600 font-medium">● Online</p>
+                </div>
+              </div>
+            </div>
+            {{/if}}
+          </div>
+        </div>
+
+        <!-- Chat Area (Right Content) -->
+        <div class="md:col-span-3 flex flex-col">
+          <!-- Chat Header -->
+          <div class="px-6 py-4 border-b border-gray-200 bg-white flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-bold text-gray-800" id="chat-header-name">
+                {{#if (eq sessionRole "admin")}}
+                Maria Santos
+                {{else}}
+                RJMBook Support
+                {{/if}}
+              </h3>
+              <p class="text-sm text-gray-600" id="chat-header-status">
+                {{#if (eq sessionRole "admin")}}
+                Room 101 • Last seen 5 min ago
+                {{else}}
+                Available 24/7
+                {{/if}}
+              </p>
+            </div>
+            <div class="flex gap-3">
+              <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                </svg>
+              </button>
+              <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Messages Area -->
+          <div class="flex-1 overflow-y-auto p-6 bg-gray-50 flex flex-col gap-4" id="messages-container">
+            <!-- Messages will be loaded dynamically from database -->
+          </div>
+
+          <!-- Input Area -->
+          <div class="px-6 py-4 border-t border-gray-200 bg-white">
+            <div class="flex gap-3 items-end">
+              <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0">
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+              </button>
+              <input 
+                type="text" 
+                id="message-input"
+                placeholder="Type your message..." 
+                class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+              <button class="px-4 py-2 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-lg hover:from-teal-600 hover:to-cyan-600 transition-all transform hover:scale-105 flex-shrink-0 font-medium" id="send-btn">
+                Send
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  {{> footer }}
+
+  <script>
+    // Chat functionality with database integration
+    const sessionRole = "{{sessionRole}}";
+    const sessionUserId = {{sessionUserId}};
+    const chatUserItems = document.querySelectorAll('.chat-user-item');
+    const messagesContainer = document.getElementById('messages-container');
+    const messageInput = document.getElementById('message-input');
+    const sendBtn = document.getElementById('send-btn');
+    const chatHeaderName = document.getElementById('chat-header-name');
+    const chatHeaderStatus = document.getElementById('chat-header-status');
+
+    let currentConversationId = null;
+
+    // Load messages for selected user
+    async function loadMessages(conversationId) {
+      try {
+        const response = await fetch(`/chats/${conversationId}/messages`);
+        const data = await response.json();
+
+        if (data.success) {
+          messagesContainer.innerHTML = '';
+          
+          if (data.messages.length === 0) {
+            messagesContainer.innerHTML = `
+              <div class="flex items-center justify-center h-full">
+                <div class="text-center text-gray-500">
+                  <p class="text-lg font-semibold mb-2">No messages yet</p>
+                  <p class="text-sm">Start a conversation below</p>
+                </div>
+              </div>
+            `;
+            return;
+          }
+
+          // Display messages
+          data.messages.forEach((msg) => {
+            const isOwn = msg.senderId === sessionUserId;
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex gap-3 items-end ${isOwn ? 'justify-end' : ''}`;
+            messageDiv.innerHTML = `
+              ${!isOwn ? `<div class="w-8 h-8 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-full flex-shrink-0"></div>` : ''}
+              <div class="${isOwn ? 'bg-teal-500 text-white' : 'bg-white text-gray-800'} rounded-lg p-3 max-w-xs shadow-sm">
+                <p class="text-sm">${escapeHtml(msg.message)}</p>
+                <p class="text-xs ${isOwn ? 'text-teal-100' : 'text-gray-500'} mt-1">${new Date(msg.createdAt).toLocaleTimeString()}</p>
+              </div>
+            `;
+            messagesContainer.appendChild(messageDiv);
+          });
+
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+      } catch (error) {
+        console.error('Error loading messages:', error);
+      }
+    }
+
+    // User click handler
+    chatUserItems.forEach(item => {
+      item.addEventListener('click', async function() {
+        // Update active state
+        chatUserItems.forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+
+        // Get user info
+        currentConversationId = this.dataset.userId;
+        const userName = this.querySelector('p:first-child').textContent;
+        const userStatus = this.querySelector('p:last-child').textContent;
+
+        // Update chat header
+        chatHeaderName.textContent = userName;
+        chatHeaderStatus.textContent = userStatus;
+
+        // Load messages from database
+        await loadMessages(currentConversationId);
+      });
+    });
+
+    // Send message
+    sendBtn.addEventListener('click', sendMessage);
+    messageInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    async function sendMessage() {
+      const message = messageInput.value.trim();
+      if (!message || !currentConversationId) return;
+
+      try {
+        const response = await fetch(`/chats/${currentConversationId}/messages`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ conversationId: currentConversationId, message })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Clear input
+          messageInput.value = '';
+
+          // Add message to chat
+          const messageDiv = document.createElement('div');
+          messageDiv.className = 'flex gap-3 items-end justify-end';
+          messageDiv.innerHTML = `
+            <div class="bg-teal-500 text-white rounded-lg p-3 max-w-xs shadow-sm">
+              <p class="text-sm">${escapeHtml(message)}</p>
+              <p class="text-xs text-teal-100 mt-1">${new Date().toLocaleTimeString()}</p>
+            </div>
+          `;
+          
+          messagesContainer.appendChild(messageDiv);
+          
+          // Scroll to bottom
+          setTimeout(() => {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+          }, 100);
+        } else {
+          showToast('Error sending message: ' + data.error, 'error');
+        }
+      } catch (error) {
+        console.error('Error sending message:', error);
+        showToast('Failed to send message', 'error');
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Load initial messages for first contact
+    if (sessionRole === 'admin' && chatUserItems.length > 0) {
+      chatUserItems[0].click();
+    } else if (sessionRole === 'user' && chatUserItems.length > 0) {
+      chatUserItems[0].click();
+    }
+  </script>
+</body>

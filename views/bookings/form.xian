@@ -1,0 +1,693 @@
+{{> head }}
+<body class="min-h-screen font-body flex flex-col" style="background:#f8fafc; min-height: 100vh;">
+  {{> nav }}
+
+  <!-- Page header -->
+  <div class="px-4 py-10 relative overflow-hidden"
+       style="background:linear-gradient(135deg,#0f766e 0%,#0d9488 55%,#0891b2 100%);">
+    <div class="absolute inset-0 pointer-events-none"
+         style="background:radial-gradient(ellipse at 80% 50%,rgba(255,255,255,.07) 0%,transparent 60%);"></div>
+    <div class="max-w-3xl mx-auto relative">
+      <div class="flex items-center gap-2 text-teal-200/70 text-xs font-medium mb-3">
+        <a href="/" class="hover:text-white transition-colors flex items-center gap-1">
+          <i class="fa-solid fa-house text-[10px]"></i> Home
+        </a>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        <span class="text-white/80">Book Your Stay</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+             style="background:rgba(255,255,255,.18);">
+          <i class="fa-solid fa-calendar-check text-white text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-3xl md:text-4xl font-bold font-display text-white">Book Your Stay</h1>
+          <p class="text-teal-100/80 text-sm mt-0.5">Rooms &amp; Cottages — check availability and reserve instantly</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="container mx-auto px-3 sm:px-4 py-8 max-w-3xl flex-1" style="min-height: calc(100vh - 220px);">
+
+    <!-- Step indicator (fixed left sidebar) -->
+    <div id="step-indicator-wrapper"
+         style="position:fixed; left:1.25rem; top:50%; transform:translateY(-50%); z-index:40;
+                background:rgba(255,255,255,0.97); backdrop-filter:blur(8px);
+                border-radius:1rem; padding:1.25rem 1rem;
+                box-shadow:0 4px 24px rgba(0,0,0,0.10); display:flex; flex-direction:column;
+                align-items:center; gap:0;">
+      <!-- Step 1 -->
+      <div class="step active" id="step-1-indicator" style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <div class="step-dot"><i class="fa-solid fa-search text-[10px]"></i></div>
+        <span style="font-size:10px;text-align:center;max-width:56px;line-height:1.2;color:#0f766e;font-weight:600;">Choose &amp;<br>Search</span>
+      </div>
+      <!-- connector -->
+      <div id="step-line-1" style="width:2px;height:28px;background:#e2e8f0;margin:2px 0;border-radius:2px;transition:background .3s;"></div>
+      <!-- Step 2 -->
+      <div class="step" id="step-2-indicator" style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <div class="step-dot">2</div>
+        <span style="font-size:10px;text-align:center;max-width:56px;line-height:1.2;color:#94a3b8;font-weight:500;">Select<br>Option</span>
+      </div>
+      <!-- connector -->
+      <div id="step-line-2" style="width:2px;height:28px;background:#e2e8f0;margin:2px 0;border-radius:2px;transition:background .3s;"></div>
+      <!-- Step 3 -->
+      <div class="step" id="step-3-indicator" style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <div class="step-dot">3</div>
+        <span style="font-size:10px;text-align:center;max-width:56px;line-height:1.2;color:#94a3b8;font-weight:500;">Your<br>Details</span>
+      </div>
+      <!-- connector -->
+      <div id="step-line-3" style="width:2px;height:28px;background:#e2e8f0;margin:2px 0;border-radius:2px;transition:background .3s;"></div>
+      <!-- Step 4 -->
+      <div class="step" id="step-4-indicator" style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <div class="step-dot"><i class="fa-solid fa-check text-[10px]"></i></div>
+        <span style="font-size:10px;text-align:center;max-width:56px;line-height:1.2;color:#94a3b8;font-weight:500;">Confirm</span>
+      </div>
+    </div>
+
+    <form id="booking-form" class="space-y-5">
+
+      <!-- ── STEP 1: Booking type ── -->
+      <div class="card p-6">
+        <h2 class="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <div class="icon-box-sm flex items-center justify-center rounded-lg flex-shrink-0"
+               style="background:linear-gradient(135deg,#f0fdfa,#ccfbf1); width:2rem; height:2rem;">
+            <i class="fa-solid fa-hotel text-teal-600 text-xs"></i>
+          </div>
+          What would you like to book?
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+          <label class="booking-type-label flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:border-teal-400 hover:bg-teal-50" data-type="room" style="border-color:#e2e8f0;">
+            <input type="radio" name="bookingType" value="room" checked class="w-4 h-4 accent-teal-600" />
+            <div class="flex items-center gap-3 flex-1">
+              <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#f0fdfa;">
+                <i class="fa-solid fa-bed text-teal-600 text-sm"></i>
+              </div>
+              <div>
+                <span class="font-semibold text-gray-900 block text-sm">Rooms</span>
+                <p class="text-xs text-gray-500 mt-0.5">Multi-day stays (24-hour rates)</p>
+              </div>
+            </div>
+          </label>
+
+          <label class="booking-type-label flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:border-amber-400 hover:bg-amber-50" data-type="cottage" style="border-color:#e2e8f0;">
+            <input type="radio" name="bookingType" value="cottage" class="w-4 h-4 accent-amber-500" />
+            <div class="flex items-center gap-3 flex-1">
+              <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#fffbeb;">
+                <i class="fa-solid fa-umbrella-beach text-amber-600 text-sm"></i>
+              </div>
+              <div>
+                <span class="font-semibold text-gray-900 block text-sm">Cottages</span>
+                <p class="text-xs text-gray-500 mt-0.5">Day or night same-day bookings</p>
+              </div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- ── STEP 1b: Room search ── -->
+      <div id="room-section" class="card p-6">
+        <h2 class="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#f0fdfa;">
+            <i class="fa-regular fa-calendar text-teal-600 text-sm"></i>
+          </div>
+          When would you like to stay?
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+          <div>
+            <label class="label"><i class="fa-solid fa-plane-arrival text-teal-500 mr-1 text-xs"></i> Check-in</label>
+            <input type="date" name="roomCheckIn" id="roomCheckIn" class="input" />
+          </div>
+          <div>
+            <label class="label"><i class="fa-solid fa-plane-departure text-teal-500 mr-1 text-xs"></i> Check-out</label>
+            <input type="date" name="roomCheckOut" id="roomCheckOut" class="input" />
+          </div>
+          <div>
+            <label class="label"><i class="fa-solid fa-bed text-teal-500 mr-1 text-xs"></i> Room Type</label>
+            <select name="roomTypeId" id="roomTypeId" class="input">
+              <option value="">Any type</option>
+              {{#each rooms}}
+              <option value="{{this.id}}" {{#unless this.isAvailable}}disabled{{/unless}}>
+                {{this.name}}{{#unless this.isAvailable}} (Unavailable){{/unless}}
+              </option>
+              {{/each}}
+            </select>
+          </div>
+        </div>
+        <!-- auto-search: no button needed -->
+        <div id="room-search-status" class="hidden text-xs text-teal-600 flex items-center gap-1.5 mt-1">
+          <i class="fa-solid fa-spinner fa-spin"></i> Checking availability…
+        </div>
+      </div>
+
+      <!-- ── STEP 1b: Cottage search ── -->
+      <div id="cottage-section" class="hidden card p-6" style="border:1.5px solid #fde68a;">
+        <h2 class="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:#fffbeb;">
+            <i class="fa-regular fa-calendar text-amber-600 text-sm"></i>
+          </div>
+          When would you like to book?
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="label"><i class="fa-solid fa-calendar-day text-amber-500 mr-1 text-xs"></i> Booking Date</label>
+            <input type="date" name="cottageCheckIn" id="cottageCheckIn" class="input" />
+          </div>
+          <div>
+            <label class="label"><i class="fa-solid fa-umbrella-beach text-amber-500 mr-1 text-xs"></i> Cottage Type</label>
+            <select name="cottageTypeId" id="cottageTypeId" class="input">
+              <option value="">Any cottage</option>
+              {{#each cottages}}
+              <option value="{{this.id}}" {{#unless this.isAvailable}}disabled{{/unless}}>
+                {{this.name}}{{#unless this.isAvailable}} (Unavailable){{/unless}}
+              </option>
+              {{/each}}
+            </select>
+          </div>
+        </div>
+        <!-- auto-search: no button needed -->
+        <div id="cottage-search-status" class="hidden text-xs text-amber-600 flex items-center gap-1.5 mt-1">
+          <i class="fa-solid fa-spinner fa-spin"></i> Checking availability…
+        </div>
+      </div>
+
+      <!-- ── STEP 2: Availability results ── -->
+      <div id="availability" class="hidden card p-6">
+        <h3 class="text-base font-bold text-gray-800 mb-4 flex items-center gap-2" id="availability-title">
+          <i class="fa-solid fa-list-check text-teal-500"></i> Available Options
+        </h3>
+        <div id="availability-list" class="space-y-2"></div>
+      </div>
+
+      <!-- ── STEP 3: Guest details ── -->
+      <div id="guest-fields" class="hidden card p-6">
+        <h2 class="text-base font-bold text-gray-800 mb-5 flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+               style="background:linear-gradient(135deg,#f0fdfa,#ccfbf1);">
+            <i class="fa-solid fa-user text-teal-600 text-sm"></i>
+          </div>
+          Your Details
+        </h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="label"><i class="fa-solid fa-id-card text-teal-500 mr-1 text-xs"></i> First Name</label>
+            <input type="text" name="firstName" value="{{firstName}}" placeholder="John" readonly
+                   class="input bg-gray-50 cursor-not-allowed" />
+          </div>
+          <div>
+            <label class="label"><i class="fa-solid fa-id-card text-teal-500 mr-1 text-xs"></i> Last Name</label>
+            <input type="text" name="lastName" value="{{lastName}}" placeholder="Doe" readonly
+                   class="input bg-gray-50 cursor-not-allowed" />
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="label"><i class="fa-solid fa-envelope text-teal-500 mr-1 text-xs"></i> Email</label>
+          <input type="email" name="email" value="{{email}}" placeholder="john@example.com" readonly
+                 class="input bg-gray-50 cursor-not-allowed" />
+        </div>
+
+        <div class="mb-4">
+          <label class="label"><i class="fa-solid fa-phone text-teal-500 mr-1 text-xs"></i> Phone Number</label>
+          <div class="relative">
+            <i class="fa-solid fa-phone absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+            <input type="tel" name="phone" placeholder="+63 9XX XXX XXXX"
+                   class="input pl-10" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="label"><i class="fa-solid fa-person text-teal-500 mr-1 text-xs"></i> Adults</label>
+            <div class="relative">
+              <i class="fa-solid fa-person absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+              <input type="number" name="adults" value="1" min="1"
+                     class="input pl-10" />
+            </div>
+          </div>
+          <div>
+            <label class="label"><i class="fa-solid fa-child text-teal-500 mr-1 text-xs"></i> Children</label>
+            <div class="relative">
+              <i class="fa-solid fa-child absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+              <input type="number" name="children" value="0" min="0"
+                     class="input pl-10" />
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <label class="label"><i class="fa-solid fa-comment-dots text-teal-500 mr-1 text-xs"></i> Special Requests <span class="text-gray-400 font-normal">(optional)</span></label>
+          <textarea name="specialRequests" rows="3"
+                    placeholder="Any special requirements or preferences?"
+                    class="input resize-none"></textarea>
+        </div>
+
+        <!-- Price summary -->
+        <div id="price-summary" class="hidden rounded-xl p-4 mb-5 flex items-center justify-between gap-4"
+             style="background:linear-gradient(135deg,#f0fdfa,#ecfeff); border:1.5px solid #99f6e4;">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                 style="background:linear-gradient(135deg,#0d9488,#0891b2);">
+              <i class="fa-solid fa-receipt text-white text-sm"></i>
+            </div>
+            <div>
+              <p class="text-xs text-gray-500 font-medium">Total Amount</p>
+              <p class="text-xl font-bold text-teal-700 font-display" id="price-display">₱0</p>
+            </div>
+          </div>
+          <span class="badge badge-teal text-xs"><i class="fa-solid fa-lock mr-1"></i>Secure</span>
+        </div>
+
+        <input type="hidden" name="roomId" id="roomId" />
+        <input type="hidden" name="cottageRate" id="cottageRate" />
+
+        <button type="submit" class="btn btn-gold w-full btn-lg">
+          <i class="fa-solid fa-circle-check"></i> Confirm Booking
+        </button>
+        <p class="text-center text-xs text-gray-400 mt-3 flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-shield-halved text-teal-400 text-xs"></i>
+          Your booking is secured and encrypted
+        </p>
+      </div>
+    </form>
+  </main>
+
+  <script>
+    const form             = document.getElementById('booking-form');
+    const availabilityDiv  = document.getElementById('availability');
+    const availabilityList = document.getElementById('availability-list');
+    const availabilityTitle= document.getElementById('availability-title');
+    const guestFields      = document.getElementById('guest-fields');
+    const roomIdInput      = document.getElementById('roomId');
+    const cottageRateInput = document.getElementById('cottageRate');
+    const roomSection      = document.getElementById('room-section');
+    const cottageSection   = document.getElementById('cottage-section');
+    const priceSummary     = document.getElementById('price-summary');
+    const priceDisplay     = document.getElementById('price-display');
+    const roomSearchStatus    = document.getElementById('room-search-status');
+    const cottageSearchStatus = document.getElementById('cottage-search-status');
+
+    // ── Step indicator ──────────────────────────────────────────────────
+    function setStep(step) {
+      for (let i = 1; i <= 4; i++) {
+        const ind  = document.getElementById('step-' + i + '-indicator');
+        const line = document.getElementById('step-line-' + i);
+        if (!ind) continue;
+        const label = ind.querySelector('span');
+        if (i < step) {
+          ind.classList.remove('active'); ind.classList.add('done');
+          if (label) { label.style.color = '#0d9488'; label.style.fontWeight = '600'; }
+        } else if (i === step) {
+          ind.classList.add('active'); ind.classList.remove('done');
+          if (label) { label.style.color = '#0f766e'; label.style.fontWeight = '700'; }
+        } else {
+          ind.classList.remove('active', 'done');
+          if (label) { label.style.color = '#94a3b8'; label.style.fontWeight = '500'; }
+        }
+        if (line) {
+          line.style.background = i < step ? '#0d9488' : '#e2e8f0';
+        }
+      }
+    }
+
+    // ── Booking type toggle ─────────────────────────────────────────────
+    document.querySelectorAll('input[name="bookingType"]').forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        const isRoom = e.target.value === 'room';
+        roomSection.classList.toggle('hidden', !isRoom);
+        cottageSection.classList.toggle('hidden', isRoom);
+        availabilityDiv.classList.add('hidden');
+        guestFields.classList.add('hidden');
+        priceSummary.classList.add('hidden');
+        setStep(1);
+      });
+    });
+
+    // Highlight selected booking type label
+    document.querySelectorAll('.booking-type-label').forEach(label => {
+      label.addEventListener('click', () => {
+        document.querySelectorAll('.booking-type-label').forEach(l => {
+          l.style.borderColor = '#e2e8f0';
+          l.style.background  = '';
+        });
+        const type  = label.getAttribute('data-type');
+        label.style.borderColor = type === 'room' ? '#2dd4bf' : '#f59e0b';
+        label.style.background  = type === 'room' ? '#f0fdfa' : '#fffbeb';
+      });
+    });
+
+    // ── Auto-search debounce ────────────────────────────────────────────
+    let roomSearchTimer    = null;
+    let cottageSearchTimer = null;
+
+    function scheduleRoomSearch() {
+      clearTimeout(roomSearchTimer);
+      roomSearchTimer = setTimeout(fetchRoomAvailability, 400);
+    }
+
+    function scheduleCottageSearch() {
+      clearTimeout(cottageSearchTimer);
+      cottageSearchTimer = setTimeout(fetchCottageAvailability, 400);
+    }
+
+    // ── Update room type combo based on availability for chosen dates ───
+    async function refreshRoomTypeCombo(checkIn, checkOut) {
+      if (!checkIn || !checkOut) return;
+      try {
+        const res  = await fetch(`/bookings/availability?checkIn=${checkIn}&checkOut=${checkOut}&category=room`);
+        const data = await res.json();
+        if (data.error || !data.available) return;
+
+        // Build a set of available roomTypeIds
+        const availableTypeIds = new Set(data.available.map(r => String(r.RoomType?.id || r.roomTypeId || '')));
+
+        const select = document.getElementById('roomTypeId');
+        Array.from(select.options).forEach(opt => {
+          if (!opt.value) return; // keep "Any type"
+          const available = availableTypeIds.has(String(opt.value));
+          opt.disabled = !available;
+          // Show/hide visually — browsers don't support hiding <option> on all platforms,
+          // so we use a style trick plus text suffix
+          if (!available) {
+            if (!opt.dataset.originalText) opt.dataset.originalText = opt.text.replace(/ \(Unavailable\)$/, '');
+            opt.text = (opt.dataset.originalText || opt.text.replace(/ \(Unavailable\)$/, '')) + ' (Unavailable)';
+            opt.style.color = '#9ca3af';
+          } else {
+            opt.text = opt.dataset.originalText || opt.text.replace(/ \(Unavailable\)$/, '');
+            opt.style.color = '';
+          }
+        });
+
+        // If currently selected type is now unavailable, reset to "Any type"
+        const sel = select;
+        if (sel.value && sel.options[sel.selectedIndex]?.disabled) {
+          sel.value = '';
+        }
+      } catch (_) { /* silently ignore */ }
+    }
+
+    async function refreshCottageTypeCombo(checkIn) {
+      if (!checkIn) return;
+      try {
+        const res  = await fetch(`/bookings/availability?checkIn=${checkIn}&checkOut=${checkIn}&category=cottage`);
+        const data = await res.json();
+        if (data.error || !data.available) return;
+
+        const availableTypeIds = new Set(
+          data.available
+            .filter(r => r.RoomType?.category === 'cottage')
+            .map(r => String(r.RoomType?.id || r.roomTypeId || ''))
+        );
+
+        const select = document.getElementById('cottageTypeId');
+        Array.from(select.options).forEach(opt => {
+          if (!opt.value) return;
+          const available = availableTypeIds.has(String(opt.value));
+          opt.disabled = !available;
+          if (!available) {
+            if (!opt.dataset.originalText) opt.dataset.originalText = opt.text.replace(/ \(Unavailable\)$/, '');
+            opt.text = (opt.dataset.originalText || opt.text.replace(/ \(Unavailable\)$/, '')) + ' (Unavailable)';
+            opt.style.color = '#9ca3af';
+          } else {
+            opt.text = opt.dataset.originalText || opt.text.replace(/ \(Unavailable\)$/, '');
+            opt.style.color = '';
+          }
+        });
+
+        const sel = select;
+        if (sel.value && sel.options[sel.selectedIndex]?.disabled) sel.value = '';
+      } catch (_) { /* silently ignore */ }
+    }
+
+    // ── Fetch room availability ─────────────────────────────────────────
+    async function fetchRoomAvailability() {
+      const checkIn    = document.getElementById('roomCheckIn').value;
+      const checkOut   = document.getElementById('roomCheckOut').value;
+      const roomTypeId = document.getElementById('roomTypeId').value || '';
+      if (!checkIn || !checkOut) return;
+
+      roomSearchStatus.classList.remove('hidden');
+      availabilityDiv.classList.add('hidden');
+      guestFields.classList.add('hidden');
+      priceSummary.classList.add('hidden');
+
+      try {
+        const params = new URLSearchParams({ checkIn, checkOut, category: 'room' });
+        if (roomTypeId) params.set('roomTypeId', roomTypeId);
+        const res  = await fetch('/bookings/availability?' + params);
+        const data = await res.json();
+
+        roomSearchStatus.classList.add('hidden');
+        availabilityDiv.classList.remove('hidden');
+        availabilityTitle.innerHTML = '<i class="fa-solid fa-bed text-teal-500"></i> Available Rooms';
+        availabilityList.innerHTML  = '';
+
+        if (data.error) {
+          availabilityList.innerHTML = `<div class="alert alert-error"><i class="fa-solid fa-circle-xmark flex-shrink-0"></i>${data.error}</div>`;
+          return;
+        }
+        if (!data.available?.length) {
+          availabilityList.innerHTML = `<div class="alert alert-warning"><i class="fa-solid fa-triangle-exclamation flex-shrink-0"></i>No rooms available for these dates.</div>`;
+          return;
+        }
+
+        data.available.forEach(r => {
+          const basePrice    = parseFloat(r.RoomType?.basePricePerNight || 0);
+          const days         = Math.ceil((new Date(checkOut) - new Date(checkIn)) / 86400000);
+          const poolIncluded = r.RoomType?.poolFeesIncluded !== false;
+          const baseTotal    = (basePrice * days).toFixed(2);
+          const poolBadge    = poolIncluded
+            ? `<span class="badge badge-success text-xs"><i class="fa-solid fa-check mr-1"></i>Entrance Incl.</span>`
+            : `<span class="badge badge-warning text-xs"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Entrance Extra</span>`;
+          const el = document.createElement('label');
+          el.className = 'flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer hover:border-teal-400 hover:bg-teal-50 transition-all';
+          el.style.borderColor = '#e2e8f0';
+          el.innerHTML = `
+            <input type="radio" name="selectedRoom" value="${r.id}"
+              data-base="${baseTotal}" data-days="${days}"
+              data-pool="${poolIncluded ? '1' : '0'}" data-type="room"
+              class="w-4 h-4 accent-teal-600 flex-shrink-0">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-semibold text-gray-900 text-sm"><i class="fa-solid fa-bed text-teal-500 mr-1 text-xs"></i>Room ${r.roomNumber}</span>
+                <span class="text-gray-500 text-sm">— ${r.RoomType?.name || ''}</span>
+                ${poolBadge}
+              </div>
+              ${poolIncluded ? `<p class="text-xs text-teal-600 mt-0.5"><i class="fa-solid fa-circle-info mr-1"></i>First 2 guests free · ₱100/extra adult · ₱100/extra child</p>` : ''}
+            </div>
+            <span class="font-bold text-teal-700 text-sm flex-shrink-0 room-price-label">₱${baseTotal}</span>`;
+          availabilityList.appendChild(el);
+        });
+
+        guestFields.classList.remove('hidden');
+        cottageRateInput.value = '';
+        setStep(2);
+      } catch (err) {
+        roomSearchStatus.classList.add('hidden');
+        availabilityDiv.classList.remove('hidden');
+        availabilityList.innerHTML = `<div class="alert alert-error"><i class="fa-solid fa-circle-xmark flex-shrink-0"></i>Error: ${err.message}</div>`;
+      }
+    }
+
+    // ── Fetch cottage availability ──────────────────────────────────────
+    async function fetchCottageAvailability() {
+      const checkIn       = document.getElementById('cottageCheckIn').value;
+      const cottageTypeId = document.getElementById('cottageTypeId').value || '';
+      if (!checkIn) return;
+
+      cottageSearchStatus.classList.remove('hidden');
+      availabilityDiv.classList.add('hidden');
+      guestFields.classList.add('hidden');
+      priceSummary.classList.add('hidden');
+
+      try {
+        const params = new URLSearchParams({ checkIn, checkOut: checkIn, category: 'cottage' });
+        if (cottageTypeId) params.set('roomTypeId', cottageTypeId);
+        const res  = await fetch('/bookings/availability?' + params);
+        const data = await res.json();
+
+        cottageSearchStatus.classList.add('hidden');
+        availabilityDiv.classList.remove('hidden');
+        availabilityTitle.innerHTML = '<i class="fa-solid fa-umbrella-beach text-amber-500"></i> Available Cottages';
+        availabilityList.innerHTML  = '';
+
+        if (data.error) {
+          availabilityList.innerHTML = `<div class="alert alert-error"><i class="fa-solid fa-circle-xmark flex-shrink-0"></i>${data.error}</div>`;
+          return;
+        }
+        const cottages = (data.available || []).filter(r => r.RoomType?.category === 'cottage');
+        if (!cottages.length) {
+          availabilityList.innerHTML = `<div class="alert alert-warning"><i class="fa-solid fa-triangle-exclamation flex-shrink-0"></i>No cottages available for this date.</div>`;
+          return;
+        }
+
+        cottages.forEach(r => {
+          const price = parseFloat(r.RoomType?.basePricePerNight || 0);
+          const el = document.createElement('label');
+          el.className = 'flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer hover:border-amber-400 hover:bg-amber-50 transition-all';
+          el.style.borderColor = '#e2e8f0';
+          el.innerHTML = `
+            <input type="radio" name="selectedRoom" value="${r.id}" data-total="${price}" data-type="cottage" class="w-4 h-4 accent-amber-500 flex-shrink-0">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-umbrella-beach text-amber-500 text-xs"></i>
+                <span class="font-semibold text-gray-800 text-sm">${r.roomNumber}</span>
+                <span class="text-gray-500 text-sm">— ${r.RoomType?.name || ''}</span>
+              </div>
+              <p class="text-xs text-gray-400 mt-0.5">24-hour rate</p>
+            </div>
+            <span class="font-bold text-amber-600 text-sm flex-shrink-0">₱${price.toFixed(2)}</span>`;
+          availabilityList.appendChild(el);
+        });
+
+        guestFields.classList.remove('hidden');
+        setStep(2);
+      } catch (err) {
+        cottageSearchStatus.classList.add('hidden');
+        availabilityDiv.classList.remove('hidden');
+        availabilityList.innerHTML = `<div class="alert alert-error"><i class="fa-solid fa-circle-xmark flex-shrink-0"></i>Error: ${err.message}</div>`;
+      }
+    }
+
+    // ── Wire up auto-trigger listeners ──────────────────────────────────
+    // Rooms: trigger when check-out is set (both dates present), or when room type combo changes
+    document.getElementById('roomCheckIn').addEventListener('change', async () => {
+      const checkIn  = document.getElementById('roomCheckIn').value;
+      const checkOut = document.getElementById('roomCheckOut').value;
+      // Update min for check-out
+      if (checkIn) document.getElementById('roomCheckOut').setAttribute('min', checkIn);
+      await refreshRoomTypeCombo(checkIn, checkOut);
+      if (checkIn && checkOut) scheduleRoomSearch();
+    });
+
+    document.getElementById('roomCheckOut').addEventListener('change', async () => {
+      const checkIn  = document.getElementById('roomCheckIn').value;
+      const checkOut = document.getElementById('roomCheckOut').value;
+      await refreshRoomTypeCombo(checkIn, checkOut);
+      if (checkIn && checkOut) scheduleRoomSearch();
+    });
+
+    document.getElementById('roomTypeId').addEventListener('change', () => {
+      const checkIn  = document.getElementById('roomCheckIn').value;
+      const checkOut = document.getElementById('roomCheckOut').value;
+      if (checkIn && checkOut) scheduleRoomSearch();
+    });
+
+    // Cottages: trigger when date is set, or when cottage type combo changes
+    document.getElementById('cottageCheckIn').addEventListener('change', async () => {
+      const checkIn = document.getElementById('cottageCheckIn').value;
+      await refreshCottageTypeCombo(checkIn);
+      if (checkIn) scheduleCottageSearch();
+    });
+
+    document.getElementById('cottageTypeId').addEventListener('change', () => {
+      const checkIn = document.getElementById('cottageCheckIn').value;
+      if (checkIn) scheduleCottageSearch();
+    });
+
+    // ── Price helpers ───────────────────────────────────────────────────
+    function calcRoomTotal(radio) {
+      const base     = parseFloat(radio.getAttribute('data-base') || 0);
+      const poolIncl = radio.getAttribute('data-pool') === '1';
+      if (!poolIncl) return base;
+      const adults   = parseInt(form.adults?.value || 1, 10);
+      const children = parseInt(form.children?.value || 0, 10);
+      const FREE          = 2;
+      const freeAdults    = Math.min(adults, FREE);
+      const freeRemaining = Math.max(0, FREE - freeAdults);
+      const extraAdults   = Math.max(0, adults - freeAdults);
+      const extraChildren = Math.max(0, children - freeRemaining);
+      return base + (extraAdults * 100) + (extraChildren * 100);
+    }
+
+    function refreshPriceDisplay() {
+      const radio = form.querySelector('input[name="selectedRoom"]:checked');
+      if (!radio) return;
+      const type = radio.getAttribute('data-type');
+      let total;
+      if (type === 'room') {
+        total = calcRoomTotal(radio);
+        const lbl = radio.closest('label')?.querySelector('.room-price-label');
+        if (lbl) lbl.textContent = '₱' + total.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+      } else {
+        total = parseFloat(radio.getAttribute('data-base') || radio.getAttribute('data-total') || 0);
+      }
+      priceSummary.classList.remove('hidden');
+      priceDisplay.textContent = '₱' + total.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+    }
+
+    document.addEventListener('change', (e) => {
+      if (e.target.name === 'selectedRoom' && e.target.checked) {
+        cottageRateInput.value = e.target.getAttribute('data-rate') || '';
+        refreshPriceDisplay();
+        setStep(3);
+      }
+      if (e.target.name === 'adults' || e.target.name === 'children') {
+        refreshPriceDisplay();
+      }
+    });
+
+    // ── Form submit ─────────────────────────────────────────────────────
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const radio = form.querySelector('input[name="selectedRoom"]:checked');
+      if (!radio) { showToast('Please select a room or cottage option.', 'warning'); return; }
+      const bookingType = document.querySelector('input[name="bookingType"]:checked').value;
+      let checkIn, checkOut;
+      if (bookingType === 'room') {
+        checkIn  = document.getElementById('roomCheckIn').value;
+        checkOut = document.getElementById('roomCheckOut').value;
+      } else {
+        checkIn = checkOut = document.getElementById('cottageCheckIn').value;
+      }
+      const firstName       = form.firstName.value;
+      const lastName        = form.lastName.value;
+      const email           = form.email.value;
+      const phone           = form.phone.value || '';
+      const adults          = form.adults.value || '1';
+      const children        = form.children?.value || '0';
+      const specialRequests = form.specialRequests.value || '';
+      const roomId          = radio.value;
+      if (!firstName || !lastName || !email) { showToast('Please fill in your name and email address.', 'warning'); return; }
+      const submitBtn = form.querySelector('[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing…';
+      try {
+        const res = await fetch('/bookings/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            roomId, checkIn, checkOut, firstName, lastName, email, phone,
+            adults: parseInt(adults), children: parseInt(children),
+            specialRequests, bookingType,
+            rateType: cottageRateInput.value || null
+          })
+        });
+        const result = await res.json();
+        if (res.ok && result.success) {
+          setStep(4);
+          window.location.href = result.checkoutUrl || '/bookings/' + result.bookingId;
+        } else {
+          showToast(result.error || 'Booking failed. Please try again.', 'error');
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Confirm Booking';
+        }
+      } catch (err) {
+        showToast('Error: ' + err.message, 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Confirm Booking';
+      }
+    });
+
+    // ── Minimum dates ───────────────────────────────────────────────────
+    const today = new Date().toISOString().split('T')[0];
+    ['roomCheckIn', 'roomCheckOut', 'cottageCheckIn'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.setAttribute('min', today);
+    });
+  </script>
+
+  {{> footer }}
+</body>

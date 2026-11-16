@@ -1,0 +1,651 @@
+{{> head }}
+<body class="font-body">
+<div class="flex h-screen overflow-hidden" style="background:#f1f5f9;">
+
+  <!-- ── Staff Sidebar ── -->
+  <aside id="staff-sidebar"
+         class="flex-shrink-0 w-64 flex flex-col fixed md:relative top-0 left-0 h-screen z-40 transition-transform duration-300"
+         style="background: linear-gradient(180deg,#1e1b4b 0%,#312e81 50%,#1e3a5f 100%); box-shadow: 4px 0 24px rgba(0,0,0,.2);">
+
+    <!-- Brand -->
+    <div class="px-6 py-6 border-b" style="border-color: rgba(255,255,255,.1);">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+             style="background: linear-gradient(135deg,#6366f1,#8b5cf6);">
+          <i class="fa-solid fa-user-tie text-white text-sm"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-white font-display leading-none">RJMBook</h1>
+          <p class="text-xs mt-0.5" style="color: rgba(255,255,255,.45);">Staff Panel</p>
+        </div>
+      </div>
+    </div>
+    <nav class="flex-1 px-3 py-5 space-y-0.5 overflow-y-auto">
+      <p class="text-xs font-semibold uppercase tracking-widest px-3 mb-3" style="color: rgba(255,255,255,.35);">Operations</p>
+      <a href="/staff" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/75 hover:text-white hover:bg-white/10 transition-all">
+        <i class="fa-solid fa-gauge w-4 text-center flex-shrink-0"></i><span>Dashboard</span>
+      </a>
+      <a href="/staff/reservations" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/75 hover:text-white hover:bg-white/10 transition-all">
+        <i class="fa-solid fa-calendar-days w-4 text-center flex-shrink-0"></i><span>Reservations</span>
+      </a>
+      <a href="/staff/reservation-calendar" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all"
+         style="background: linear-gradient(135deg,#6366f1,#8b5cf6); color:#fff; box-shadow: 0 4px 12px rgba(99,102,241,.35);">
+        <i class="fa-solid fa-calendar w-4 text-center flex-shrink-0"></i><span>Reservation Calendar</span>
+      </a>
+      <a href="/staff/room-status" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/75 hover:text-white hover:bg-white/10 transition-all">
+        <i class="fa-solid fa-bed w-4 text-center flex-shrink-0"></i><span>Room Status</span>
+      </a>
+      <a href="/staff/guests" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/75 hover:text-white hover:bg-white/10 transition-all">
+        <i class="fa-solid fa-users w-4 text-center flex-shrink-0"></i><span>Guests</span>
+      </a>
+      <a href="/staff/book" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/75 hover:text-white hover:bg-white/10 transition-all">
+        <i class="fa-solid fa-calendar-plus w-4 text-center flex-shrink-0"></i><span>Walk-in Booking</span>
+      </a>
+    </nav>
+    <div class="px-3 py-4 border-t" style="border-color: rgba(255,255,255,.08);">
+      <div class="flex items-center gap-3 px-3 py-3 rounded-xl mb-3" style="background: rgba(255,255,255,.07);">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
+             style="background: linear-gradient(135deg,#6366f1,#8b5cf6);">
+          {{#if sessionUserName}}{{sessionUserName.[0]}}{{else}}S{{/if}}
+        </div>
+        <div class="min-w-0">
+          <p class="text-xs text-white font-semibold truncate">{{sessionUserName}}</p>
+          <p class="text-xs" style="color: rgba(255,255,255,.4);">Staff Member</p>
+        </div>
+      </div>
+      <button id="staffLogoutBtn"
+              class="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-white transition-all cursor-pointer border-none"
+              style="background: rgba(220,38,38,.2); border: 1px solid rgba(220,38,38,.3);">
+        <i class="fa-solid fa-right-from-bracket text-red-400"></i>
+        <span class="text-red-300">Sign Out</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <main class="flex-1 flex flex-col overflow-hidden">
+    <header class="flex-shrink-0 flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200"
+            style="box-shadow: 0 1px 8px rgba(0,0,0,.06);">
+      <div class="flex items-center gap-4">
+        <button id="sidebar-toggle" class="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">Reservation Calendar</h2>
+          <p class="text-xs text-gray-500 mt-0.5"><i class="fa-regular fa-calendar text-indigo-500 mr-1"></i>View all reserved dates at a glance</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="hidden sm:block text-right">
+          <p class="text-xs text-gray-500">Welcome back,</p>
+          <p class="text-sm font-semibold text-gray-800">{{sessionUserName}}</p>
+        </div>
+        <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white"
+             style="background: linear-gradient(135deg,#6366f1,#8b5cf6);">
+          {{#if sessionUserName}}{{sessionUserName.[0]}}{{else}}S{{/if}}
+        </div>
+      </div>
+    </header>
+
+    <div class="flex-1 overflow-auto p-6" style="background:#f8fafc;">
+      
+      <!-- ── Filter Controls ── -->
+      <div class="flex flex-wrap gap-4 mb-6 items-center">
+        <!-- Month Navigation -->
+        <div class="flex items-center gap-2">
+          <button id="prevMonth" class="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 hover:border-indigo-300 transition-all">
+            <i class="fa-solid fa-chevron-left text-sm"></i>
+          </button>
+          <div class="px-4 py-2 bg-white rounded-xl border border-gray-200 min-w-[180px] text-center">
+            <span id="currentMonth" class="font-bold text-gray-800"></span>
+          </div>
+          <button id="nextMonth" class="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 hover:border-indigo-300 transition-all">
+            <i class="fa-solid fa-chevron-right text-sm"></i>
+          </button>
+        </div>
+
+        <!-- Category Filter -->
+        <div class="flex items-center gap-2">
+          <label class="text-sm font-medium text-gray-600">Filter:</label>
+          <select id="categoryFilter" class="input py-2 px-3 text-sm rounded-xl" style="min-width: 140px;">
+            <option value="">All Rooms & Cottages</option>
+            <option value="room" {{#if (eq selectedCategory 'room')}}selected{{/if}}>Rooms Only</option>
+            <option value="cottage" {{#if (eq selectedCategory 'cottage')}}selected{{/if}}>Cottages Only</option>
+          </select>
+        </div>
+
+        <!-- Today Button -->
+        <button id="todayBtn" class="px-4 py-2 rounded-xl text-sm font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors">
+          <i class="fa-solid fa-calendar-day text-xs mr-1"></i> Today
+        </button>
+      </div>
+
+      <!-- ── Legend ── -->
+      <div class="flex gap-4 mb-5 flex-wrap">
+        <div class="flex items-center gap-2 text-sm text-gray-600">
+          <div class="w-4 h-4 rounded" style="background: #f59e0b;"></div> Pending
+        </div>
+        <div class="flex items-center gap-2 text-sm text-gray-600">
+          <div class="w-4 h-4 rounded" style="background: #22c55e;"></div> Confirmed
+        </div>
+        <div class="flex items-center gap-2 text-sm text-gray-600">
+          <div class="w-4 h-4 rounded" style="background: #3b82f6;"></div> Checked In
+        </div>
+        <div class="flex items-center gap-2 text-sm text-gray-600">
+          <div class="w-4 h-4 rounded" style="background: #d1d5db;"></div> Available
+        </div>
+        <div class="flex items-center gap-2 text-sm text-gray-600 ml-4">
+          <i class="fa-solid fa-circle-half-stroke text-gray-400 text-xs"></i> Multiple bookings
+        </div>
+      </div>
+
+      <!-- ── Calendar Grid ── -->
+      <div class="flex gap-6">
+        <!-- Calendar -->
+        <div class="flex-1">
+          <div class="card overflow-hidden">
+            <!-- Day Headers -->
+            <div class="grid grid-cols-7 bg-gray-50 border-b border-gray-100">
+              <div class="py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Sun</div>
+              <div class="py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Mon</div>
+              <div class="py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Tue</div>
+              <div class="py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Wed</div>
+              <div class="py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Thu</div>
+              <div class="py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Fri</div>
+              <div class="py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Sat</div>
+            </div>
+            <!-- Calendar Days -->
+            <div id="calendarGrid" class="grid grid-cols-7">
+              <!-- Days will be rendered by JavaScript -->
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Side Panel (appears on hover) ── -->
+        <div id="sidePanel" class="w-80 flex-shrink-0 opacity-0 translate-x-4 transition-all duration-300 pointer-events-none">
+          <div class="card p-5 sticky top-0" style="max-height: calc(100vh - 180px); overflow-y: auto;">
+            <div class="flex items-center justify-between mb-4">
+              <h3 id="panelDate" class="font-bold text-gray-800 text-lg"></h3>
+              <div class="flex items-center gap-2">
+                <button id="lockPanel" class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-all" title="Click to lock/unlock panel">
+                  <i class="fa-solid fa-lock-open text-sm"></i>
+                </button>
+                <button id="closePanel" class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-all">
+                  <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Status Summary -->
+            <div id="panelSummary" class="mb-4">
+              <!-- Summary will be rendered by JavaScript -->
+            </div>
+
+            <!-- Bookings List -->
+            <div id="panelBookings" class="space-y-3">
+              <!-- Bookings will be rendered by JavaScript -->
+            </div>
+
+            <!-- No bookings message -->
+            <div id="panelNoBookings" class="hidden text-center py-8">
+              <i class="fa-solid fa-calendar-check text-4xl text-gray-300 mb-3"></i>
+              <p class="text-gray-500 text-sm">No bookings for this date</p>
+              <p class="text-gray-400 text-xs mt-1">This day is available</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+(function() {
+  // ── Configuration ──
+  const bookingsByDate = {{{bookingsByDate}}};
+  const today = '{{today}}';
+  const selectedCategory = '{{selectedCategory}}';
+
+  // Initialize from server-rendered start date so month nav stays in sync
+  const serverStart = '{{startDate}}';
+  const initDate = serverStart ? new Date(serverStart + 'T00:00:00') : new Date();
+
+  let currentYear = initDate.getFullYear();
+  let currentMonth = initDate.getMonth();
+  let selectedDate = null;
+  let isPanelLocked = false;
+
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                      'July', 'August', 'September', 'October', 'November', 'December'];
+
+  // ── Initialize ──
+  document.addEventListener('DOMContentLoaded', function() {
+    renderCalendar();
+    bindEvents();
+  });
+
+  // ── Render Calendar ──
+  function renderCalendar() {
+    const grid = document.getElementById('calendarGrid');
+    grid.innerHTML = '';
+
+    // Update month display
+    document.getElementById('currentMonth').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+    // Get first day and total days of month
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
+
+    // Previous month days
+    for (let i = firstDay - 1; i >= 0; i--) {
+      const day = daysInPrevMonth - i;
+      grid.appendChild(createDayCell(day, true, null));
+    }
+
+    // Current month days
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      grid.appendChild(createDayCell(day, false, dateStr));
+    }
+
+    // Next month days to fill the grid
+    const totalCells = firstDay + daysInMonth;
+    const remainingCells = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+    for (let day = 1; day <= remainingCells; day++) {
+      grid.appendChild(createDayCell(day, true, null));
+    }
+  }
+
+  // ── Create Day Cell ──
+  function createDayCell(day, isOtherMonth, dateStr) {
+    const cell = document.createElement('div');
+    cell.className = 'min-h-[90px] border-b border-r border-gray-100 p-2 transition-all cursor-pointer hover:bg-gray-50';
+    
+    if (isOtherMonth) {
+      cell.classList.add('bg-gray-50');
+      cell.innerHTML = `<span class="text-gray-300 text-sm">${day}</span>`;
+      return cell;
+    }
+
+    const bookings = bookingsByDate[dateStr] || [];
+    const isToday = dateStr === today;
+
+    // Determine status color
+    let statusColor = '#d1d5db'; // gray for available
+    let statusBg = 'bg-gray-100';
+    let statusPriority = { pending: 1, confirmed: 2, checked_in: 3 };
+    let hasMultiple = bookings.length > 1;
+
+    if (bookings.length > 0) {
+      // Get highest priority status
+      let highestStatus = bookings[0].status;
+      for (const b of bookings) {
+        if (statusPriority[b.status] > statusPriority[highestStatus]) {
+          highestStatus = b.status;
+        }
+      }
+
+      if (highestStatus === 'pending') {
+        statusColor = '#f59e0b';
+        statusBg = 'bg-amber-50';
+      } else if (highestStatus === 'confirmed') {
+        statusColor = '#22c55e';
+        statusBg = 'bg-green-50';
+      } else if (highestStatus === 'checked_in') {
+        statusColor = '#3b82f6';
+        statusBg = 'bg-blue-50';
+      }
+    }
+
+    // Build cell content
+    let cellContent = `
+      <div class="flex items-start justify-between mb-1">
+        <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg text-sm font-semibold
+          ${isToday ? 'bg-indigo-500 text-white' : 'text-gray-700'}">
+          ${day}
+        </span>
+        ${hasMultiple ? '<i class="fa-solid fa-layer-group text-gray-400 text-xs"></i>' : ''}
+      </div>
+    `;
+
+    if (bookings.length > 0) {
+      // Show booking indicators
+      cellContent += `<div class="space-y-1">`;
+      
+      // Show up to 2 bookings preview
+      const preview = bookings.slice(0, 2);
+      for (const booking of preview) {
+        const guestName = booking.Guest ? `${booking.Guest.firstName} ${booking.Guest.lastName}` : 'Guest';
+        cellContent += `
+          <div class="text-xs truncate px-1.5 py-0.5 rounded" style="background: ${statusColor}20; color: ${statusColor};">
+            ${guestName}
+          </div>
+        `;
+      }
+      
+      if (bookings.length > 2) {
+        cellContent += `<div class="text-xs text-gray-400 px-1.5">+${bookings.length - 2} more</div>`;
+      }
+      
+      cellContent += `</div>`;
+    }
+
+    cell.innerHTML = cellContent;
+    cell.dataset.date = dateStr;
+    cell.dataset.bookings = JSON.stringify(bookings);
+
+    // Add event handlers
+    cell.addEventListener('mouseenter', () => {
+      if (!isPanelLocked) {
+        showSidePanel(dateStr, bookings);
+      }
+    });
+
+    cell.addEventListener('click', () => {
+      if (isPanelLocked && selectedDate === dateStr) {
+        // Unlock panel
+        isPanelLocked = false;
+        hideSidePanel();
+      } else {
+        // Lock panel to this date
+        isPanelLocked = true;
+        showSidePanel(dateStr, bookings);
+        updateLockIndicator();
+      }
+    });
+
+    // Apply status background color
+    if (bookings.length > 0) {
+      cell.style.borderLeft = `3px solid ${statusColor}`;
+    }
+
+    return cell;
+  }
+
+  // ── Show Side Panel ──
+  function showSidePanel(dateStr, bookings) {
+    const panel = document.getElementById('sidePanel');
+    const panelDate = document.getElementById('panelDate');
+    const panelSummary = document.getElementById('panelSummary');
+    const panelBookings = document.getElementById('panelBookings');
+    const panelNoBookings = document.getElementById('panelNoBookings');
+
+    // Format date
+    const date = new Date(dateStr + 'T00:00:00');
+    const formattedDate = date.toLocaleDateString('en-US', { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+    
+    // Update header with lock indicator
+    const lockIcon = isPanelLocked ? '<i class="fa-solid fa-lock text-indigo-500 text-sm ml-2"></i>' : '';
+    panelDate.innerHTML = formattedDate + lockIcon;
+
+    // Render summary
+    if (bookings.length > 0) {
+      const pending = bookings.filter(b => b.status === 'pending').length;
+      const confirmed = bookings.filter(b => b.status === 'confirmed').length;
+      const checkedIn = bookings.filter(b => b.status === 'checked_in').length;
+
+      panelSummary.innerHTML = `
+        <div class="flex gap-2 flex-wrap">
+          ${pending > 0 ? `<span class="badge badge-warning"><i class="fa-solid fa-clock text-xs mr-1"></i>${pending} Pending</span>` : ''}
+          ${confirmed > 0 ? `<span class="badge badge-success"><i class="fa-solid fa-check text-xs mr-1"></i>${confirmed} Confirmed</span>` : ''}
+          ${checkedIn > 0 ? `<span class="badge badge-info"><i class="fa-solid fa-door-open text-xs mr-1"></i>${checkedIn} Checked In</span>` : ''}
+        </div>
+      `;
+
+      // Render bookings list
+      panelBookings.innerHTML = bookings.map(booking => {
+        const guestName = booking.Guest ? `${booking.Guest.firstName} ${booking.Guest.lastName}` : 'Guest';
+        const guestEmail = booking.Guest?.email || '';
+        const roomNumber = booking.Room?.roomNumber || '';
+        const roomName = booking.Room?.RoomType?.name || '';
+        
+        let statusBadge = '';
+        if (booking.status === 'pending') {
+          statusBadge = '<span class="badge badge-warning text-xs">Pending</span>';
+        } else if (booking.status === 'confirmed') {
+          statusBadge = '<span class="badge badge-success text-xs">Confirmed</span>';
+        } else if (booking.status === 'checked_in') {
+          statusBadge = '<span class="badge badge-info text-xs">Checked In</span>';
+        } else if (booking.status === 'cancelled') {
+          statusBadge = '<span class="badge badge-danger text-xs">Cancelled</span>';
+        }
+
+        return `
+          <a href="/bookings/${booking.id}" class="block p-3 rounded-xl border border-gray-100 hover:border-indigo-300 hover:shadow-md transition-all group">
+            <div class="flex items-start justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
+                     style="background: linear-gradient(135deg,#6366f1,#8b5cf6);">
+                  ${guestName.charAt(0)}
+                </div>
+                <div>
+                  <p class="font-semibold text-gray-800 text-sm group-hover:text-indigo-600 transition-colors">${guestName}</p>
+                  <p class="text-xs text-gray-400">${guestEmail}</p>
+                </div>
+              </div>
+              ${statusBadge}
+            </div>
+            <div class="flex items-center gap-3 text-xs text-gray-500">
+              <span><i class="fa-solid fa-bed text-indigo-500 mr-1"></i>${roomNumber || 'N/A'}</span>
+              <span><i class="fa-solid fa-door-open text-gray-400 mr-1"></i>${roomName}</span>
+            </div>
+            <div class="mt-2 pt-2 border-t border-gray-50 flex items-center justify-between text-xs">
+              <span class="text-gray-400">
+                <i class="fa-regular fa-calendar text-indigo-500 mr-1"></i>
+                ${booking.checkIn} → ${booking.checkOut}
+              </span>
+              <span class="font-bold text-indigo-700">₱${parseFloat(booking.totalAmount).toLocaleString()}</span>
+            </div>
+          </a>
+        `;
+      }).join('');
+
+      panelNoBookings.classList.add('hidden');
+      panelBookings.classList.remove('hidden');
+    } else {
+      panelSummary.innerHTML = `
+        <div class="flex items-center gap-2 px-3 py-2 bg-green-50 rounded-lg text-green-700">
+          <i class="fa-solid fa-check-circle"></i>
+          <span class="text-sm font-medium">Available for booking</span>
+        </div>
+      `;
+      panelBookings.innerHTML = '';
+      panelNoBookings.classList.remove('hidden');
+    }
+
+    // Show panel
+    panel.classList.remove('opacity-0', 'translate-x-4', 'pointer-events-none');
+    panel.classList.add('opacity-100', 'translate-x-0');
+    selectedDate = dateStr;
+  }
+
+  // ── Hide Side Panel ──
+  function hideSidePanel() {
+    const panel = document.getElementById('sidePanel');
+    panel.classList.add('opacity-0', 'translate-x-4', 'pointer-events-none');
+    panel.classList.remove('opacity-100', 'translate-x-0');
+    selectedDate = null;
+    isPanelLocked = false;
+  }
+
+  // ── Update Lock Indicator ──
+  function updateLockIndicator() {
+    const panelDate = document.getElementById('panelDate');
+    const currentDateText = panelDate.textContent || panelDate.innerText;
+    
+    if (isPanelLocked) {
+      // Add lock icon if not present
+      if (!currentDateText.includes('fa-lock')) {
+        panelDate.innerHTML = currentDateText + '<i class="fa-solid fa-lock text-indigo-500 text-sm ml-2"></i>';
+      }
+    }
+  }
+
+  // ── Update Lock Button State ──
+  function updateLockButtonState() {
+    const lockBtn = document.getElementById('lockPanel');
+    if (isPanelLocked) {
+      lockBtn.innerHTML = '<i class="fa-solid fa-lock text-sm text-indigo-500"></i>';
+      lockBtn.classList.add('bg-indigo-50', 'text-indigo-500');
+      lockBtn.classList.remove('bg-gray-100', 'text-gray-400');
+    } else {
+      lockBtn.innerHTML = '<i class="fa-solid fa-lock-open text-sm"></i>';
+      lockBtn.classList.remove('bg-indigo-50', 'text-indigo-500');
+      lockBtn.classList.add('bg-gray-100', 'text-gray-400');
+    }
+  }
+
+  // ── Navigate to Month (reload with correct date range + filter) ──
+  function navigateToMonth(year, month) {
+    const start = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+    const lastDay = new Date(year, month + 1, 0).getDate();
+    const end = `${year}-${String(month + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+    const url = new URL(window.location.href);
+    url.searchParams.set('start', start);
+    url.searchParams.set('end', end);
+    if (selectedCategory) {
+      url.searchParams.set('category', selectedCategory);
+    } else {
+      url.searchParams.delete('category');
+    }
+    window.location.href = url.toString();
+  }
+
+  // ── Bind Events ──
+  function bindEvents() {
+    // Month navigation — reload page with new date range to get fresh filtered data
+    document.getElementById('prevMonth').addEventListener('click', () => {
+      let y = currentYear, m = currentMonth - 1;
+      if (m < 0) { m = 11; y--; }
+      navigateToMonth(y, m);
+    });
+
+    document.getElementById('nextMonth').addEventListener('click', () => {
+      let y = currentYear, m = currentMonth + 1;
+      if (m > 11) { m = 0; y++; }
+      navigateToMonth(y, m);
+    });
+
+    // Today button
+    document.getElementById('todayBtn').addEventListener('click', () => {
+      const now = new Date();
+      navigateToMonth(now.getFullYear(), now.getMonth());
+    });
+
+    // Category filter
+    document.getElementById('categoryFilter').addEventListener('change', function() {
+      const category = this.value;
+      const url = new URL(window.location.href);
+      if (category) {
+        url.searchParams.set('category', category);
+      } else {
+        url.searchParams.delete('category');
+      }
+      window.location.href = url.toString();
+    });
+
+    // Close panel button
+    document.getElementById('closePanel').addEventListener('click', hideSidePanel);
+
+    // Lock/Unlock panel button
+    document.getElementById('lockPanel').addEventListener('click', function() {
+      isPanelLocked = !isPanelLocked;
+      updateLockButtonState();
+      updateLockIndicator();
+    });
+
+    // Hide panel when mouse leaves calendar grid (if not locked)
+    const calendarGrid = document.getElementById('calendarGrid');
+    if (calendarGrid) {
+      calendarGrid.addEventListener('mouseleave', () => {
+        if (!isPanelLocked) {
+          hideSidePanel();
+        }
+      });
+    }
+
+    // Sidebar toggle
+    const toggle = document.getElementById('sidebar-toggle');
+    const sidebar = document.getElementById('staff-sidebar');
+    if (toggle && sidebar) {
+      toggle.addEventListener('click', () => sidebar.classList.toggle('-translate-x-full'));
+      document.addEventListener('click', (e) => {
+        if (window.innerWidth < 768 && !sidebar.contains(e.target) && !toggle.contains(e.target)) {
+          sidebar.classList.add('-translate-x-full');
+        }
+      });
+    }
+
+    // Logout functionality
+    let _logoutCb = null;
+
+    window.showLogoutConfirmation = function (cb) {
+      _logoutCb = cb;
+      const m = document.getElementById('logoutConfirmModal');
+      if (m) m.classList.remove('hidden');
+    };
+
+    window.confirmStaffLogout = function () {
+      showLogoutConfirmation(function () {
+        window.location.href = '/logout';
+      });
+    };
+
+    function closeModal() {
+      const modal = document.getElementById('logoutConfirmModal');
+      if (modal) modal.classList.add('hidden');
+      _logoutCb = null;
+    }
+
+    const logoutBtn = document.getElementById('staffLogoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', window.confirmStaffLogout);
+    }
+
+    const yes = document.getElementById('logoutConfirmYes');
+    const no = document.getElementById('logoutConfirmNo');
+    const modal = document.getElementById('logoutConfirmModal');
+
+    if (yes) yes.addEventListener('click', () => { if (_logoutCb) _logoutCb(); });
+    if (no) no.addEventListener('click', closeModal);
+    if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+  }
+})();
+</script>
+
+<!-- Logout Confirmation Modal -->
+<div id="logoutConfirmModal"
+     class="hidden fixed inset-0 z-[500] flex items-center justify-center p-4"
+     style="background: rgba(15,23,42,.65); backdrop-filter: blur(6px);">
+  <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 animate-fade-in-up">
+    <div class="flex items-center gap-4 mb-5">
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
+           style="background: linear-gradient(135deg,#fef3c7,#fde68a);">
+        <i class="fa-solid fa-right-from-bracket text-amber-600 text-lg"></i>
+      </div>
+      <div>
+        <h3 class="text-lg font-bold text-gray-900">Sign Out?</h3>
+        <p class="text-sm text-gray-500">You'll need to sign in again to access your account.</p>
+      </div>
+    </div>
+    <div class="flex gap-3 mt-6">
+      <button id="logoutConfirmNo"
+              class="flex-1 px-4 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm transition-colors">
+        Cancel
+      </button>
+      <button id="logoutConfirmYes"
+              class="flex-1 px-4 py-2.5 rounded-xl font-semibold text-sm text-white transition-all"
+              style="background: linear-gradient(135deg,#dc2626,#ef4444); box-shadow: 0 4px 12px rgba(220,38,38,.3);">
+        Sign Out
+      </button>
+    </div>
+  </div>
+</div>
+</body>

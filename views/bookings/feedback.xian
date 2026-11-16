@@ -1,0 +1,321 @@
+{{> head }}
+<body class="min-h-screen font-body flex flex-col" style="background:#f8fafc;">
+  {{> nav }}
+
+  <main class="flex-1 py-12 px-4">
+    <div class="max-w-xl mx-auto">
+
+      <!-- Back link -->
+      <a href="/bookings/reservations"
+         class="inline-flex items-center gap-2 text-teal-700 hover:text-teal-900 font-semibold text-sm mb-8 transition-colors group">
+        <i class="fa-solid fa-arrow-left text-xs group-hover:-translate-x-1 transition-transform"></i>
+        Back to My Reservations
+      </a>
+
+      <!-- Page header -->
+      <div class="text-center mb-8 animate-fade-in-up">
+        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
+             style="background:linear-gradient(135deg,#0d9488,#0891b2);">
+          <i class="fa-solid fa-comment-dots text-white text-2xl"></i>
+        </div>
+        <h1 class="text-3xl font-bold font-display text-gray-900 mb-2">Share Your Experience</h1>
+        <p class="text-gray-500 text-sm">Your feedback helps us improve for every guest at RJM Beach Resort.</p>
+      </div>
+
+      <!-- Form card -->
+      <div class="card p-8 animate-fade-in-up">
+
+        <div id="successMessage" class="hidden alert alert-success mb-6">
+          <i class="fa-solid fa-circle-check flex-shrink-0 text-lg"></i>
+          <div>
+            <p class="font-semibold">Thank you for your feedback!</p>
+            <p class="text-sm opacity-80">Redirecting you back to your reservations…</p>
+          </div>
+        </div>
+
+        <div id="errorMessage" class="hidden alert alert-error mb-6">
+          <i class="fa-solid fa-circle-xmark flex-shrink-0"></i>
+          <span id="errorText"></span>
+        </div>
+
+        <form id="feedbackForm" class="space-y-6">
+
+          <!-- Overall Rating -->
+          <div>
+            <label class="label text-sm font-semibold text-gray-700 mb-3 block">
+              Overall Rating <span class="text-red-500">*</span>
+            </label>
+            <div class="flex items-center gap-1" id="overallStars">
+              <button type="button" class="overall-star text-4xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="1">☆</button>
+              <button type="button" class="overall-star text-4xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="2">☆</button>
+              <button type="button" class="overall-star text-4xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="3">☆</button>
+              <button type="button" class="overall-star text-4xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="4">☆</button>
+              <button type="button" class="overall-star text-4xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="5">☆</button>
+              <span id="overallRatingLabel" class="ml-3 text-sm text-gray-500 font-medium">Click to rate</span>
+            </div>
+            <input type="hidden" name="rating" id="ratingInput" value="">
+          </div>
+
+          <!-- Aspect Ratings -->
+          <div>
+            <label class="label text-sm font-semibold text-gray-700 mb-3 block">
+              Rate Each Aspect <span class="text-gray-400 font-normal">(optional)</span>
+            </label>
+            <div class="space-y-4">
+
+              <div class="flex items-center justify-between gap-4">
+                <span class="flex items-center gap-2 text-sm text-gray-700 min-w-0">
+                  <i class="fa-solid fa-broom text-teal-500 w-4 text-center flex-shrink-0"></i>
+                  Room Cleanliness
+                </span>
+                <div class="flex items-center gap-0.5 aspect-star-group" data-field="roomCleanliness">
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="1">☆</button>
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="2">☆</button>
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="3">☆</button>
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="4">☆</button>
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="5">☆</button>
+                  <input type="hidden" name="roomCleanliness" value="">
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between gap-4">
+                <span class="flex items-center gap-2 text-sm text-gray-700 min-w-0">
+                  <i class="fa-solid fa-concierge-bell text-teal-500 w-4 text-center flex-shrink-0"></i>
+                  Service Quality
+                </span>
+                <div class="flex items-center gap-0.5 aspect-star-group" data-field="serviceQuality">
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="1">☆</button>
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="2">☆</button>
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="3">☆</button>
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="4">☆</button>
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="5">☆</button>
+                  <input type="hidden" name="serviceQuality" value="">
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between gap-4">
+                <span class="flex items-center gap-2 text-sm text-gray-700 min-w-0">
+                  <i class="fa-solid fa-utensils text-teal-500 w-4 text-center flex-shrink-0"></i>
+                  Food Quality
+                </span>
+                <div class="flex items-center gap-0.5 aspect-star-group" data-field="foodQuality">
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="1">☆</button>
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="2">☆</button>
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="3">☆</button>
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="4">☆</button>
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="5">☆</button>
+                  <input type="hidden" name="foodQuality" value="">
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between gap-4">
+                <span class="flex items-center gap-2 text-sm text-gray-700 min-w-0">
+                  <i class="fa-solid fa-wifi text-teal-500 w-4 text-center flex-shrink-0"></i>
+                  Amenities
+                </span>
+                <div class="flex items-center gap-0.5 aspect-star-group" data-field="amenities">
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="1">☆</button>
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="2">☆</button>
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="3">☆</button>
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="4">☆</button>
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="5">☆</button>
+                  <input type="hidden" name="amenities" value="">
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between gap-4">
+                <span class="flex items-center gap-2 text-sm text-gray-700 min-w-0">
+                  <i class="fa-solid fa-tag text-teal-500 w-4 text-center flex-shrink-0"></i>
+                  Value for Money
+                </span>
+                <div class="flex items-center gap-0.5 aspect-star-group" data-field="valueForMoney">
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="1">☆</button>
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="2">☆</button>
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="3">☆</button>
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="4">☆</button>
+                  <button type="button" class="aspect-star text-2xl leading-none transition-transform hover:scale-110 focus:outline-none" data-value="5">☆</button>
+                  <input type="hidden" name="valueForMoney" value="">
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Written Review -->
+          <div>
+            <label for="comment" class="label text-sm font-semibold text-gray-700 mb-2 block">
+              Your Review <span class="text-red-500">*</span>
+            </label>
+            <textarea id="comment" name="comment" rows="5" required
+                      placeholder="Tell us about your stay — what you loved, what could be improved…"
+                      class="input resize-none"></textarea>
+          </div>
+
+          <!-- Hidden fields -->
+          <input type="hidden" id="bookingId" name="bookingId" value="{{bookingId}}">
+          <input type="hidden" id="guestId"   name="guestId"   value="{{guestId}}">
+
+          <button type="submit" id="submitBtn" class="btn btn-primary w-full btn-lg">
+            <i class="fa-solid fa-paper-plane"></i> Submit Feedback
+          </button>
+
+        </form>
+      </div>
+
+    </div>
+  </main>
+
+  {{> footer }}
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const errEl  = document.getElementById('errorMessage');
+    const errTxt = document.getElementById('errorText');
+    const okEl   = document.getElementById('successMessage');
+
+    const ratingLabels = ['Poor', 'Fair', 'Good', 'Great', 'Excellent'];
+
+    // ── Overall star rating ──
+    const overallStars = document.querySelectorAll('.overall-star');
+    const ratingInput  = document.getElementById('ratingInput');
+    const ratingLabel  = document.getElementById('overallRatingLabel');
+
+    function setOverallStars(value, isHover) {
+      overallStars.forEach((star, idx) => {
+        if (idx < value) {
+          star.textContent = '★';
+          star.style.color = '#f59e0b';
+        } else {
+          star.textContent = '☆';
+          star.style.color = '#d1d5db';
+        }
+      });
+      if (!isHover) {
+        ratingLabel.textContent = value ? ratingLabels[value - 1] : 'Click to rate';
+        ratingLabel.style.color = value ? '#0d9488' : '';
+      } else {
+        ratingLabel.textContent = ratingLabels[value - 1];
+        ratingLabel.style.color = '#6b7280';
+      }
+    }
+
+    overallStars.forEach(star => {
+      const val = parseInt(star.dataset.value);
+      star.addEventListener('mouseenter', () => setOverallStars(val, true));
+      star.addEventListener('mouseleave', () => setOverallStars(parseInt(ratingInput.value) || 0, false));
+      star.addEventListener('click', (e) => {
+        e.preventDefault();
+        ratingInput.value = val;
+        setOverallStars(val, false);
+      });
+    });
+
+    // ── Aspect star ratings ──
+    document.querySelectorAll('.aspect-star-group').forEach(group => {
+      const stars  = group.querySelectorAll('.aspect-star');
+      const hidden = group.querySelector('input[type="hidden"]');
+
+      function setAspectStars(value, isHover) {
+        stars.forEach((star, idx) => {
+          if (idx < value) {
+            star.textContent = '★';
+            star.style.color = '#f59e0b';
+          } else {
+            star.textContent = '☆';
+            star.style.color = '#d1d5db';
+          }
+        });
+      }
+
+      stars.forEach(star => {
+        const val = parseInt(star.dataset.value);
+        star.addEventListener('mouseenter', () => setAspectStars(val, true));
+        star.addEventListener('mouseleave', () => setAspectStars(parseInt(hidden.value) || 0, false));
+        star.addEventListener('click', (e) => {
+          e.preventDefault();
+          // Allow toggling off by clicking the same star again
+          if (parseInt(hidden.value) === val) {
+            hidden.value = '';
+            setAspectStars(0, false);
+          } else {
+            hidden.value = val;
+            setAspectStars(val, false);
+          }
+        });
+      });
+    });
+
+    // ── Form submit ──
+    document.getElementById('feedbackForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const btn     = document.getElementById('submitBtn');
+      const comment = document.getElementById('comment').value.trim();
+      const rating  = parseInt(ratingInput.value);
+
+      errEl.classList.add('hidden');
+
+      if (!rating) {
+        errTxt.textContent = 'Please provide an overall rating.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      if (!comment) {
+        errTxt.textContent = 'Please write your review before submitting.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      const form = new FormData(this);
+      const payload = {
+        bookingId:        parseInt(form.get('bookingId')),
+        guestId:          parseInt(form.get('guestId')),
+        rating,
+        comment,
+        roomCleanliness:  form.get('roomCleanliness')  ? parseInt(form.get('roomCleanliness'))  : null,
+        serviceQuality:   form.get('serviceQuality')   ? parseInt(form.get('serviceQuality'))   : null,
+        foodQuality:      form.get('foodQuality')      ? parseInt(form.get('foodQuality'))      : null,
+        amenities:        form.get('amenities')        ? parseInt(form.get('amenities'))        : null,
+        valueForMoney:    form.get('valueForMoney')    ? parseInt(form.get('valueForMoney'))    : null,
+      };
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting…';
+
+      try {
+        const res  = await fetch('/api/feedback', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          okEl.classList.remove('hidden');
+          this.reset();
+          // Reset all stars visually
+          setOverallStars(0, false);
+          document.querySelectorAll('.aspect-star-group').forEach(group => {
+            group.querySelectorAll('.aspect-star').forEach(s => {
+              s.textContent = '☆';
+              s.style.color = '#d1d5db';
+            });
+          });
+          setTimeout(() => window.location.href = '/bookings/reservations', 2500);
+        } else {
+          errTxt.textContent = data.message || 'Something went wrong. Please try again.';
+          errEl.classList.remove('hidden');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Feedback';
+        }
+      } catch (err) {
+        errTxt.textContent = 'Failed to submit: ' + err.message;
+        errEl.classList.remove('hidden');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Feedback';
+      }
+    });
+  });
+  </script>
+</body>

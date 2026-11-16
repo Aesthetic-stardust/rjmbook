@@ -1,0 +1,140 @@
+{{> head }}
+<body class="min-h-screen font-body flex items-center justify-center p-4 relative overflow-hidden"
+      style="background: linear-gradient(160deg,#0a0f1e 0%,#0c2b27 50%,#0a0f1e 100%);">
+
+  <!-- Dot grid -->
+  <div class="absolute inset-0 pointer-events-none opacity-[.04]"
+       style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 36px 36px; z-index:0;"></div>
+
+  <!-- Ambient blobs -->
+  <div class="absolute -top-40 -right-40 w-[480px] h-[480px] rounded-full pointer-events-none"
+       style="background: radial-gradient(circle, rgba(20,184,166,.14) 0%, transparent 65%); filter: blur(60px); z-index:0;"></div>
+  <div class="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full pointer-events-none"
+       style="background: radial-gradient(circle, rgba(8,145,178,.12) 0%, transparent 65%); filter: blur(50px); z-index:0;"></div>
+
+  <div class="w-full max-w-2xl relative animate-fade-in-up" style="z-index:10;">
+
+    <!-- Brand header -->
+    <div class="text-center mb-10">
+      <a href="/" class="inline-flex flex-col items-center gap-3 group">
+        <div class="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform duration-300 group-hover:scale-105"
+             style="background: linear-gradient(135deg,#0d9488,#0891b2);
+                    box-shadow: 0 8px 32px rgba(13,148,136,.4), 0 2px 8px rgba(0,0,0,.2);
+                    border: 1px solid rgba(255,255,255,.12);">
+          <i class="fa-solid fa-water text-white text-2xl"></i>
+        </div>
+        <div>
+          <h1 class="text-4xl font-bold font-display text-white leading-none" style="letter-spacing:-.025em;">RJMBook</h1>
+          <p class="text-teal-400/80 text-sm font-medium mt-1">RJM Beach Resort</p>
+        </div>
+      </a>
+      <p class="text-gray-500 text-sm mt-3">Choose your login portal to continue</p>
+    </div>
+
+    <!-- Portal cards -->
+    <div class="grid md:grid-cols-2 gap-5 mb-5 stagger">
+
+      <!-- Admin Portal -->
+      <a href="/login/admin" class="group block animate-fade-in-up" aria-label="Admin portal login">
+        <div class="h-full rounded-2xl p-7 transition-all duration-300 hover:-translate-y-2"
+             style="background: rgba(13,148,136,.1); border: 1.5px solid rgba(45,212,191,.2);
+                    box-shadow: 0 4px 24px rgba(0,0,0,.15);"
+             onmouseover="this.style.background='rgba(13,148,136,.18)'; this.style.borderColor='rgba(45,212,191,.45)'; this.style.boxShadow='0 12px 40px rgba(13,148,136,.18)'"
+             onmouseout="this.style.background='rgba(13,148,136,.1)'; this.style.borderColor='rgba(45,212,191,.2)'; this.style.boxShadow='0 4px 24px rgba(0,0,0,.15)'">
+
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-5"
+               style="background: linear-gradient(135deg,#0d9488,#0f766e);
+                      box-shadow: 0 4px 16px rgba(13,148,136,.3);">
+            <i class="fa-solid fa-shield-halved text-white text-xl"></i>
+          </div>
+
+          <h2 class="text-xl font-bold font-display text-white mb-1">Admin Portal</h2>
+          <p class="text-teal-200/60 text-sm mb-5">Manage rooms, bookings &amp; analytics</p>
+
+          <ul class="space-y-2.5 mb-6">
+            <li class="flex items-center gap-2 text-sm text-teal-100/75">
+              <i class="fa-solid fa-circle-check text-teal-400 text-xs flex-shrink-0"></i>
+              Access management dashboard
+            </li>
+            <li class="flex items-center gap-2 text-sm text-teal-100/75">
+              <i class="fa-solid fa-circle-check text-teal-400 text-xs flex-shrink-0"></i>
+              View analytics &amp; reports
+            </li>
+            <li class="flex items-center gap-2 text-sm text-teal-100/75">
+              <i class="fa-solid fa-circle-check text-teal-400 text-xs flex-shrink-0"></i>
+              Manage all operations
+            </li>
+          </ul>
+
+          <div class="w-full py-2.5 rounded-xl font-semibold text-sm text-white text-center flex items-center justify-center gap-2 transition-all duration-200 group-hover:gap-3"
+               style="background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18);">
+            <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i> Admin Sign In
+            <i class="fa-solid fa-arrow-right text-[10px] transition-transform duration-200 group-hover:translate-x-1"></i>
+          </div>
+        </div>
+      </a>
+
+      <!-- Guest Portal -->
+      <a href="/login/user" class="group block animate-fade-in-up" aria-label="Guest portal login">
+        <div class="h-full rounded-2xl p-7 transition-all duration-300 hover:-translate-y-2"
+             style="background: rgba(8,145,178,.1); border: 1.5px solid rgba(34,211,238,.18);
+                    box-shadow: 0 4px 24px rgba(0,0,0,.15);"
+             onmouseover="this.style.background='rgba(8,145,178,.18)'; this.style.borderColor='rgba(34,211,238,.42)'; this.style.boxShadow='0 12px 40px rgba(8,145,178,.18)'"
+             onmouseout="this.style.background='rgba(8,145,178,.1)'; this.style.borderColor='rgba(34,211,238,.18)'; this.style.boxShadow='0 4px 24px rgba(0,0,0,.15)'">
+
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-5"
+               style="background: linear-gradient(135deg,#0891b2,#0e7490);
+                      box-shadow: 0 4px 16px rgba(8,145,178,.3);">
+            <i class="fa-solid fa-person-swimming text-white text-xl"></i>
+          </div>
+
+          <h2 class="text-xl font-bold font-display text-white mb-1">Guest Portal</h2>
+          <p class="text-cyan-200/60 text-sm mb-5">Book rooms &amp; access resort services</p>
+
+          <ul class="space-y-2.5 mb-6">
+            <li class="flex items-center gap-2 text-sm text-cyan-100/75">
+              <i class="fa-solid fa-circle-check text-cyan-400 text-xs flex-shrink-0"></i>
+              Browse and book rooms
+            </li>
+            <li class="flex items-center gap-2 text-sm text-cyan-100/75">
+              <i class="fa-solid fa-circle-check text-cyan-400 text-xs flex-shrink-0"></i>
+              Access premium services
+            </li>
+            <li class="flex items-center gap-2 text-sm text-cyan-100/75">
+              <i class="fa-solid fa-circle-check text-cyan-400 text-xs flex-shrink-0"></i>
+              Manage your reservations
+            </li>
+          </ul>
+
+          <div class="w-full py-2.5 rounded-xl font-semibold text-sm text-white text-center flex items-center justify-center gap-2 transition-all duration-200 group-hover:gap-3"
+               style="background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18);">
+            <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i> Guest Sign In
+            <i class="fa-solid fa-arrow-right text-[10px] transition-transform duration-200 group-hover:translate-x-1"></i>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Register strip -->
+    <div class="rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 animate-fade-in-up"
+         style="background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);">
+      <div>
+        <p class="text-white/70 text-sm font-medium flex items-center gap-2">
+          <i class="fa-solid fa-user-plus text-teal-400 text-xs"></i>
+          New to RJMBook?
+        </p>
+        <p class="text-gray-500 text-xs mt-0.5">Create a guest account to start booking instantly.</p>
+      </div>
+      <a href="/register"
+         class="flex-shrink-0 btn btn-pill inline-flex items-center gap-2 text-white text-sm font-semibold"
+         style="background: linear-gradient(135deg,#7c3aed,#a855f7); box-shadow: 0 4px 16px rgba(124,58,237,.35); padding: .6rem 1.5rem;">
+        <i class="fa-solid fa-sparkles text-xs"></i> Create Account
+      </a>
+    </div>
+
+    <p class="text-center text-white/20 text-xs mt-8">
+      &copy; 2026 RJMBook — RJM Beach Resort Management System
+    </p>
+  </div>
+</body>
+</html>

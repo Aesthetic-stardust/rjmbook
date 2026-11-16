@@ -1,0 +1,73 @@
+<!-- Floating Feedback Widget — guest-facing only -->
+{{#unless (eq sessionRole "admin")}}
+{{#unless (eq sessionRole "staff")}}
+<div id="feedback-widget-container" class="fixed bottom-8 left-8 z-40">
+  <button id="feedback-btn" class="group relative w-16 h-16 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg hover:shadow-2xl hover:scale-110 transition-all duration-300 flex items-center justify-center animate-bounce font-bold text-2xl"
+    title="Share your feedback"
+    aria-label="Open feedback">
+    ⭐
+  </button>
+  
+  <!-- Feedback tooltip -->
+  <div id="feedback-tooltip" class="hidden absolute bottom-20 left-0 bg-white rounded-lg shadow-xl p-3 text-sm font-medium text-gray-700 whitespace-nowrap border-2 border-amber-300">
+    Share your experience!
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const feedbackBtn = document.getElementById('feedback-btn');
+  const feedbackTooltip = document.getElementById('feedback-tooltip');
+  
+  // Show tooltip on hover
+  feedbackBtn.addEventListener('mouseenter', function() {
+    feedbackTooltip.classList.remove('hidden');
+  });
+  
+  feedbackBtn.addEventListener('mouseleave', function() {
+    feedbackTooltip.classList.add('hidden');
+  });
+  
+  // Handle click
+  feedbackBtn.addEventListener('click', function() {
+    // Check if user has completed bookings
+    if (window.sessionUserId) {
+      // Redirect to reservations page where they can leave feedback
+      window.location.href = '/bookings/reservations';
+    } else {
+      // Redirect to login
+      window.location.href = '/login';
+    }
+  });
+});
+</script>
+
+<style>
+@keyframes floating {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+#feedback-widget-container {
+  animation: floating 3s ease-in-out infinite;
+}
+
+@media (max-width: 768px) {
+  #feedback-widget-container {
+    bottom: 20px;
+    left: 20px;
+  }
+  
+  #feedback-btn {
+    width: 56px;
+    height: 56px;
+    font-size: 24px;
+  }
+}
+</style>
+{{/unless}}
+{{/unless}}

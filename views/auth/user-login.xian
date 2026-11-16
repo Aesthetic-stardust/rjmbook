@@ -1,0 +1,177 @@
+{{> head }}
+<body class="min-h-screen font-body flex items-center justify-center p-4 relative overflow-hidden"
+      style="background: linear-gradient(160deg,#0a0f1e 0%,#0c2340 50%,#0a0f1e 100%);">
+
+  <!-- Dot grid -->
+  <div class="absolute inset-0 pointer-events-none opacity-[.035]"
+       style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 36px 36px; z-index:0;"></div>
+
+  <!-- Ambient blobs -->
+  <div class="absolute -top-32 -right-32 w-96 h-96 rounded-full pointer-events-none"
+       style="background: radial-gradient(circle, rgba(56,189,248,.12) 0%, transparent 65%); filter: blur(50px); z-index:0;"></div>
+  <div class="absolute -bottom-32 -left-32 w-80 h-80 rounded-full pointer-events-none"
+       style="background: radial-gradient(circle, rgba(8,145,178,.1) 0%, transparent 65%); filter: blur(44px); z-index:0;"></div>
+
+  <div class="w-full max-w-md relative animate-fade-in-up" style="z-index:10;">
+
+    <!-- Back link -->
+    <div class="mb-6 text-center">
+      <a href="/login"
+         class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-cyan-400 transition-colors">
+        <i class="fa-solid fa-arrow-left text-[10px]"></i> Back to portal selection
+      </a>
+    </div>
+
+    <!-- Brand header -->
+    <div class="text-center mb-8">
+      <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 transition-transform duration-300 hover:scale-105"
+           style="background: linear-gradient(135deg,#0369a1,#0891b2);
+                  box-shadow: 0 8px 32px rgba(8,145,178,.42), 0 2px 8px rgba(0,0,0,.2);
+                  border: 1px solid rgba(255,255,255,.1);">
+        <i class="fa-solid fa-person-swimming text-white text-2xl"></i>
+      </div>
+      <h1 class="text-3xl font-bold font-display text-white mb-1" style="letter-spacing:-.02em;">Guest Sign In</h1>
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold mt-1"
+           style="background: rgba(8,145,178,.2); color:#7dd3fc; border: 1px solid rgba(125,211,252,.25);">
+        <i class="fa-solid fa-user text-[10px]"></i> Guest Portal · RJMBook
+      </div>
+    </div>
+
+    <!-- Card -->
+    <div class="rounded-3xl p-8 shadow-2xl"
+         style="background: rgba(255,255,255,.97); backdrop-filter: blur(24px);
+                border: 1px solid rgba(255,255,255,.55);
+                box-shadow: 0 32px 80px rgba(0,0,0,.28), 0 4px 16px rgba(0,0,0,.12);">
+
+      <p class="text-sm text-gray-500 mb-6">Welcome back — sign in to manage your reservations</p>
+
+      <div id="error-message"   class="hidden alert alert-error mb-5"></div>
+      <div id="success-message" class="hidden alert alert-success mb-5"></div>
+
+      <form id="user-login-form" class="space-y-5" novalidate>
+
+        <!-- Email -->
+        <div>
+          <label class="label" for="user-email">Email Address</label>
+          <div class="relative">
+            <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+            <input id="user-email" type="email" name="email"
+                   placeholder="guest@example.com" required
+                   class="input pl-10"
+                   autocomplete="username" />
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label class="label" for="user-password">Password</label>
+          <div class="relative">
+            <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+            <input id="user-password" type="password" name="password"
+                   placeholder="••••••••" required
+                   class="input pl-10 pr-11"
+                   autocomplete="current-password" />
+            <button type="button" id="toggle-user-pw"
+                    class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    aria-label="Toggle password visibility">
+              <i class="fa-solid fa-eye text-sm"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Remember me -->
+        <div class="flex items-center gap-2.5">
+          <input type="checkbox" id="remember" name="remember"
+                 class="w-4 h-4 rounded accent-cyan-600">
+          <label for="remember" class="text-sm text-gray-600 select-none cursor-pointer">Remember me on this device</label>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" id="submit-btn"
+                class="btn btn-pill w-full btn-lg font-bold text-white"
+                style="background: linear-gradient(135deg,#0369a1,#0891b2);
+                       box-shadow: 0 4px 16px rgba(3,105,161,.35);"
+                onmouseover="this.style.boxShadow='0 8px 26px rgba(3,105,161,.48)'"
+                onmouseout="this.style.boxShadow='0 4px 16px rgba(3,105,161,.35)'">
+          <i class="fa-solid fa-right-to-bracket"></i> Sign In as Guest
+        </button>
+      </form>
+
+      <!-- Divider -->
+      <div class="flex items-center gap-3 my-6">
+        <div class="flex-1 h-px bg-gray-200"></div>
+        <span class="text-xs text-gray-400 font-medium px-1">OR</span>
+        <div class="flex-1 h-px bg-gray-200"></div>
+      </div>
+
+      <!-- Footer links -->
+      <div class="space-y-3 text-center">
+        <p class="text-sm text-gray-500">
+          Don't have an account?
+          <a href="/register" class="text-cyan-600 font-semibold hover:text-cyan-700 transition-colors ml-1">
+            Create one <i class="fa-solid fa-arrow-right text-xs"></i>
+          </a>
+        </p>
+        <div class="pt-2.5" style="border-top: 1px solid #f1f5f9;">
+          <p class="text-sm text-gray-400">
+            Are you staff?
+            <a href="/login/admin" class="text-gray-600 font-semibold hover:text-gray-800 transition-colors ml-1">
+              Admin Login <i class="fa-solid fa-arrow-right text-xs"></i>
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <p class="text-center text-white/20 text-xs mt-8">
+      &copy; 2026 RJMBook — RJM Beach Resort Booking System
+    </p>
+  </div>
+
+  <script>
+  document.getElementById('toggle-user-pw').addEventListener('click', function () {
+    const inp  = document.getElementById('user-password');
+    const icon = this.querySelector('i');
+    if (inp.type === 'password') { inp.type = 'text';     icon.className = 'fa-solid fa-eye-slash text-sm'; }
+    else                         { inp.type = 'password'; icon.className = 'fa-solid fa-eye text-sm'; }
+  });
+
+  document.getElementById('user-login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errEl = document.getElementById('error-message');
+    const okEl  = document.getElementById('success-message');
+    const btn   = document.getElementById('submit-btn');
+    errEl.classList.add('hidden');
+    okEl.classList.add('hidden');
+
+    const { email, password } = Object.fromEntries(new FormData(e.target));
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Signing in…';
+
+    try {
+      const res  = await fetch('/login/user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        errEl.innerHTML = '<i class="fa-solid fa-circle-xmark mr-1"></i>' + (data.error || 'Login failed');
+        errEl.classList.remove('hidden');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Sign In as Guest';
+        return;
+      }
+      okEl.innerHTML = '<i class="fa-solid fa-circle-check mr-1"></i> Welcome back! Redirecting…';
+      okEl.classList.remove('hidden');
+      setTimeout(() => window.location.href = data.redirect, 1000);
+    } catch {
+      errEl.innerHTML = '<i class="fa-solid fa-circle-xmark mr-1"></i> An error occurred. Please try again.';
+      errEl.classList.remove('hidden');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Sign In as Guest';
+    }
+  });
+  </script>
+</body>
+</html>

@@ -1,0 +1,555 @@
+{{> head }}
+<body class="bg-gradient-to-b from-slate-50 via-blue-50 to-slate-50 min-h-screen font-body flex flex-col">
+  {{> nav }}
+  <main class="container mx-auto px-4 py-12 flex-1">
+    <div class="max-w-6xl mx-auto">
+      <!-- Header -->
+      <div class="mb-8">
+        <h1 class="text-5xl font-bold font-display bg-gradient-to-r from-teal-700 to-cyan-600 bg-clip-text text-transparent mb-2">
+          My Reservations
+        </h1>
+        <p class="text-gray-600">Welcome, {{userName}}! View your current and past reservations</p>
+      </div>
+
+      <!-- Current Reservations Section -->
+      <div class="mb-12">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-1 h-8 bg-gradient-to-b from-green-500 to-emerald-600 rounded-full"></div>
+          <h2 class="text-3xl font-bold text-gray-800">📅 Upcoming Reservations</h2>
+          {{#if currentReservations}}
+          <span class="ml-auto bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
+            {{currentReservations.length}} Active
+          </span>
+          {{/if}}
+        </div>
+
+        {{#if currentReservations.length}}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {{#each currentReservations}}
+          <div class="bg-white rounded-xl shadow-lg border-2 border-green-100 hover:shadow-xl transition-shadow overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-b-2 border-green-200 px-6 py-4">
+              <div class="flex items-start justify-between mb-2">
+                <h3 class="text-xl font-bold text-gray-800">Booking #{this.id}</h3>
+                <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                  {{this.status}}
+                </span>
+              </div>
+              <p class="text-sm text-gray-600">{{this.Room.RoomType.name}}</p>
+            </div>
+
+            <!-- Room Details -->
+            <div class="px-6 py-4 border-b border-gray-200">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <p class="text-xs font-semibold text-gray-500 uppercase">Room Number</p>
+                  <p class="text-lg font-bold text-gray-800">{{this.Room.roomNumber}}</p>
+                </div>
+                <div>
+                  <p class="text-xs font-semibold text-gray-500 uppercase">Max Guests</p>
+                  <p class="text-lg font-bold text-gray-800">{{this.Room.RoomType.maxGuests}}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dates & Guests -->
+            <div class="px-6 py-4 border-b border-gray-200">
+              <div class="space-y-3">
+                <div class="flex items-center gap-3">
+                  <span class="text-xl">📅</span>
+                  <div>
+                    <p class="text-xs text-gray-500">Check-in</p>
+                    <p class="font-semibold text-gray-800">{{this.checkIn}}</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="text-xl">🚪</span>
+                  <div>
+                    <p class="text-xs text-gray-500">Check-out</p>
+                    <p class="font-semibold text-gray-800">{{this.checkOut}}</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="text-xl">👥</span>
+                  <div>
+                    <p class="text-xs text-gray-500">Guests</p>
+                    <p class="font-semibold text-gray-800">{{this.adults}} Adults{{#if this.children}}, {{this.children}} Children{{/if}}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Total Price -->
+            <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+              <p class="text-xs text-gray-500 mb-1">Total Amount</p>
+              <p class="text-2xl font-bold text-green-600">₱{{this.totalAmount}}</p>
+            </div>
+
+            <!-- Special Requests -->
+            {{#if this.specialRequests}}
+            <div class="px-6 py-4 bg-blue-50 border-b border-blue-200">
+              <p class="text-xs font-semibold text-gray-600 mb-2">📝 Special Requests</p>
+              <p class="text-sm text-gray-700">{{this.specialRequests}}</p>
+            </div>
+            {{/if}}
+
+            <!-- Actions -->
+            <div class="px-6 py-4 space-y-2">
+              <a href="/bookings/{{this.id}}" class="block w-full text-center px-4 py-2 bg-gradient-to-r from-teal-600 to-cyan-600 text-white font-semibold rounded-lg hover:shadow-lg transition-shadow">
+                View Details →
+              </a>
+              {{#if (eq this.status 'checked_out')}}
+              <a href="/bookings/{{this.id}}/feedback" class="block w-full text-center px-4 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-lg hover:shadow-2xl transition-all hover:scale-105 animate-bounce" title="Share your experience">
+                ⭐ Leave Feedback
+              </a>
+              {{/if}}
+            </div>
+          </div>
+          {{/each}}
+        </div>
+        {{else}}
+        <div class="bg-white rounded-xl shadow-md border-l-4 border-green-500 p-8 text-center">
+          <div class="text-5xl mb-4">📭</div>
+          <h3 class="text-xl font-bold text-gray-800 mb-2">No Upcoming Reservations</h3>
+          <p class="text-gray-600 mb-4">You don't have any active reservations at the moment.</p>
+          <a href="/bookings/book" class="inline-block px-6 py-2 bg-gradient-to-r from-teal-600 to-cyan-600 text-white font-semibold rounded-lg hover:shadow-lg transition-shadow">
+            Make a New Booking →
+          </a>
+        </div>
+        {{/if}}
+      </div>
+
+      <!-- Past Reservations Section -->
+      <div>
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-1 h-8 bg-gradient-to-b from-gray-400 to-gray-600 rounded-full"></div>
+          <h2 class="text-3xl font-bold text-gray-800">📜 Reservation History</h2>
+          {{#if pastReservations}}
+          <span class="ml-auto bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">
+            {{pastReservations.length}} Past
+          </span>
+          {{/if}}
+        </div>
+
+        <!-- Feedback CTA -->
+        {{#if pastReservations.length}}
+        <div class="mb-6 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300 rounded-lg p-4 flex items-center gap-4">
+          <span class="text-3xl">⭐</span>
+          <div>
+            <p class="font-bold text-gray-800">Share Your Experience</p>
+            <p class="text-sm text-gray-600">Leave feedback and sentiment ratings for completed stays to help us improve your future visits!</p>
+          </div>
+        </div>
+        {{/if}}
+
+        {{#if pastReservations.length}}
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead class="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
+                <tr>
+                  <th class="px-6 py-4 font-semibold text-gray-700 text-sm">Booking ID</th>
+                  <th class="px-6 py-4 font-semibold text-gray-700 text-sm">Check-in</th>
+                  <th class="px-6 py-4 font-semibold text-gray-700 text-sm">Check-out</th>
+                  <th class="px-6 py-4 font-semibold text-gray-700 text-sm">Room</th>
+                  <th class="px-6 py-4 font-semibold text-gray-700 text-sm">Total</th>
+                  <th class="px-6 py-4 font-semibold text-gray-700 text-sm">Status</th>
+                  <th class="px-6 py-4 font-semibold text-gray-700 text-sm text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200">
+                {{#each pastReservations}}
+                <tr class="hover:bg-gray-50 transition-colors duration-200">
+                  <td class="px-6 py-4 text-sm font-medium text-gray-900">#{{this.id}}</td>
+                  <td class="px-6 py-4 text-sm text-gray-600">{{this.checkIn}}</td>
+                  <td class="px-6 py-4 text-sm text-gray-600">{{this.checkOut}}</td>
+                  <td class="px-6 py-4 text-sm">
+                    <span class="font-medium text-gray-900">{{this.Room.roomNumber}}</span>
+                    <span class="text-gray-500">({{this.Room.RoomType.name}})</span>
+                  </td>
+                  <td class="px-6 py-4 text-sm font-semibold text-gray-900">₱{{this.totalAmount}}</td>
+                  <td class="px-6 py-4 text-sm">
+                    <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold
+                      {{#if (eq this.status 'checked_out')}}bg-blue-100 text-blue-800{{/if}}
+                      {{#if (eq this.status 'cancelled')}}bg-red-100 text-red-800{{/if}}
+                      {{#if (eq this.status 'completed')}}bg-green-100 text-green-800{{/if}}
+                      {{#unless (eq this.status 'checked_out')}}
+                        {{#unless (eq this.status 'cancelled')}}
+                          {{#unless (eq this.status 'completed')}}
+                            bg-gray-100 text-gray-800
+                          {{/unless}}
+                        {{/unless}}
+                      {{/unless}}
+                    ">
+                      {{this.status}}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-center">
+                    {{#if (eq this.status 'checked_out')}}
+                    <div class="flex gap-2 justify-center flex-wrap">
+                      <a href="/bookings/{{this.id}}/feedback" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-lg hover:shadow-2xl hover:scale-110 transition-all animate-bounce text-xs" title="Share your experience">
+                        ⭐ Feedback
+                      </a>
+                      <a href="/bookings/{{this.id}}" class="px-3 py-2 text-teal-700 font-semibold hover:text-teal-900 hover:bg-teal-50 rounded-lg transition-colors text-xs">
+                        View
+                      </a>
+                    </div>
+                    {{else}}
+                      {{#if (eq this.status 'completed')}}
+                      <div class="flex gap-2 justify-center flex-wrap">
+                        <a href="/bookings/{{this.id}}/feedback" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-lg hover:shadow-2xl hover:scale-110 transition-all animate-bounce text-xs" title="Share your experience">
+                          ⭐ Feedback
+                        </a>
+                        <a href="/bookings/{{this.id}}" class="px-3 py-2 text-teal-700 font-semibold hover:text-teal-900 hover:bg-teal-50 rounded-lg transition-colors text-xs">
+                          View
+                        </a>
+                      </div>
+                      {{else}}
+                        {{#if (eq this.status 'early_checkout')}}
+                        <div class="flex gap-2 justify-center flex-wrap">
+                          <a href="/bookings/{{this.id}}/feedback" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold rounded-lg hover:shadow-2xl hover:scale-110 transition-all animate-bounce text-xs" title="Share your experience">
+                            ⭐ Feedback
+                          </a>
+                          <a href="/bookings/{{this.id}}" class="px-3 py-2 text-teal-700 font-semibold hover:text-teal-900 hover:bg-teal-50 rounded-lg transition-colors text-xs">
+                            View
+                          </a>
+                        </div>
+                        {{else}}
+                        <a href="/bookings/{{this.id}}" class="inline-block px-3 py-2 text-teal-700 font-semibold hover:text-teal-900 hover:bg-teal-50 rounded-lg transition-colors">
+                          View →
+                        </a>
+                        {{/if}}
+                      {{/if}}
+                    {{/if}}
+                  </td>
+                </tr>
+                {{/each}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {{else}}
+        <div class="bg-white rounded-xl shadow-md border-l-4 border-gray-400 p-8 text-center">
+          <div class="text-5xl mb-4">📭</div>
+          <h3 class="text-xl font-bold text-gray-800 mb-2">No Reservation History</h3>
+          <p class="text-gray-600">You haven't completed any reservations yet.</p>
+        </div>
+        {{/if}}
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="mt-12 mb-8">
+        <div class="bg-gradient-to-r from-teal-500 to-cyan-500 rounded-xl shadow-lg p-8 text-white">
+          <h3 class="text-2xl font-bold mb-4">Ready to Make Another Reservation?</h3>
+          <p class="mb-6 opacity-90">Discover our rooms and cottages and book your next stay with us!</p>
+          <div class="flex gap-4">
+            <a href="/bookings/book" class="px-6 py-3 bg-white text-teal-600 font-bold rounded-lg hover:bg-gray-100 transition-colors">
+              Book Now
+            </a>
+            <a href="/rooms" class="px-6 py-3 border-2 border-white text-white font-bold rounded-lg hover:bg-white hover:bg-opacity-10 transition-colors">
+              View Rooms
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Feedback Modal -->
+  <div id="feedbackModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-96 overflow-y-auto">
+      <!-- Modal Header -->
+      <div class="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-6 flex items-center justify-between sticky top-0">
+        <div>
+          <h2 class="text-2xl font-bold">⭐ Share Your Experience</h2>
+          <p class="text-amber-100 text-sm mt-1">Your feedback helps us improve</p>
+        </div>
+        <button id="closeModal" class="text-white hover:bg-white/20 p-2 rounded-lg transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Modal Content -->
+      <div class="p-6">
+        <form id="feedbackForm" class="space-y-6">
+          <!-- Overall Rating -->
+          <div>
+            <label class="block text-lg font-bold text-gray-800 mb-3">Overall Rating</label>
+            <div class="flex gap-3">
+              <button type="button" class="star-btn w-12 h-12 text-3xl transition-all" data-value="1">⭐</button>
+              <button type="button" class="star-btn w-12 h-12 text-3xl transition-all" data-value="2">⭐</button>
+              <button type="button" class="star-btn w-12 h-12 text-3xl transition-all" data-value="3">⭐</button>
+              <button type="button" class="star-btn w-12 h-12 text-3xl transition-all" data-value="4">⭐</button>
+              <button type="button" class="star-btn w-12 h-12 text-3xl transition-all" data-value="5">⭐</button>
+            </div>
+            <p class="text-sm text-gray-600 mt-2" id="ratingText">Click to rate</p>
+            <input type="hidden" id="rating" name="rating" value="0">
+          </div>
+
+          <!-- Aspect Ratings -->
+          <div>
+            <label class="block text-lg font-bold text-gray-800 mb-3">Rate Specific Aspects</label>
+            <div class="space-y-2">
+              <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                <span class="font-medium text-gray-700">Room Cleanliness</span>
+                <div class="flex gap-1">
+                  <button type="button" class="aspect-star" data-field="roomCleanliness" data-value="1" class="text-sm">★</button>
+                  <button type="button" class="aspect-star" data-field="roomCleanliness" data-value="2" class="text-sm">★</button>
+                  <button type="button" class="aspect-star" data-field="roomCleanliness" data-value="3" class="text-sm">★</button>
+                  <button type="button" class="aspect-star" data-field="roomCleanliness" data-value="4" class="text-sm">★</button>
+                  <button type="button" class="aspect-star" data-field="roomCleanliness" data-value="5" class="text-sm">★</button>
+                </div>
+              </div>
+              <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                <span class="font-medium text-gray-700">Service Quality</span>
+                <div class="flex gap-1">
+                  <button type="button" class="aspect-star" data-field="serviceQuality" data-value="1" class="text-sm">★</button>
+                  <button type="button" class="aspect-star" data-field="serviceQuality" data-value="2" class="text-sm">★</button>
+                  <button type="button" class="aspect-star" data-field="serviceQuality" data-value="3" class="text-sm">★</button>
+                  <button type="button" class="aspect-star" data-field="serviceQuality" data-value="4" class="text-sm">★</button>
+                  <button type="button" class="aspect-star" data-field="serviceQuality" data-value="5" class="text-sm">★</button>
+                </div>
+              </div>
+              <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                <span class="font-medium text-gray-700">Food Quality</span>
+                <div class="flex gap-1">
+                  <button type="button" class="aspect-star" data-field="foodQuality" data-value="1" class="text-sm">★</button>
+                  <button type="button" class="aspect-star" data-field="foodQuality" data-value="2" class="text-sm">★</button>
+                  <button type="button" class="aspect-star" data-field="foodQuality" data-value="3" class="text-sm">★</button>
+                  <button type="button" class="aspect-star" data-field="foodQuality" data-value="4" class="text-sm">★</button>
+                  <button type="button" class="aspect-star" data-field="foodQuality" data-value="5" class="text-sm">★</button>
+                </div>
+              </div>
+              <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                <span class="font-medium text-gray-700">Amenities</span>
+                <div class="flex gap-1">
+                  <button type="button" class="aspect-star" data-field="amenities" data-value="1" class="text-sm">★</button>
+                  <button type="button" class="aspect-star" data-field="amenities" data-value="2" class="text-sm">★</button>
+                  <button type="button" class="aspect-star" data-field="amenities" data-value="3" class="text-sm">★</button>
+                  <button type="button" class="aspect-star" data-field="amenities" data-value="4" class="text-sm">★</button>
+                  <button type="button" class="aspect-star" data-field="amenities" data-value="5" class="text-sm">★</button>
+                </div>
+              </div>
+              <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                <span class="font-medium text-gray-700">Value for Money</span>
+                <div class="flex gap-1">
+                  <button type="button" class="aspect-star" data-field="valueForMoney" data-value="1" class="text-sm">★</button>
+                  <button type="button" class="aspect-star" data-field="valueForMoney" data-value="2" class="text-sm">★</button>
+                  <button type="button" class="aspect-star" data-field="valueForMoney" data-value="3" class="text-sm">★</button>
+                  <button type="button" class="aspect-star" data-field="valueForMoney" data-value="4" class="text-sm">★</button>
+                  <button type="button" class="aspect-star" data-field="valueForMoney" data-value="5" class="text-sm">★</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comment -->
+          <div>
+            <label class="block text-lg font-bold text-gray-800 mb-3">Tell Us More</label>
+            <textarea 
+              id="comment" 
+              name="comment" 
+              placeholder="Share your detailed experience, what you loved, what could be improved..." 
+              rows="4"
+              class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 resize-none"
+              required
+            ></textarea>
+          </div>
+
+          <!-- Hidden Fields -->
+          <input type="hidden" id="bookingId" name="bookingId" value="">
+          <input type="hidden" id="guestId" name="guestId" value="">
+
+          <!-- Buttons -->
+          <div class="flex gap-3">
+            <button type="button" id="cancelModal" class="flex-1 px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold rounded-lg transition-colors">
+              Cancel
+            </button>
+            <button type="submit" class="flex-1 px-4 py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:shadow-lg text-white font-bold rounded-lg transition-all">
+              Submit Feedback
+            </button>
+          </div>
+
+          <!-- Success Message -->
+          <div id="successMessage" class="hidden bg-green-100 border-2 border-green-500 text-green-700 px-4 py-3 rounded-lg text-center">
+            ✓ Thank you! Your feedback has been submitted successfully.
+          </div>
+
+          <!-- Error Message -->
+          <div id="errorMessage" class="hidden bg-red-100 border-2 border-red-500 text-red-700 px-4 py-3 rounded-lg text-center">
+            <p id="errorText"></p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const feedbackModal = document.getElementById('feedbackModal');
+    const closeBtn = document.getElementById('closeModal');
+    const cancelBtn = document.getElementById('cancelModal');
+    const form = document.getElementById('feedbackForm');
+    let ratings = {
+      rating: 0,
+      roomCleanliness: 0,
+      serviceQuality: 0,
+      foodQuality: 0,
+      amenities: 0,
+      valueForMoney: 0
+    };
+
+    // Open modal from feedback buttons
+    document.querySelectorAll('a[href*="/feedback"]').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const bookingId = this.getAttribute('href').match(/\/bookings\/(\d+)/)[1];
+        document.getElementById('bookingId').value = bookingId;
+        feedbackModal.classList.remove('hidden');
+      });
+    });
+
+    // Auto-open modal if feedback parameter is present in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const feedbackBookingId = urlParams.get('feedback');
+    if (feedbackBookingId) {
+      document.getElementById('bookingId').value = feedbackBookingId;
+      feedbackModal.classList.remove('hidden');
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // Close modal
+    closeBtn.addEventListener('click', () => feedbackModal.classList.add('hidden'));
+    cancelBtn.addEventListener('click', () => feedbackModal.classList.add('hidden'));
+    feedbackModal.addEventListener('click', (e) => {
+      if (e.target === feedbackModal) feedbackModal.classList.add('hidden');
+    });
+
+    // Star rating handlers
+    document.querySelectorAll('.star-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const value = parseInt(btn.dataset.value);
+        ratings.rating = value;
+        document.getElementById('rating').value = value;
+        
+        document.querySelectorAll('.star-btn').forEach((b, idx) => {
+          b.style.opacity = (idx + 1) <= value ? '1' : '0.3';
+        });
+        
+        const texts = ['Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+        document.getElementById('ratingText').textContent = texts[value - 1];
+      });
+    });
+
+    // Aspect star handlers
+    document.querySelectorAll('.aspect-star').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const field = btn.dataset.field;
+        const value = parseInt(btn.dataset.value);
+        ratings[field] = value;
+        
+        const parent = btn.parentElement;
+        parent.querySelectorAll('.aspect-star').forEach((b, idx) => {
+          b.style.opacity = (idx + 1) <= value ? '1' : '0.3';
+        });
+      });
+    });
+
+    // Form submission
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (ratings.rating === 0) {
+        showError('Please provide an overall rating');
+        return;
+      }
+
+      if (!document.getElementById('comment').value.trim()) {
+        showError('Please share your experience');
+        return;
+      }
+
+      const feedbackData = {
+        bookingId: parseInt(document.getElementById('bookingId').value),
+        guestId: parseInt(document.getElementById('guestId').value || 0),
+        rating: ratings.rating,
+        comment: document.getElementById('comment').value,
+        roomCleanliness: ratings.roomCleanliness,
+        serviceQuality: ratings.serviceQuality,
+        foodQuality: ratings.foodQuality,
+        amenities: ratings.amenities,
+        valueForMoney: ratings.valueForMoney
+      };
+
+      try {
+        const response = await fetch('/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(feedbackData)
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          document.getElementById('errorMessage').classList.add('hidden');
+          document.getElementById('successMessage').classList.remove('hidden');
+          form.reset();
+          
+          // Reset UI
+          document.querySelectorAll('.star-btn').forEach(b => b.style.opacity = '0.3');
+          document.querySelectorAll('.aspect-star').forEach(b => b.style.opacity = '0.3');
+          document.getElementById('ratingText').textContent = 'Click to rate';
+          
+          setTimeout(() => {
+            feedbackModal.classList.add('hidden');
+            document.getElementById('successMessage').classList.add('hidden');
+          }, 3000);
+        } else {
+          showError(data.message || 'Error submitting feedback');
+        }
+      } catch (error) {
+        showError('Failed to submit feedback: ' + error.message);
+      }
+    });
+
+    function showError(message) {
+      document.getElementById('errorMessage').classList.remove('hidden');
+      document.getElementById('errorText').textContent = message;
+      setTimeout(() => {
+        document.getElementById('errorMessage').classList.add('hidden');
+      }, 5000);
+    }
+  });
+  </script>
+
+  <style>
+  .star-btn, .aspect-star {
+    opacity: 0.3;
+    transition: all 0.3s ease;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .star-btn:hover, .aspect-star:hover {
+    opacity: 1 !important;
+    transform: scale(1.1);
+  }
+
+  #feedbackModal {
+    animation: fadeIn 0.3s ease-in;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  </style>
+
+  {{> footer }}
+</body>

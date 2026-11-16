@@ -1,0 +1,402 @@
+{{> head }}
+<body class="font-body">
+<div class="flex h-screen overflow-hidden" style="background:#f1f5f9;">
+
+  <!-- ── Staff Sidebar ── -->
+  <aside id="staff-sidebar"
+         class="flex-shrink-0 w-64 flex flex-col fixed md:relative top-0 left-0 h-screen z-40 transition-transform duration-300"
+         style="background: linear-gradient(180deg,#1e1b4b 0%,#312e81 50%,#1e3a5f 100%); box-shadow: 4px 0 24px rgba(0,0,0,.2);">
+
+    <!-- Brand -->
+    <div class="px-6 py-6 border-b" style="border-color: rgba(255,255,255,.1);">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+             style="background: linear-gradient(135deg,#6366f1,#8b5cf6);">
+          <i class="fa-solid fa-user-tie text-white text-sm"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-white font-display leading-none">RJMBook</h1>
+          <p class="text-xs mt-0.5" style="color: rgba(255,255,255,.45);">RJM Beach Resort</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 px-3 py-5 space-y-0.5 overflow-y-auto">
+      <p class="text-xs font-semibold uppercase tracking-widest px-3 mb-3" style="color: rgba(255,255,255,.35);">Operations</p>
+
+      <a href="/staff" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all"
+         style="background: linear-gradient(135deg,#6366f1,#8b5cf6); color:#fff; box-shadow: 0 4px 12px rgba(99,102,241,.35);">
+        <i class="fa-solid fa-gauge w-4 text-center flex-shrink-0"></i><span>Dashboard</span>
+      </a>
+
+      <a href="/staff/reservations" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/75 hover:text-white hover:bg-white/10 transition-all">
+        <i class="fa-solid fa-calendar-days w-4 text-center flex-shrink-0"></i><span>Reservations</span>
+      </a>
+
+      <a href="/staff/reservation-calendar" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/75 hover:text-white hover:bg-white/10 transition-all">
+        <i class="fa-solid fa-calendar w-4 text-center flex-shrink-0"></i><span>Reservation Calendar</span>
+      </a>
+
+      <a href="/staff/room-status" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/75 hover:text-white hover:bg-white/10 transition-all">
+        <i class="fa-solid fa-bed w-4 text-center flex-shrink-0"></i><span>Room Status</span>
+      </a>
+
+      <a href="/staff/guests" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/75 hover:text-white hover:bg-white/10 transition-all">
+        <i class="fa-solid fa-users w-4 text-center flex-shrink-0"></i><span>Guests</span>
+      </a>
+
+      <a href="/staff/book" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-white/75 hover:text-white hover:bg-white/10 transition-all">
+        <i class="fa-solid fa-calendar-plus w-4 text-center flex-shrink-0"></i><span>Walk-in Booking</span>
+      </a>
+
+    </nav>
+
+    <!-- User + Logout -->
+    <div class="px-3 py-4 border-t" style="border-color: rgba(255,255,255,.08);">
+      <div class="flex items-center gap-3 px-3 py-3 rounded-xl mb-3" style="background: rgba(255,255,255,.07);">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
+             style="background: linear-gradient(135deg,#6366f1,#8b5cf6);">
+          {{#if sessionUserName}}{{sessionUserName.[0]}}{{else}}S{{/if}}
+        </div>
+        <div class="min-w-0">
+          <p class="text-xs text-white font-semibold truncate">{{sessionUserName}}</p>
+          <p class="text-xs" style="color: rgba(255,255,255,.4);">Staff Member</p>
+        </div>
+      </div>
+      <button id="staffLogoutBtn"
+              class="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-white transition-all cursor-pointer border-none"
+              style="background: rgba(220,38,38,.2); border: 1px solid rgba(220,38,38,.3);"
+>
+        <i class="fa-solid fa-right-from-bracket text-red-400"></i>
+        <span class="text-red-300">Sign Out</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── Main Content ── -->
+  <main class="flex-1 flex flex-col overflow-hidden">
+
+    <!-- Top bar -->
+    <header class="flex-shrink-0 flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200"
+            style="box-shadow: 0 1px 8px rgba(0,0,0,.06);">
+      <div class="flex items-center gap-4">
+        <button id="sidebar-toggle" class="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">Staff Dashboard</h2>
+          <p class="text-xs text-gray-500 mt-0.5">Today's overview — {{today}}</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="/staff/book"
+           class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all"
+           style="background: linear-gradient(135deg,#6366f1,#8b5cf6); box-shadow: 0 4px 12px rgba(99,102,241,.3);">
+          <i class="fa-solid fa-plus text-xs"></i> Walk-in Booking
+        </a>
+        <div class="hidden sm:block text-right">
+          <p class="text-xs text-gray-500">Logged in as</p>
+          <p class="text-sm font-semibold text-gray-800">{{sessionUserName}}</p>
+        </div>
+        <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white"
+             style="background: linear-gradient(135deg,#6366f1,#8b5cf6);">
+          {{#if sessionUserName}}{{sessionUserName.[0]}}{{else}}S{{/if}}
+        </div>
+      </div>
+    </header>
+
+    <!-- Page content -->
+    <div class="flex-1 overflow-auto p-6" style="background:#f8fafc;">
+
+      <!-- ── KPI Cards ── -->
+      <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6 stagger">
+
+        <div class="stat-card animate-fade-in-up" style="--tw-border-opacity:1;">
+          <div class="flex items-start justify-between mb-3">
+            <div class="icon-box bg-indigo-100"><i class="fa-solid fa-bed text-indigo-600"></i></div>
+            <span class="badge badge-info text-xs">Total</span>
+          </div>
+          <p class="text-3xl font-bold text-gray-800 mb-1">{{totalRooms}}</p>
+          <p class="text-sm text-gray-500 font-medium">Total Rooms</p>
+        </div>
+
+        <div class="stat-card animate-fade-in-up">
+          <div class="flex items-start justify-between mb-3">
+            <div class="icon-box bg-green-100"><i class="fa-solid fa-arrow-right-to-bracket text-green-600"></i></div>
+            <span class="badge badge-success text-xs">Today</span>
+          </div>
+          <p class="text-3xl font-bold text-gray-800 mb-1">{{todayCheckIns}}</p>
+          <p class="text-sm text-gray-500 font-medium">Check-ins</p>
+        </div>
+
+        <div class="stat-card animate-fade-in-up">
+          <div class="flex items-start justify-between mb-3">
+            <div class="icon-box bg-amber-100"><i class="fa-solid fa-arrow-right-from-bracket text-amber-600"></i></div>
+            <span class="badge badge-warning text-xs">Today</span>
+          </div>
+          <p class="text-3xl font-bold text-gray-800 mb-1">{{todayCheckOuts}}</p>
+          <p class="text-sm text-gray-500 font-medium">Check-outs</p>
+        </div>
+
+        <div class="stat-card animate-fade-in-up">
+          <div class="flex items-start justify-between mb-3">
+            <div class="icon-box bg-teal-100"><i class="fa-solid fa-door-open text-teal-600"></i></div>
+            <span class="badge badge-teal text-xs">Live</span>
+          </div>
+          <p class="text-3xl font-bold text-gray-800 mb-1">{{currentlyOccupied}}</p>
+          <p class="text-sm text-gray-500 font-medium">Occupied</p>
+        </div>
+
+        <div class="stat-card animate-fade-in-up">
+          <div class="flex items-start justify-between mb-3">
+            <div class="icon-box bg-orange-100"><i class="fa-solid fa-clock text-orange-600"></i></div>
+            <span class="badge badge-warning text-xs">Action</span>
+          </div>
+          <p class="text-3xl font-bold text-gray-800 mb-1">{{pendingCount}}</p>
+          <p class="text-sm text-gray-500 font-medium">Pending</p>
+        </div>
+      </div>
+
+      <!-- ── Occupancy bar ── -->
+      <div class="card p-5 mb-6 animate-fade-in-up">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <p class="text-sm font-semibold text-gray-700">Current Occupancy Rate</p>
+            <p class="text-xs text-gray-400">{{currentlyOccupied}} of {{totalRooms}} rooms occupied</p>
+          </div>
+          <span class="text-2xl font-bold" style="color:#6366f1;">{{occupancyRate}}%</span>
+        </div>
+        <div class="w-full h-3 rounded-full bg-gray-100 overflow-hidden">
+          <div class="h-full rounded-full transition-all duration-700"
+               style="width:{{occupancyRate}}%; background: linear-gradient(90deg,#6366f1,#8b5cf6);"></div>
+        </div>
+      </div>
+
+      <!-- ── Today's Arrivals & Departures ── -->
+      <div class="grid lg:grid-cols-2 gap-6 mb-6">
+
+        <!-- Arrivals -->
+        <div class="card overflow-hidden animate-fade-in-up">
+          <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between"
+               style="background: linear-gradient(135deg,#f0fdf4,#dcfce7);">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-arrow-right-to-bracket text-green-600"></i>
+              <h3 class="font-bold text-gray-800">Today's Arrivals</h3>
+            </div>
+            <span class="badge badge-success">{{todayCheckIns}} guests</span>
+          </div>
+          <div class="divide-y divide-gray-50 max-h-64 overflow-y-auto">
+            {{#each todayArrivals}}
+            <div class="px-5 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors">
+              <div>
+                <p class="text-sm font-semibold text-gray-800">
+                  {{#if this.Guest}}{{this.Guest.firstName}} {{this.Guest.lastName}}{{else}}—{{/if}}
+                </p>
+                <p class="text-xs text-gray-500">
+                  {{#if this.Room}}{{this.Room.roomNumber}} · {{this.Room.RoomType.name}}{{/if}}
+                </p>
+              </div>
+              <div class="text-right">
+                <span class="badge {{#if (eq this.status 'confirmed')}}badge-success{{else}}badge-warning{{/if}} text-xs">
+                  {{this.status}}
+                </span>
+                <p class="text-xs text-gray-400 mt-1">#{{this.id}}</p>
+              </div>
+            </div>
+            {{else}}
+            <div class="px-5 py-8 text-center text-gray-400 text-sm">
+              <i class="fa-regular fa-calendar-check text-2xl mb-2 block"></i>
+              No arrivals scheduled today
+            </div>
+            {{/each}}
+          </div>
+        </div>
+
+        <!-- Departures -->
+        <div class="card overflow-hidden animate-fade-in-up">
+          <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between"
+               style="background: linear-gradient(135deg,#fffbeb,#fef3c7);">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-arrow-right-from-bracket text-amber-600"></i>
+              <h3 class="font-bold text-gray-800">Today's Departures</h3>
+            </div>
+            <span class="badge badge-warning">{{todayCheckOuts}} guests</span>
+          </div>
+          <div class="divide-y divide-gray-50 max-h-64 overflow-y-auto">
+            {{#each todayDepartures}}
+            <div class="px-5 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors">
+              <div>
+                <p class="text-sm font-semibold text-gray-800">
+                  {{#if this.Guest}}{{this.Guest.firstName}} {{this.Guest.lastName}}{{else}}—{{/if}}
+                </p>
+                <p class="text-xs text-gray-500">
+                  {{#if this.Room}}{{this.Room.roomNumber}} · {{this.Room.RoomType.name}}{{/if}}
+                </p>
+              </div>
+              <div class="text-right">
+                <span class="badge badge-teal text-xs">checked in</span>
+                <p class="text-xs text-gray-400 mt-1">#{{this.id}}</p>
+              </div>
+            </div>
+            {{else}}
+            <div class="px-5 py-8 text-center text-gray-400 text-sm">
+              <i class="fa-regular fa-calendar text-2xl mb-2 block"></i>
+              No departures scheduled today
+            </div>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Recent Bookings ── -->
+      <div class="card overflow-hidden animate-fade-in-up">
+        <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+          <h3 class="font-bold text-gray-800">Recent Bookings</h3>
+          <a href="/staff/reservations" class="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+            View all <i class="fa-solid fa-arrow-right text-xs"></i>
+          </a>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="nb-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Guest</th>
+                <th>Room</th>
+                <th>Check-in</th>
+                <th>Check-out</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each recentBookings}}
+              <tr>
+                <td class="font-medium text-gray-700">#{{this.id}}</td>
+                <td>
+                  {{#if this.Guest}}
+                  <p class="font-medium text-gray-800 text-sm">{{this.Guest.firstName}} {{this.Guest.lastName}}</p>
+                  <p class="text-xs text-gray-400">{{this.Guest.email}}</p>
+                  {{else}}<span class="text-gray-400">—</span>{{/if}}
+                </td>
+                <td>
+                  {{#if this.Room}}
+                  <p class="font-medium text-sm">{{this.Room.roomNumber}}</p>
+                  <p class="text-xs text-gray-400">{{this.Room.RoomType.name}}</p>
+                  {{else}}<span class="text-gray-400">—</span>{{/if}}
+                </td>
+                <td class="text-sm text-gray-600">{{this.checkIn}}</td>
+                <td class="text-sm text-gray-600">{{this.checkOut}}</td>
+                <td class="font-semibold text-teal-700 text-sm">₱{{this.totalAmount}}</td>
+                <td>
+                  <span class="badge text-xs
+                    {{#if (eq this.status 'pending')}}badge-warning
+                    {{else if (eq this.status 'confirmed')}}badge-success
+                    {{else if (eq this.status 'checked_in')}}badge-info
+                    {{else if (eq this.status 'cancelled')}}badge-danger
+                    {{else}}badge-neutral{{/if}}">
+                    {{this.status}}
+                  </span>
+                </td>
+                <td>
+                  <a href="/bookings/{{this.id}}"
+                     class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors">
+                    View →
+                  </a>
+                </td>
+              </tr>
+              {{else}}
+              <tr><td colspan="8" class="text-center py-8 text-gray-400">No bookings yet</td></tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </main>
+</div>
+
+<script>
+(function () {
+  const toggle  = document.getElementById('sidebar-toggle');
+  const sidebar = document.getElementById('staff-sidebar');
+  if (toggle && sidebar) {
+    toggle.addEventListener('click', () => sidebar.classList.toggle('-translate-x-full'));
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth < 768 && !sidebar.contains(e.target) && !toggle.contains(e.target)) {
+        sidebar.classList.add('-translate-x-full');
+      }
+    });
+  }
+
+  // Logout functionality
+  let _logoutCb = null;
+
+  window.showLogoutConfirmation = function (cb) {
+    _logoutCb = cb;
+    const m = document.getElementById('logoutConfirmModal');
+    if (m) m.classList.remove('hidden');
+  };
+
+  window.confirmStaffLogout = function () {
+    showLogoutConfirmation(function () {
+      window.location.href = '/logout';
+    });
+  };
+
+  function closeModal() {
+    const modal = document.getElementById('logoutConfirmModal');
+    if (modal) modal.classList.add('hidden');
+    _logoutCb = null;
+  }
+
+  // Wire up logout button and modal
+  document.addEventListener('DOMContentLoaded', function () {
+    const logoutBtn = document.getElementById('staffLogoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', window.confirmStaffLogout);
+    }
+
+    const yes = document.getElementById('logoutConfirmYes');
+    const no = document.getElementById('logoutConfirmNo');
+    const modal = document.getElementById('logoutConfirmModal');
+
+    if (yes) yes.addEventListener('click', () => { if (_logoutCb) _logoutCb(); });
+    if (no) no.addEventListener('click', closeModal);
+    if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+  });
+})();
+</script>
+
+<!-- Logout Confirmation Modal -->
+<div id="logoutConfirmModal"
+     class="hidden fixed inset-0 z-[500] flex items-center justify-center p-4"
+     style="background: rgba(15,23,42,.65); backdrop-filter: blur(6px);">
+  <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 animate-fade-in-up">
+    <div class="flex items-center gap-4 mb-5">
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
+           style="background: linear-gradient(135deg,#fef3c7,#fde68a);">
+        <i class="fa-solid fa-right-from-bracket text-amber-600 text-lg"></i>
+      </div>
+      <div>
+        <h3 class="text-lg font-bold text-gray-900">Sign Out?</h3>
+        <p class="text-sm text-gray-500">You'll need to sign in again to access your account.</p>
+      </div>
+    </div>
+    <div class="flex gap-3 mt-6">
+      <button id="logoutConfirmNo"
+              class="flex-1 px-4 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm transition-colors">
+        Cancel
+      </button>
+      <button id="logoutConfirmYes"
+              class="flex-1 px-4 py-2.5 rounded-xl font-semibold text-sm text-white transition-all"
+              style="background: linear-gradient(135deg,#dc2626,#ef4444); box-shadow: 0 4px 12px rgba(220,38,38,.3);">
+        Sign Out
+      </button>
+    </div>
+  </div>
+</div>
+</body>

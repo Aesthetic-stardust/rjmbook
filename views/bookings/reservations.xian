@@ -1,0 +1,188 @@
+{{> head }}
+<body class="font-body flex flex-col" style="background:#f8fafc;">
+  {{> nav }}
+  <main class="min-h-screen py-10 px-4">
+    <div class="max-w-5xl mx-auto">
+
+      <!-- Header -->
+      <div class="mb-8 animate-fade-in-up">
+        <h1 class="text-3xl font-bold font-display text-gray-900 mb-1">My Reservations</h1>
+        <p class="text-gray-500 text-sm">Welcome back, <strong>{{userName}}</strong>! Manage your bookings below.</p>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex gap-1 mb-6 p-1 rounded-xl w-fit" style="background:#e2e8f0;">
+        <button class="tab-btn px-5 py-2 rounded-lg text-sm font-semibold transition-all bg-white text-teal-700 shadow-sm" data-tab="current">
+          <i class="fa-regular fa-calendar-check mr-1.5"></i>Current
+          {{#if currentReservations.length}}<span class="ml-1.5 badge badge-teal text-xs">{{currentReservations.length}}</span>{{/if}}
+        </button>
+        <button class="tab-btn px-5 py-2 rounded-lg text-sm font-semibold transition-all text-gray-500 hover:text-gray-700" data-tab="history">
+          <i class="fa-solid fa-clock-rotate-left mr-1.5"></i>History
+          {{#if pastReservations.length}}<span class="ml-1.5 badge badge-neutral text-xs">{{pastReservations.length}}</span>{{/if}}
+        </button>
+      </div>
+
+      <!-- Current tab -->
+      <div id="current-tab" class="tab-content">
+        {{#if currentReservations.length}}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          {{#each currentReservations}}
+          <div class="card overflow-hidden animate-fade-in-up">
+            <!-- Status bar -->
+            <div class="px-5 py-3 flex items-center justify-between border-b border-gray-100"
+                 style="background:{{#if (eq this.status 'checked_in')}}#f0fdf4{{else if (eq this.status 'confirmed')}}#eff6ff{{else}}#fffbeb{{/if}};">
+              <div>
+                <p class="text-xs text-gray-500 font-medium">Booking Reference</p>
+                <p class="font-bold text-gray-800">#{{this.id}}</p>
+              </div>
+              <span class="badge text-xs
+                {{#if (eq this.status 'pending')}}badge-warning
+                {{else if (eq this.status 'confirmed')}}badge-info
+                {{else if (eq this.status 'checked_in')}}badge-success
+                {{else}}badge-neutral{{/if}}">
+                {{#if (eq this.status 'checked_in')}}<i class="fa-solid fa-door-open mr-1"></i>Checked In
+                {{else if (eq this.status 'confirmed')}}<i class="fa-solid fa-circle-check mr-1"></i>Confirmed
+                {{else if (eq this.status 'pending')}}<i class="fa-solid fa-clock mr-1"></i>Pending
+                {{else}}{{this.status}}{{/if}}
+              </span>
+            </div>
+
+            <div class="p-5 space-y-3">
+              <!-- Room -->
+              <div class="flex items-center gap-3">
+                <div class="icon-box bg-teal-100 flex-shrink-0"><i class="fa-solid fa-bed text-teal-600"></i></div>
+                <div>
+                  <p class="text-xs text-gray-400">Room / Cottage</p>
+                  <p class="font-semibold text-gray-800 text-sm">{{this.Room.roomNumber}} — {{this.Room.RoomType.name}}</p>
+                </div>
+              </div>
+              <!-- Dates -->
+              <div class="grid grid-cols-2 gap-3">
+                <div class="rounded-xl p-3" style="background:#f8fafc;">
+                  <p class="text-xs text-gray-400 mb-0.5"><i class="fa-regular fa-calendar-check text-teal-500 mr-1"></i>Check-in</p>
+                  <p class="font-bold text-gray-800 text-sm">{{this.checkIn}}</p>
+                </div>
+                <div class="rounded-xl p-3" style="background:#f8fafc;">
+                  <p class="text-xs text-gray-400 mb-0.5"><i class="fa-regular fa-calendar-xmark text-teal-500 mr-1"></i>Check-out</p>
+                  <p class="font-bold text-gray-800 text-sm">{{this.checkOut}}</p>
+                </div>
+              </div>
+              <!-- Guests + Amount -->
+              <div class="flex items-center justify-between pt-2 border-t border-gray-100">
+                <span class="text-sm text-gray-500">
+                  <i class="fa-solid fa-users text-teal-400 mr-1"></i>
+                  {{this.adults}} Adult(s){{#if this.children}}, {{this.children}} Child{{/if}}
+                </span>
+                <p class="text-xl font-bold text-teal-700 font-display">₱{{this.totalAmount}}</p>
+              </div>
+              <a href="/bookings/{{this.id}}" class="btn btn-primary w-full justify-center">
+                View Details <i class="fa-solid fa-arrow-right text-xs ml-1"></i>
+              </a>
+            </div>
+          </div>
+          {{/each}}
+        </div>
+        {{else}}
+        <div class="card p-12 text-center animate-fade-in-up">
+          <i class="fa-regular fa-calendar-check text-5xl text-gray-300 mb-4 block"></i>
+          <h3 class="text-xl font-bold text-gray-800 mb-2">No Current Reservations</h3>
+          <p class="text-gray-500 text-sm mb-6">You don't have any active bookings right now.</p>
+          <a href="/bookings/book" class="btn btn-primary inline-flex items-center gap-2">
+            <i class="fa-solid fa-calendar-plus"></i> Make a Booking
+          </a>
+        </div>
+        {{/if}}
+      </div>
+
+      <!-- History tab -->
+      <div id="history-tab" class="tab-content hidden">
+        {{#if pastReservations.length}}
+        <div class="table-wrapper animate-fade-in-up">
+          <table class="nb-table">
+            <thead>
+              <tr>
+                <th>Booking</th>
+                <th>Room</th>
+                <th>Check-in</th>
+                <th>Check-out</th>
+                <th>Nights</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each pastReservations}}
+              <tr>
+                <td class="font-semibold text-gray-700">#{{this.id}}</td>
+                <td>
+                  <p class="font-medium text-gray-800 text-sm">{{this.Room.RoomType.name}}</p>
+                  <p class="text-xs text-gray-400">Room {{this.Room.roomNumber}}</p>
+                </td>
+                <td class="text-sm text-gray-600">{{this.checkIn}}</td>
+                <td class="text-sm text-gray-600">{{this.checkOut}}</td>
+                <td><span class="badge badge-info text-xs">{{this.nights}} nights</span></td>
+                <td class="font-bold text-teal-700 text-sm">₱{{this.totalAmount}}</td>
+                <td>
+                  <span class="badge text-xs
+                    {{#if (eq this.status 'checked_out')}}badge-neutral
+                    {{else if (eq this.status 'cancelled')}}badge-danger
+                    {{else if (eq this.status 'confirmed')}}badge-success
+                    {{else}}badge-neutral{{/if}}">
+                    {{this.status}}
+                  </span>
+                </td>
+                <td>
+                  <a href="/bookings/{{this.id}}" class="text-xs font-semibold text-teal-600 hover:text-teal-800 transition-colors">View →</a>
+                </td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+        {{else}}
+        <div class="card p-12 text-center animate-fade-in-up">
+          <i class="fa-solid fa-clock-rotate-left text-5xl text-gray-300 mb-4 block"></i>
+          <h3 class="text-xl font-bold text-gray-800 mb-2">No Reservation History</h3>
+          <p class="text-gray-500 text-sm mb-6">Your completed bookings will appear here.</p>
+          <a href="/bookings/book" class="btn btn-primary inline-flex items-center gap-2">
+            <i class="fa-solid fa-calendar-plus"></i> Make Your First Booking
+          </a>
+        </div>
+        {{/if}}
+      </div>
+
+      <!-- CTA -->
+      {{#if currentReservations.length}}
+      <div class="mt-10 rounded-3xl p-8 text-white animate-fade-in-up"
+           style="background:linear-gradient(135deg,#0f766e,#0d9488,#0891b2);">
+        <h3 class="text-xl font-bold font-display mb-2">Planning Another Stay?</h3>
+        <p class="text-teal-100 text-sm mb-5">Explore more rooms and cottages at RJM Beach Resort.</p>
+        <div class="flex flex-wrap gap-3">
+          <a href="/bookings/book" class="btn bg-white text-teal-700 hover:bg-teal-50 btn-sm">Book Now</a>
+          <a href="/rooms" class="btn btn-sm text-white" style="background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.4);">View Rooms</a>
+          <a href="/cottages" class="btn btn-sm text-white" style="background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.4);">View Cottages</a>
+        </div>
+      </div>
+      {{/if}}
+
+    </div>
+  </main>
+  {{> footer }}
+
+  <script>
+  (function () {
+    const btns = document.querySelectorAll('.tab-btn');
+    const contents = document.querySelectorAll('.tab-content');
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        btns.forEach(b => { b.classList.remove('bg-white','text-teal-700','shadow-sm'); b.classList.add('text-gray-500'); });
+        contents.forEach(c => c.classList.add('hidden'));
+        btn.classList.add('bg-white','text-teal-700','shadow-sm'); btn.classList.remove('text-gray-500');
+        document.getElementById(tab + '-tab').classList.remove('hidden');
+      });
+    });
+  })();
+  </script>
+</body>

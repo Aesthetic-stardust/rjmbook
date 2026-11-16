@@ -1,0 +1,108 @@
+{{> head }}
+<body class="min-h-screen font-body flex flex-col" style="background:#f8fafc;">
+  {{> nav }}
+  <main class="flex-1 py-12 px-4">
+    <div class="max-w-6xl mx-auto">
+
+      <div class="text-center mb-12 animate-fade-in-up">
+        <p class="text-xs font-semibold uppercase tracking-widest text-teal-600 mb-2">RJM Beach Resort</p>
+        <h1 class="text-4xl md:text-5xl font-bold font-display text-gray-900 mb-3">Guest Services &amp; Rates</h1>
+        <p class="text-gray-500 text-lg max-w-xl mx-auto">Enhance your stay with our comprehensive services and amenities.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-14">
+        {{#each services}}
+        <div class="card overflow-hidden animate-fade-in-up">
+          <!-- Icon header -->
+          <div class="h-28 flex items-center justify-center relative"
+               style="background:{{#if (eq this.category 'Entrance Fee')}}linear-gradient(135deg,#059669,#10b981){{else if (eq this.category 'Electricity Charge')}}linear-gradient(135deg,#d97706,#f59e0b){{else}}linear-gradient(135deg,#7c3aed,#a855f7){{/if}};">
+            <span class="text-5xl">{{#if (eq this.category 'Entrance Fee')}}🎫{{else if (eq this.category 'Electricity Charge')}}⚡{{else}}🛎️{{/if}}</span>
+          </div>
+          <div class="p-5">
+            <div class="flex items-start justify-between mb-2">
+              <h3 class="text-base font-bold text-gray-800 font-display">{{this.name}}</h3>
+              {{#if this.category}}
+              <span class="badge text-xs flex-shrink-0 ml-2
+                {{#if (eq this.category 'Entrance Fee')}}badge-success
+                {{else if (eq this.category 'Electricity Charge')}}badge-warning
+                {{else}}badge-neutral{{/if}}">
+                {{this.category}}
+              </span>
+              {{/if}}
+            </div>
+            <p class="text-sm text-gray-500 leading-relaxed mb-4">{{this.description}}</p>
+            {{#if this.durationMinutes}}
+            <p class="text-xs text-gray-400 mb-3"><i class="fa-regular fa-clock mr-1 text-teal-400"></i>{{this.durationMinutes}} minutes</p>
+            {{/if}}
+            <div class="pt-3 border-t border-gray-100">
+              {{#if (eq this.price 0)}}
+              <p class="text-2xl font-bold text-green-600 font-display">FREE</p>
+              {{else}}
+              <p class="text-2xl font-bold text-teal-700 font-display">₱{{this.price}}</p>
+              {{/if}}
+            </div>
+          </div>
+        </div>
+        {{else}}
+        <div class="col-span-full text-center py-16 text-gray-400">
+          <i class="fa-solid fa-concierge-bell text-4xl mb-3 block text-gray-300"></i>
+          No services available at the moment.
+        </div>
+        {{/each}}
+      </div>
+
+      <!-- Info section -->
+      <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <div class="card p-6 animate-fade-in-up">
+          <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <i class="fa-regular fa-clock text-teal-500"></i> Operating Hours
+          </h3>
+          <div class="space-y-2 text-sm text-gray-600">
+            <div class="flex justify-between py-2 border-b border-gray-50">
+              <span>Day Shift</span><span class="font-semibold text-gray-800">8:00 AM – 5:00 PM</span>
+            </div>
+            <div class="flex justify-between py-2 border-b border-gray-50">
+              <span>Night Shift</span><span class="font-semibold text-gray-800">6:00 PM – 11:00 PM</span>
+            </div>
+            <p class="text-xs text-gray-400 pt-1 italic">Arriving at 3PM? Night rate applies.</p>
+          </div>
+        </div>
+        <div class="card p-6 animate-fade-in-up">
+          <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-circle-check text-teal-500"></i> Inclusions
+          </h3>
+          <ul class="space-y-2 text-sm text-gray-600">
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-teal-500 text-xs"></i>Unlimited use of plastic chairs</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-teal-500 text-xs"></i>Access to all common areas</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-teal-500 text-xs"></i>Basic amenities per cottage type</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="card p-6 animate-fade-in-up" style="border-left:3px solid #ef4444;">
+          <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-triangle-exclamation text-red-500"></i> Guest Rules
+          </h3>
+          <ul class="space-y-2 text-sm text-gray-600">
+            <li class="flex items-start gap-2"><i class="fa-solid fa-ban text-red-400 text-xs mt-0.5 flex-shrink-0"></i>No smoking or drinking of liquor inside cottages</li>
+            <li class="flex items-start gap-2"><i class="fa-solid fa-ban text-red-400 text-xs mt-0.5 flex-shrink-0"></i>No loud noise or music — respect other guests</li>
+            <li class="flex items-start gap-2"><i class="fa-solid fa-ban text-red-400 text-xs mt-0.5 flex-shrink-0"></i>Keep cottages clean — report damage immediately</li>
+            <li class="flex items-start gap-2"><i class="fa-solid fa-ban text-red-400 text-xs mt-0.5 flex-shrink-0"></i>Be mindful of check-in/check-out times</li>
+          </ul>
+        </div>
+        <div class="rounded-2xl p-6 animate-fade-in-up" style="background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1px solid #fde68a;">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#d97706,#f59e0b);">
+              <i class="fa-solid fa-gift text-white"></i>
+            </div>
+            <h3 class="font-bold text-amber-900">Birthday Celebrant Promo</h3>
+          </div>
+          <p class="text-sm text-amber-800 leading-relaxed">Valid during the celebrant's birth month. Get a <strong>20% discount on entrance fee</strong> for birthday celebrants!</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+  {{> footer }}
+</body>

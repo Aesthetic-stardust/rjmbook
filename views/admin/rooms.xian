@@ -1,0 +1,971 @@
+{{> head }}
+<body class="font-body">
+  <div class="flex h-screen overflow-hidden" style="background:#f1f5f9;">
+  <!-- ── New Dark Sidebar ── -->
+  <aside id="admin-sidebar"
+         class="flex-shrink-0 w-64 flex flex-col fixed md:relative top-0 left-0 h-screen z-40 transition-transform duration-300"
+         style="background: linear-gradient(180deg,#0f172a 0%,#134e4a 100%); box-shadow: 4px 0 24px rgba(0,0,0,.18);">
+
+    <div class="px-6 py-6 border-b" style="border-color: rgba(255,255,255,.08);">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+             style="background: linear-gradient(135deg,#0d9488,#0891b2);">
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-white font-display leading-none">RJMBook</h1>
+          <p class="text-xs mt-0.5" style="color: rgba(255,255,255,.4);">Admin Panel</p>
+        </div>
+      </div>
+    </div>
+
+    <nav class="flex-1 px-3 py-5 space-y-0.5 overflow-y-auto">
+      <p class="text-xs font-semibold uppercase tracking-widest px-3 mb-3" style="color: rgba(255,255,255,.3);">Management</p>
+      <a href="/admin"              class="sidebar-link "><i class="fa-solid fa-gauge w-4 text-center flex-shrink-0"></i><span>Dashboard</span></a>
+      <a href="/admin/reservations" class="sidebar-link "><i class="fa-solid fa-calendar-days w-4 text-center flex-shrink-0"></i><span>Reservations</span></a>
+      <a href="/admin/book"         class="sidebar-link"><i class="fa-solid fa-calendar-plus w-4 text-center flex-shrink-0"></i><span>Walk-in Booking</span></a>
+      <a href="/admin/reservation-calendar" class="sidebar-link"><i class="fa-solid fa-calendar w-4 text-center flex-shrink-0"></i><span>Reservation Calendar</span></a>
+      <a href="/admin/room-availability" class="sidebar-link"><i class="fa-solid fa-door-open w-4 text-center flex-shrink-0"></i><span>Room Availability</span></a>
+      <a href="/admin/rooms"        class="sidebar-link active"><i class="fa-solid fa-bed w-4 text-center flex-shrink-0"></i><span>Rooms</span></a>
+      <a href="/admin/cottages"     class="sidebar-link "><i class="fa-solid fa-umbrella-beach w-4 text-center flex-shrink-0"></i><span>Cottages</span></a>
+      <a href="/guests"             class="sidebar-link"><i class="fa-solid fa-users w-4 text-center flex-shrink-0"></i><span>Guests</span></a>
+      <div class="my-3 border-t" style="border-color: rgba(255,255,255,.07);"></div>
+      <p class="text-xs font-semibold uppercase tracking-widest px-3 mb-3" style="color: rgba(255,255,255,.3);">Analytics</p>
+      <a href="/dashboard"                class="sidebar-link"><i class="fa-solid fa-chart-pie w-4 text-center flex-shrink-0"></i><span>Analytics</span></a>
+      <a href="/admin/reports"            class="sidebar-link "><i class="fa-solid fa-file-chart-column w-4 text-center flex-shrink-0"></i><span>Reports</span></a>
+      <a href="/admin/sentiment-analysis" class="sidebar-link "><i class="fa-solid fa-brain w-4 text-center flex-shrink-0"></i><span>Sentiment Analysis</span></a>
+      <div class="my-3 border-t" style="border-color: rgba(255,255,255,.07);"></div>
+      <p class="text-xs font-semibold uppercase tracking-widest px-3 mb-3" style="color: rgba(255,255,255,.3);">Account</p>
+      <a href="/admin/payment-settings" class="sidebar-link"><i class="fa-solid fa-peso-sign w-4 text-center flex-shrink-0"></i><span>Payment Settings</span></a>
+      <a href="/admin/staff"        class="sidebar-link"><i class="fa-solid fa-user-tie w-4 text-center flex-shrink-0"></i><span>Manage Staff</span></a>
+      <a href="/account" class="sidebar-link"><i class="fa-solid fa-user-gear w-4 text-center flex-shrink-0"></i><span>Account Settings</span></a>
+    </nav>
+
+    <div class="px-3 py-4 border-t" style="border-color: rgba(255,255,255,.08);">
+      <div class="flex items-center gap-3 px-3 py-3 rounded-xl mb-3" style="background: rgba(255,255,255,.06);">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
+             style="background: linear-gradient(135deg,#0d9488,#0891b2);">
+          {{#if sessionUserName}}{{sessionUserName.[0]}}{{else}}A{{/if}}
+        </div>
+        <div class="min-w-0">
+          <p class="text-xs text-white font-semibold truncate">{{sessionUserName}}</p>
+          <p class="text-xs" style="color: rgba(255,255,255,.4);">Administrator</p>
+        </div>
+      </div>
+      <button id="adminLogoutBtn"
+              class="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-white transition-all cursor-pointer border-none"
+              style="background: rgba(220,38,38,.2); border: 1px solid rgba(220,38,38,.3);"
+>
+        <i class="fa-solid fa-right-from-bracket text-red-400"></i>
+        <span class="text-red-300">Sign Out</span>
+      </button>
+    </div>
+  </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+    <header class="flex-shrink-0 flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200" style="box-shadow: 0 1px 8px rgba(0,0,0,.06);">
+      <div class="flex items-center gap-4">
+        <button id="sidebar-toggle" class="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">Rooms Management</h2>
+          <p class="text-xs text-gray-500 mt-0.5">Edit room details and pricing</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="hidden sm:block text-right">
+          <p class="text-xs text-gray-500">Welcome back,</p>
+          <p class="text-sm font-semibold text-gray-800">{{sessionUserName}}</p>
+        </div>
+        <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white"
+             style="background: linear-gradient(135deg,#0d9488,#0891b2);">
+          {{#if sessionUserName}}{{sessionUserName.[0]}}{{else}}A{{/if}}
+        </div>
+      </div>
+    </header>
+      <!-- Page Content -->
+      <div class="flex-1 overflow-auto p-6" style="background:#f8fafc;">
+        <!-- Rooms Grid -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {{#each roomTypes}}
+          <div class="card overflow-hidden animate-fade-in-up group">
+            <!-- Image -->
+            <div class="h-52 bg-gray-200 relative overflow-hidden">
+              {{#if this.thumbnailUrl}}
+              <img src="{{this.thumbnailUrl}}" alt="{{this.name}}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              {{else if this.imageUrl}}
+              <img src="{{this.imageUrl}}" alt="{{this.name}}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              {{else}}
+              <div class="w-full h-full flex items-center justify-center" style="background:linear-gradient(135deg,#e2e8f0,#cbd5e1);">
+                <i class="fa-solid fa-bed text-4xl text-gray-400"></i>
+              </div>
+              {{/if}}
+              <!-- Availability badge -->
+              <div class="absolute top-3 left-3">
+                {{#if this.isAvailable}}
+                <span class="badge badge-success text-xs px-3 py-1 shadow-sm">
+                  <i class="fa-solid fa-circle text-xs mr-1" style="font-size:6px;"></i>Available
+                </span>
+                {{else}}
+                <span class="badge badge-danger text-xs px-3 py-1 shadow-sm">
+                  <i class="fa-solid fa-circle text-xs mr-1" style="font-size:6px;"></i>Unavailable
+                </span>
+                {{/if}}
+              </div>
+            </div>
+
+            <!-- Content -->
+            <div class="p-5">
+              <div class="flex items-start justify-between mb-2">
+                <h3 class="text-base font-bold text-gray-800 leading-tight">{{this.name}}</h3>
+                <span class="text-lg font-bold text-teal-700 ml-2 flex-shrink-0">₱{{this.basePricePerNight}}</span>
+              </div>
+              <p class="text-gray-500 text-sm mb-4 line-clamp-2">{{this.description}}</p>
+
+              <div class="flex items-center gap-4 mb-4 text-xs text-gray-500">
+                <span class="flex items-center gap-1">
+                  <i class="fa-solid fa-users text-teal-500"></i>
+                  Max {{this.maxGuests}} guests
+                </span>
+                <span class="flex items-center gap-1">
+                  <i class="fa-solid fa-bed text-blue-500"></i>
+                  {{#if this.Rooms}}{{this.Rooms.length}}{{else}}0{{/if}} active
+                </span>
+                <span class="flex items-center gap-1 text-gray-400">
+                  <i class="fa-solid fa-clock text-gray-400"></i>
+                  per 24hrs
+                </span>
+              </div>
+
+              <div class="space-y-2">
+                <button onclick="openEditModal({{this.id}}, '{{this.name}}', '{{this.description}}', {{this.basePricePerNight}}, {{this.maxGuests}})" class="btn btn-primary w-full">
+                  <i class="fa-solid fa-pen-to-square mr-1"></i> Edit Details
+                </button>
+                <button onclick="openUnitsModal({{this.id}}, '{{this.name}}')" class="btn w-full text-white" style="background:#7c3aed;">
+                  <i class="fa-solid fa-layer-group mr-1"></i> Manage Units <span class="ml-1 bg-white/20 rounded px-1.5 py-0.5 text-xs font-bold">{{#if this.Rooms}}{{this.Rooms.length}}{{else}}0{{/if}}</span>
+                </button>
+                <button onclick="openImageManagerModal({{this.id}}, '{{this.name}}')" class="btn btn-secondary w-full">
+                  <i class="fa-solid fa-images mr-1"></i> Manage Images
+                </button>
+                {{#if this.isAvailable}}
+                <button onclick="openAvailabilityModal({{this.id}}, false, '{{this.name}}')" class="btn btn-danger w-full">
+                  <i class="fa-solid fa-eye-slash mr-1"></i> Mark Unavailable
+                </button>
+                {{else}}
+                <button onclick="toggleAvailability({{this.id}}, true, '{{this.name}}')" class="btn w-full text-white" style="background:#22c55e;">
+                  <i class="fa-solid fa-eye mr-1"></i> Mark Available
+                </button>
+                {{/if}}
+              </div>
+            </div>
+          </div>
+          {{else}}
+          <div class="col-span-full text-center py-16">
+            <i class="fa-solid fa-bed text-4xl text-gray-300 mb-3 block"></i>
+            <p class="text-gray-500 text-lg">No rooms available to manage.</p>
+          </div>
+          {{/each}}
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Availability Modal -->
+  <div id="availabilityModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(15,23,42,.6); backdrop-filter: blur(4px);">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full animate-fade-in-up">
+      <div class="p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-11 h-11 rounded-2xl flex items-center justify-center bg-red-100 flex-shrink-0">
+            <i class="fa-solid fa-eye-slash text-red-600 text-lg"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-gray-800">Mark Room Unavailable</h2>
+            <p class="text-sm text-gray-500">Room: <span id="modalRoomName" class="text-teal-600 font-semibold"></span></p>
+          </div>
+          <button onclick="closeAvailabilityModal()" class="ml-auto text-gray-400 hover:text-gray-600 text-xl leading-none">&times;</button>
+        </div>
+
+        <div class="mb-6">
+          <label class="label">Reason for unavailability (optional)</label>
+          <textarea id="unavailableReason" placeholder="e.g., Maintenance, Renovation, Damage..." class="input w-full resize-none" rows="3"></textarea>
+        </div>
+
+        <div class="flex gap-3">
+          <button type="button" onclick="closeAvailabilityModal()" class="btn btn-secondary flex-1">Cancel</button>
+          <button type="button" onclick="confirmMarkUnavailable()" class="btn btn-danger flex-1">
+            <i class="fa-solid fa-eye-slash mr-1"></i> Mark Unavailable
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div id="editModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(15,23,42,.6); backdrop-filter: blur(4px);">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-fade-in-up">
+      <div class="p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-11 h-11 rounded-2xl flex items-center justify-center bg-teal-100 flex-shrink-0">
+            <i class="fa-solid fa-pen-to-square text-teal-600 text-lg"></i>
+          </div>
+          <h2 class="text-xl font-bold text-gray-800">Edit Room Type</h2>
+          <button onclick="closeEditModal()" class="ml-auto text-gray-400 hover:text-gray-600 text-xl leading-none">&times;</button>
+        </div>
+
+        <form id="editForm" onsubmit="handleEditSubmit(event)" class="space-y-5" enctype="multipart/form-data">
+          <input type="hidden" id="roomTypeId" />
+
+          <div>
+            <label class="label">Room Title</label>
+            <input type="text" id="roomTitle" required class="input w-full" placeholder="e.g., Room 1" />
+          </div>
+
+          <div>
+            <label class="label">Description</label>
+            <textarea id="roomDescription" rows="4" class="input w-full resize-none" placeholder="Describe the room..."></textarea>
+          </div>
+
+          <div>
+            <label class="label">Price per Day (24hrs) — ₱</label>
+            <input type="number" id="roomPrice" required min="0" step="100" class="input w-full" placeholder="0" />
+          </div>
+
+          <div>
+            <label class="label">Maximum Guests</label>
+            <input type="number" id="roomGuests" required min="1" class="input w-full" placeholder="1" />
+          </div>
+
+          <div class="flex gap-3 pt-2">
+            <button type="button" onclick="closeEditModal()" class="btn btn-secondary flex-1">Cancel</button>
+            <button type="submit" class="btn btn-primary flex-1">
+              <i class="fa-solid fa-floppy-disk mr-1"></i> Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Manager Modal -->
+  <div id="imageManagerModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(15,23,42,.6); backdrop-filter: blur(4px);">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto animate-fade-in-up">
+      <div class="p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-11 h-11 rounded-2xl flex items-center justify-center bg-blue-100 flex-shrink-0">
+            <i class="fa-solid fa-images text-blue-600 text-lg"></i>
+          </div>
+          <h2 class="text-xl font-bold text-gray-800">Manage Room Images</h2>
+          <button onclick="closeImageManagerModal()" class="ml-auto text-gray-400 hover:text-gray-600 text-xl leading-none">&times;</button>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="mb-8 p-6 bg-teal-50 rounded-lg border-2 border-dashed border-teal-300">
+          <h3 class="text-lg font-bold text-gray-800 mb-4">📤 Upload Images</h3>
+          <div id="dropZone" class="text-center cursor-pointer">
+            <div class="mb-3">
+              <svg class="mx-auto h-12 w-12 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+            </div>
+            <p class="text-gray-700 font-semibold">Drag images here or click to select</p>
+            <p class="text-sm text-gray-600 mt-1">Supported: JPG, PNG, GIF, WebP (Max 5MB each)</p>
+            <input type="file" id="imageUploadInput" accept="image/*" multiple class="hidden" onchange="handleImageSelection(event)" />
+          </div>
+          <div id="uploadProgress" class="hidden mt-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-semibold text-gray-700">Uploading...</span>
+              <span id="uploadPercent" class="text-sm text-gray-600">0%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div id="uploadBar" class="bg-teal-600 h-2 rounded-full transition-all" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Image Carousel View -->
+        <div class="mb-8">
+          <h3 class="text-lg font-bold text-gray-800 mb-4">🎬 Image Carousel</h3>
+          <div id="carouselContainer" class="bg-gray-200 rounded-lg overflow-hidden relative h-96 flex items-center justify-center">
+            <div class="carousel-images w-full h-full relative">
+              <!-- Loading state -->
+              <div id="carouselLoading" class="absolute inset-0 flex items-center justify-center bg-gray-200">
+                <div class="text-center">
+                  <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-teal-600"></div>
+                  <p class="text-xs text-gray-600 mt-2">Loading...</p>
+                </div>
+              </div>
+              
+              <!-- Images container -->
+              <div id="adminCarouselContainer" class="carousel-container w-full h-full flex transition-transform duration-300" style="transform: translateX(0%);">
+                <!-- Images will be populated here -->
+              </div>
+
+              <!-- Navigation buttons -->
+              <button type="button" id="carouselPrevBtn" class="hidden absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-all" onclick="adminCarouselPrev()">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+              </button>
+              <button type="button" id="carouselNextBtn" class="hidden absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-all" onclick="adminCarouselNext()">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </button>
+
+              <!-- Indicators -->
+              <div id="carouselIndicators" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                <!-- Indicators will be populated here -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Existing Images Section (Grid View) -->
+        <div>
+          <h3 class="text-lg font-bold text-gray-800 mb-4">📋 Image Gallery</h3>
+          <div id="imageList" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            <div class="col-span-full text-center py-8 text-gray-500">
+              <p class="text-sm">Loading images...</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex gap-3 pt-6 border-t border-gray-200">
+          <button type="button" onclick="closeImageManagerModal()" class="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentImageManagerRoomId = null;
+
+    function openImageManagerModal(id, name) {
+      currentImageManagerRoomId = id;
+      document.getElementById('imageManagerModal').classList.remove('hidden');
+      loadRoomImages(id);
+      loadAdminCarousel(id);
+    }
+
+    function closeImageManagerModal() {
+      document.getElementById('imageManagerModal').classList.add('hidden');
+      currentImageManagerRoomId = null;
+    }
+
+    async function loadRoomImages(roomTypeId) {
+      try {
+        const response = await fetch(`/rooms/api/${roomTypeId}/images`);
+        const data = await response.json();
+        
+        const imageList = document.getElementById('imageList');
+        imageList.innerHTML = '';
+
+        if (data.images && data.images.length > 0) {
+          data.images.forEach(image => {
+            const imageCard = document.createElement('div');
+            imageCard.className = 'relative group bg-gray-100 rounded-lg overflow-hidden';
+            imageCard.innerHTML = `
+              <img src="${image.url}" alt="${image.filename}" class="w-full h-32 object-cover" />
+              <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex items-center justify-center">
+                <button type="button" onclick="deleteImage(${roomTypeId}, '${image.filename}')" class="hidden group-hover:block bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-sm font-semibold transition-colors">
+                  Delete
+                </button>
+              </div>
+              <p class="text-xs text-gray-600 p-2 text-center truncate">${image.filename}</p>
+            `;
+            imageList.appendChild(imageCard);
+          });
+        } else {
+          imageList.innerHTML = '<div class="col-span-full text-center py-8 text-gray-500"><p class="text-sm">No images yet. Upload some to get started!</p></div>';
+        }
+      } catch (error) {
+        console.error('Error loading images:', error);
+        document.getElementById('imageList').innerHTML = '<div class="col-span-full text-center py-8 text-red-500"><p class="text-sm">Failed to load images</p></div>';
+      }
+    }
+
+    // Setup drag and drop
+    const dropZone = document.getElementById('dropZone');
+    dropZone.addEventListener('click', () => document.getElementById('imageUploadInput').click());
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('bg-teal-100');
+    });
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('bg-teal-100');
+    });
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('bg-teal-100');
+      const files = e.dataTransfer.files;
+      uploadImages(files);
+    });
+
+    function handleImageSelection(event) {
+      const files = event.target.files;
+      uploadImages(files);
+    }
+
+    async function uploadImages(files) {
+      if (!files || files.length === 0 || !currentImageManagerRoomId) return;
+
+      const formData = new FormData();
+      for (let file of files) {
+        formData.append('images', file);
+      }
+
+      const uploadProgress = document.getElementById('uploadProgress');
+      uploadProgress.classList.remove('hidden');
+
+      try {
+        const xhr = new XMLHttpRequest();
+        
+        xhr.upload.addEventListener('progress', (e) => {
+          if (e.lengthComputable) {
+            const percentComplete = (e.loaded / e.total) * 100;
+            document.getElementById('uploadBar').style.width = percentComplete + '%';
+            document.getElementById('uploadPercent').textContent = Math.round(percentComplete) + '%';
+          }
+        });
+
+        xhr.addEventListener('load', async () => {
+          uploadProgress.classList.add('hidden');
+          if (xhr.status === 200) {
+            const result = JSON.parse(xhr.responseText);
+            showToast(result.message, 'success');
+            document.getElementById('imageUploadInput').value = '';
+            await loadRoomImages(currentImageManagerRoomId);
+          } else {
+            showToast('Error uploading images', 'error');
+          }
+        });
+
+        xhr.addEventListener('error', () => {
+          uploadProgress.classList.add('hidden');
+          showToast('Upload failed', 'error');
+        });
+
+        xhr.open('POST', `/rooms/api/${currentImageManagerRoomId}/images`);
+        xhr.send(formData);
+      } catch (error) {
+        console.error('Error uploading images:', error);
+        uploadProgress.classList.add('hidden');
+        showToast('Error: ' + error.message, 'error');
+      }
+    }
+
+    async function deleteImage(roomTypeId, filename) {
+      if (!confirm('Are you sure you want to delete this image?')) return;
+
+      try {
+        const response = await fetch(`/rooms/api/${roomTypeId}/images/${filename}`, {
+          method: 'DELETE'
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          showToast('Error deleting image: ' + (error.error || response.statusText), 'error');
+          return;
+        }
+
+        showToast('Image deleted successfully!', 'success');
+        await loadRoomImages(roomTypeId);
+      } catch (error) {
+        console.error('Error deleting image:', error);
+        showToast('Error: ' + error.message, 'error');
+      }
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('imageManagerModal').addEventListener('click', function(event) {
+      if (event.target === this) {
+        closeImageManagerModal();
+      }
+    });
+    function openEditModal(id, name, description, price, guests) {
+      document.getElementById('roomTypeId').value = id;
+      document.getElementById('roomTitle').value = name;
+      document.getElementById('roomDescription').value = description;
+      document.getElementById('roomPrice').value = price;
+      document.getElementById('roomGuests').value = guests;
+      document.getElementById('editModal').classList.remove('hidden');
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').classList.add('hidden');
+    }
+
+    async function handleEditSubmit(event) {
+      event.preventDefault();
+
+      const id = document.getElementById('roomTypeId').value;
+      const formData = new FormData();
+      
+      formData.append('name', document.getElementById('roomTitle').value);
+      formData.append('description', document.getElementById('roomDescription').value);
+      formData.append('basePricePerNight', parseFloat(document.getElementById('roomPrice').value));
+      formData.append('maxGuests', parseInt(document.getElementById('roomGuests').value));
+      
+
+
+      try {
+        const response = await fetch('/rooms/api/' + id, {
+          method: 'PUT',
+          body: formData
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          showToast('Error updating room: ' + (error.error || response.statusText), 'error');
+          return;
+        }
+
+        showToast('Room updated successfully!', 'success');
+        closeEditModal();
+        location.reload();
+      } catch (error) {
+        showToast('Error: ' + error.message, 'error');
+      }
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('editModal').addEventListener('click', function(event) {
+      if (event.target === this) {
+        closeEditModal();
+      }
+    });
+
+    // Admin Carousel Functions
+    let adminCarouselState = {
+      currentSlide: 0,
+      totalSlides: 0
+    };
+
+    async function loadAdminCarousel(roomTypeId) {
+      try {
+        const response = await fetch(`/rooms/api/${roomTypeId}/images`);
+        const data = await response.json();
+        
+        const container = document.getElementById('adminCarouselContainer');
+        const loading = document.getElementById('carouselLoading');
+        const indicatorsDiv = document.getElementById('carouselIndicators');
+        const prevBtn = document.getElementById('carouselPrevBtn');
+        const nextBtn = document.getElementById('carouselNextBtn');
+
+        // Clear previous content
+        container.innerHTML = '';
+        indicatorsDiv.innerHTML = '';
+        adminCarouselState.currentSlide = 0;
+
+        if (data.images && data.images.length > 0) {
+          // Add images to carousel
+          data.images.forEach((image, index) => {
+            const imgEl = document.createElement('img');
+            imgEl.src = image.url;
+            imgEl.alt = `Image ${index + 1}`;
+            imgEl.className = 'w-full h-full object-cover flex-shrink-0';
+            container.appendChild(imgEl);
+
+            // Add indicator
+            const indicator = document.createElement('button');
+            indicator.className = `h-2 w-2 rounded-full transition-all ${index === 0 ? 'bg-white w-6' : 'bg-white/50'}`;
+            indicator.type = 'button';
+            indicator.onclick = (e) => {
+              e.stopPropagation();
+              adminGoToSlide(index);
+            };
+            indicatorsDiv.appendChild(indicator);
+          });
+
+          adminCarouselState.totalSlides = data.images.length;
+
+          // Show navigation buttons only if multiple images
+          if (data.images.length > 1) {
+            prevBtn.classList.remove('hidden');
+            nextBtn.classList.remove('hidden');
+          } else {
+            prevBtn.classList.add('hidden');
+            nextBtn.classList.add('hidden');
+          }
+
+          // Hide loading
+          if (loading) loading.style.display = 'none';
+        } else {
+          // No images, show placeholder
+          const placeholder = document.createElement('div');
+          placeholder.className = 'w-full h-full flex items-center justify-center bg-gray-300 text-gray-600';
+          placeholder.innerHTML = '<div class="text-center"><p class="text-sm">No images available in carousel</p></div>';
+          container.appendChild(placeholder);
+          if (loading) loading.style.display = 'none';
+          prevBtn.classList.add('hidden');
+          nextBtn.classList.add('hidden');
+        }
+      } catch (error) {
+        console.error('Error loading carousel images:', error);
+        document.getElementById('carouselLoading').innerHTML = '<div class="text-center"><p class="text-red-600 text-xs">Failed to load images</p></div>';
+      }
+    }
+
+    function adminCarouselPrev() {
+      let newSlide = adminCarouselState.currentSlide - 1;
+      if (newSlide < 0) {
+        newSlide = adminCarouselState.totalSlides - 1;
+      }
+      adminGoToSlide(newSlide);
+    }
+
+    function adminCarouselNext() {
+      let newSlide = adminCarouselState.currentSlide + 1;
+      if (newSlide >= adminCarouselState.totalSlides) {
+        newSlide = 0;
+      }
+      adminGoToSlide(newSlide);
+    }
+
+    function adminGoToSlide(slideIndex) {
+      adminCarouselState.currentSlide = slideIndex;
+      const container = document.getElementById('adminCarouselContainer');
+      const offset = slideIndex * -100;
+      container.style.transform = `translateX(${offset}%)`;
+
+      // Update indicators
+      const indicators = document.querySelectorAll('#carouselIndicators button');
+      indicators.forEach((indicator, index) => {
+        if (index === slideIndex) {
+          indicator.className = 'h-2 w-6 rounded-full transition-all bg-white';
+        } else {
+          indicator.className = 'h-2 w-2 rounded-full transition-all bg-white/50';
+        }
+      });
+    }
+
+    // Availability Modal and Functions
+    let availabilityModalData = {
+      roomTypeId: null,
+      roomName: null
+    };
+
+    function openAvailabilityModal(roomTypeId, isAvailable, roomName) {
+      if (isAvailable === false) {
+        availabilityModalData.roomTypeId = roomTypeId;
+        availabilityModalData.roomName = roomName;
+        document.getElementById('modalRoomName').textContent = roomName;
+        document.getElementById('unavailableReason').value = '';
+        document.getElementById('availabilityModal').classList.remove('hidden');
+      }
+    }
+
+    function closeAvailabilityModal() {
+      document.getElementById('availabilityModal').classList.add('hidden');
+      availabilityModalData.roomTypeId = null;
+      availabilityModalData.roomName = null;
+    }
+
+    async function confirmMarkUnavailable() {
+      if (!availabilityModalData.roomTypeId) return;
+      
+      const reason = document.getElementById('unavailableReason').value.trim();
+      await toggleAvailability(availabilityModalData.roomTypeId, false, availabilityModalData.roomName, reason);
+      closeAvailabilityModal();
+    }
+
+    async function toggleAvailability(roomTypeId, isAvailable, roomName, reason = '') {
+      try {
+        const payload = {
+          isAvailable: isAvailable,
+          unavailableReason: reason || undefined
+        };
+
+        const response = await fetch(`/rooms/api/${roomTypeId}/availability`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          showToast('Error updating availability: ' + (error.error || response.statusText), 'error');
+          return;
+        }
+
+        const result = await response.json();
+        showToast(result.message, 'success');
+        location.reload();
+      } catch (error) {
+        console.error('Error toggling availability:', error);
+        showToast('Error: ' + error.message, 'error');
+      }
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('availabilityModal').addEventListener('click', function(event) {
+      if (event.target === this) {
+        closeAvailabilityModal();
+      }
+    });
+
+    // Logout confirmation - handled by new sidebar JS block below
+
+    // ── Manage Units ──
+    let currentUnitsRoomTypeId = null;
+    let currentUnitsRoomTypeName = null;
+
+    function openUnitsModal(id, name) {
+      currentUnitsRoomTypeId = id;
+      currentUnitsRoomTypeName = name;
+      document.getElementById('unitsModalTitle').textContent = name;
+      document.getElementById('unitsModal').classList.remove('hidden');
+      document.getElementById('newUnitNumber').value = '';
+      document.getElementById('newUnitFloor').value = '';
+      document.getElementById('newUnitView').value = '';
+      loadUnits(id);
+    }
+
+    function closeUnitsModal() {
+      document.getElementById('unitsModal').classList.add('hidden');
+      currentUnitsRoomTypeId = null;
+    }
+
+    async function loadUnits(roomTypeId) {
+      const list = document.getElementById('unitsList');
+      list.innerHTML = '<p class="text-sm text-gray-400 text-center py-4">Loading…</p>';
+      try {
+        const res = await fetch(`/rooms/api/${roomTypeId}/units`);
+        const data = await res.json();
+        if (!data.units || data.units.length === 0) {
+          list.innerHTML = '<p class="text-sm text-gray-400 text-center py-4">No units yet. Add one below.</p>';
+          return;
+        }
+        list.innerHTML = '';
+        data.units.forEach(unit => {
+          const row = document.createElement('div');
+          row.className = 'flex items-center justify-between gap-3 p-3 rounded-xl border border-gray-100 bg-gray-50';
+          row.id = `unit-row-${unit.id}`;
+          const meta = [unit.floor != null ? `Floor ${unit.floor}` : null, unit.viewType || null].filter(Boolean).join(' · ');
+          row.innerHTML = `
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${unit.isAvailable ? 'bg-green-100' : 'bg-red-100'}">
+                <i class="fa-solid fa-door-${unit.isAvailable ? 'open' : 'closed'} text-${unit.isAvailable ? 'green' : 'red'}-600 text-sm"></i>
+              </div>
+              <div class="min-w-0">
+                <p class="text-sm font-bold text-gray-800 truncate">${unit.roomNumber}</p>
+                ${meta ? `<p class="text-xs text-gray-400">${meta}</p>` : ''}
+              </div>
+            </div>
+            <button onclick="deleteUnit(${roomTypeId}, ${unit.id}, '${unit.roomNumber.replace(/'/g, "\\'")}')"
+                    class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center bg-red-50 hover:bg-red-100 text-red-500 transition-colors"
+                    title="Delete unit">
+              <i class="fa-solid fa-trash-can text-xs"></i>
+            </button>`;
+          list.appendChild(row);
+        });
+
+        // Update the unit count badge in the card
+        const badges = document.querySelectorAll('[data-units-badge]');
+        badges.forEach(b => { if (b.dataset.unitsBadge == roomTypeId) b.textContent = data.units.length; });
+      } catch (err) {
+        list.innerHTML = `<p class="text-sm text-red-500 text-center py-4">Failed to load units.</p>`;
+      }
+    }
+
+    async function addUnit() {
+      const roomNumber = document.getElementById('newUnitNumber').value.trim();
+      const floor      = document.getElementById('newUnitFloor').value.trim();
+      const viewType   = document.getElementById('newUnitView').value.trim();
+
+      if (!roomNumber) {
+        showToast('Room number is required', 'error');
+        return;
+      }
+
+      const addBtn = document.getElementById('addUnitBtn');
+      addBtn.disabled = true;
+      addBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Adding…';
+
+      try {
+        const res = await fetch(`/rooms/api/${currentUnitsRoomTypeId}/units`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ roomNumber, floor: floor || undefined, viewType: viewType || undefined })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          showToast(data.error || 'Error adding unit', 'error');
+          return;
+        }
+        showToast(`Unit "${roomNumber}" added!`, 'success');
+        document.getElementById('newUnitNumber').value = '';
+        document.getElementById('newUnitFloor').value = '';
+        document.getElementById('newUnitView').value = '';
+        await loadUnits(currentUnitsRoomTypeId);
+      } catch (err) {
+        showToast('Error: ' + err.message, 'error');
+      } finally {
+        addBtn.disabled = false;
+        addBtn.innerHTML = '<i class="fa-solid fa-plus mr-1"></i> Add Unit';
+      }
+    }
+
+    async function deleteUnit(roomTypeId, roomId, roomNumber) {
+      if (!confirm(`Delete unit "${roomNumber}"? This cannot be undone.`)) return;
+      try {
+        const res = await fetch(`/rooms/api/${roomTypeId}/units/${roomId}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (!res.ok) {
+          showToast(data.error || 'Error deleting unit', 'error');
+          return;
+        }
+        showToast(`Unit "${roomNumber}" deleted`, 'success');
+        const row = document.getElementById(`unit-row-${roomId}`);
+        if (row) row.remove();
+        // Re-load to update count
+        await loadUnits(roomTypeId);
+      } catch (err) {
+        showToast('Error: ' + err.message, 'error');
+      }
+    }
+
+    document.getElementById('unitsModal').addEventListener('click', function(e) {
+      if (e.target === this) closeUnitsModal();
+    });
+  </script>
+
+  <!-- Units Management Modal -->
+  <div id="unitsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(15,23,42,.6); backdrop-filter: blur(4px);">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-fade-in-up">
+      <div class="p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-11 h-11 rounded-2xl flex items-center justify-center bg-purple-100 flex-shrink-0">
+            <i class="fa-solid fa-layer-group text-purple-600 text-lg"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h2 class="text-xl font-bold text-gray-800">Manage Room Units</h2>
+            <p class="text-sm text-gray-500">Room Type: <span id="unitsModalTitle" class="text-teal-600 font-semibold"></span></p>
+          </div>
+          <button onclick="closeUnitsModal()" class="ml-auto text-gray-400 hover:text-gray-600 text-xl leading-none">&times;</button>
+        </div>
+
+        <!-- Existing Units List -->
+        <div class="mb-6">
+          <h3 class="text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Existing Units</h3>
+          <div id="unitsList" class="space-y-2 max-h-72 overflow-y-auto pr-2">
+            <p class="text-sm text-gray-400 text-center py-4">Loading…</p>
+          </div>
+        </div>
+
+        <!-- Add Unit Form -->
+        <div class="border-t pt-6 border-gray-200">
+          <h3 class="text-sm font-bold text-gray-700 mb-4 uppercase tracking-wide flex items-center gap-2">
+            <i class="fa-solid fa-plus-circle text-purple-600"></i> Add New Unit
+          </h3>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+            <div>
+              <label class="label text-xs">Room Number <span class="text-red-500">*</span></label>
+              <input type="text" id="newUnitNumber" placeholder="e.g., 101" class="input w-full text-sm" />
+            </div>
+            <div>
+              <label class="label text-xs">Floor (optional)</label>
+              <input type="number" id="newUnitFloor" placeholder="e.g., 1" min="0" class="input w-full text-sm" />
+            </div>
+            <div>
+              <label class="label text-xs">View Type (optional)</label>
+              <input type="text" id="newUnitView" placeholder="e.g., Ocean" class="input w-full text-sm" />
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <button type="button" onclick="closeUnitsModal()" class="btn btn-secondary flex-1">Close</button>
+            <button type="button" id="addUnitBtn" onclick="addUnit()" class="btn flex-1 text-white" style="background:#7c3aed;">
+              <i class="fa-solid fa-plus mr-1"></i> Add Unit
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Logout Confirmation Modal -->
+<div id="logoutConfirmModal"
+     class="hidden fixed inset-0 z-[500] flex items-center justify-center p-4"
+     style="background: rgba(15,23,42,.65); backdrop-filter: blur(6px);">
+  <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 animate-fade-in-up">
+    <div class="flex items-center gap-4 mb-5">
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
+           style="background: linear-gradient(135deg,#fef3c7,#fde68a);">
+        <i class="fa-solid fa-right-from-bracket text-amber-600 text-lg"></i>
+      </div>
+      <div>
+        <h3 class="text-lg font-bold text-gray-900">Sign Out?</h3>
+        <p class="text-sm text-gray-500">You'll need to sign in again to access your account.</p>
+      </div>
+    </div>
+    <div class="flex gap-3 mt-6">
+      <button id="logoutConfirmNo"
+              class="flex-1 px-4 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm transition-colors">
+        Cancel
+      </button>
+      <button id="logoutConfirmYes"
+              class="flex-1 px-4 py-2.5 rounded-xl font-semibold text-sm text-white transition-all"
+              style="background: linear-gradient(135deg,#dc2626,#ef4444); box-shadow: 0 4px 12px rgba(220,38,38,.3);">
+        Sign Out
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const toggle  = document.getElementById('sidebar-toggle');
+  const sidebar = document.getElementById('admin-sidebar');
+  if (toggle && sidebar) {
+    toggle.addEventListener('click', () => sidebar.classList.toggle('-translate-x-full'));
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth < 768 && !sidebar.contains(e.target) && !toggle.contains(e.target)) {
+        sidebar.classList.add('-translate-x-full');
+      }
+    });
+  }
+
+  // Logout functionality
+  let _logoutCb = null;
+
+  window.showLogoutConfirmation = function (cb) {
+    _logoutCb = cb;
+    const m = document.getElementById('logoutConfirmModal');
+    if (m) m.classList.remove('hidden');
+  };
+
+  window.confirmAdminLogout = function () {
+    showLogoutConfirmation(function () {
+      window.location.href = '/logout';
+    });
+  };
+
+  function closeModal() {
+    const modal = document.getElementById('logoutConfirmModal');
+    if (modal) modal.classList.add('hidden');
+    _logoutCb = null;
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    // Wire up logout button
+    const logoutBtn = document.getElementById('adminLogoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', window.confirmAdminLogout);
+    }
+
+    const yes = document.getElementById('logoutConfirmYes');
+    const no = document.getElementById('logoutConfirmNo');
+    const modal = document.getElementById('logoutConfirmModal');
+
+    if (yes) yes.addEventListener('click', () => { if (_logoutCb) _logoutCb(); });
+    if (no) no.addEventListener('click', closeModal);
+    if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+  });
+})();
+</script>
+</body>

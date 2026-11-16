@@ -1,0 +1,183 @@
+{{> head }}
+<body class="bg-gray-100 min-h-screen font-body">
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white shadow-lg flex flex-col">
+      <!-- Logo / Brand -->
+      <div class="px-6 py-8 border-b border-gray-200">
+        <h1 class="text-2xl font-bold text-teal-700">RJMBook</h1>
+        <p class="text-xs text-gray-500 mt-1">Admin Panel</p>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="flex-1 px-4 py-8 space-y-2 overflow-y-auto">
+        <a href="/admin" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-700 rounded-lg transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-3m0 0l7-4 7 4M5 9v10a1 1 0 001 1h12a1 1 0 001-1V9m-9 11l4-2m-9-2l4 2m0-5l7-4m-7 4L5 7m12 0l4-2" />
+          </svg>
+          <span class="font-medium">Dashboard</span>
+        </a>
+
+        <a href="/admin/reservations" class="flex items-center gap-3 px-4 py-3 text-white bg-teal-700 rounded-lg transition-colors font-medium">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <span>Reservations</span>
+        </a>
+
+        <a href="/admin/rooms" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-700 rounded-lg transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v1h1a1 1 0 011 1v2H4V7a1 1 0 011-1h1V5zm0 4h14v8a2 2 0 01-2 2H7a2 2 0 01-2-2V9zm2 2a1 1 0 100 2 1 1 0 000-2zm3 0a1 1 0 100 2 1 1 0 000-2zm7 0a1 1 0 100 2 1 1 0 000-2z" />
+          </svg>
+          <span class="font-medium">Rooms</span>
+        </a>
+
+        <a href="/admin/cottages" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-700 rounded-lg transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-3m0 0l7-4 7 4M5 9v10a1 1 0 001 1h12a1 1 0 001-1V9m-9 11l4-2m-9-2l4 2m0-5l7-4m-7 4L5 7m12 0l4-2" />
+          </svg>
+          <span class="font-medium">Cottages</span>
+        </a>
+
+        <a href="/guests" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-700 rounded-lg transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 8.048M7 14H5a2 2 0 00-2 2v4h16v-4a2 2 0 00-2-2h-2m-4-6a4 4 0 110-8m0 8H9m0-8a4 4 0 00-4 4v4h8v-4a4 4 0 00-4-4z" />
+          </svg>
+          <span class="font-medium">Guests</span>
+        </a>
+
+        <a href="/admin/reports" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-700 rounded-lg transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          <span class="font-medium">Reports</span>
+        </a>
+
+        <a href="/dashboard" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-teal-50 hover:text-teal-700 rounded-lg transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8L6.41 20.41M19 19H5a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v14a2 2 0 01-2 2z" />
+          </svg>
+          <span class="font-medium">Analytics</span>
+        </a>
+      </nav>
+
+      <!-- Divider -->
+      <div class="border-t border-gray-200"></div>
+
+      <!-- User Info & Logout -->
+      <div class="px-4 py-4">
+        <div class="bg-gradient-to-br from-teal-50 to-blue-50 rounded-lg p-4 mb-4">
+          <p class="text-xs text-gray-600 mb-1">Logged in as</p>
+          <p class="text-sm font-semibold text-gray-800">{{sessionUserName}}</p>
+        </div>
+        <a href="/auth/logout" class="flex items-center justify-center gap-2 w-full px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-auto flex flex-col">
+      <!-- Page Content -->
+      <div class="flex-1 overflow-auto p-8 bg-gray-50">
+        <div class="max-w-3xl">
+          <div class="mb-6">
+            <a href="/admin/reservations" class="inline-flex items-center gap-2 text-teal-700 hover:text-teal-900 font-semibold mb-4 group">
+              <span class="group-hover:-translate-x-1 transition-transform">←</span> Back to Reservations
+            </a>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-teal-600 to-cyan-600 text-white p-8">
+              <h1 class="text-3xl font-bold mb-2">Booking #{{booking.id}}</h1>
+              <p class="text-cyan-100">Reservation details and information</p>
+            </div>
+
+            <!-- Details -->
+            <div class="p-8">
+              <div class="grid md:grid-cols-2 gap-8">
+                <!-- Left Column -->
+                <div>
+                  <h2 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-teal-200">📋 Booking Details</h2>
+                  <div class="space-y-4">
+                    <div>
+                      <p class="text-sm text-gray-500 font-semibold">Status</p>
+                      <p class="text-lg">
+                        <span class="inline-block px-3 py-1 rounded-full text-sm font-semibold
+                          {{#if (eq booking.status 'pending')}}bg-amber-100 text-amber-800{{/if}}
+                          {{#if (eq booking.status 'confirmed')}}bg-green-100 text-green-800{{/if}}
+                          {{#if (eq booking.status 'cancelled')}}bg-red-100 text-red-800{{/if}}
+                          {{#if (eq booking.status 'completed')}}bg-blue-100 text-blue-800{{/if}}
+                        ">
+                          {{booking.status}}
+                        </span>
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <p class="text-sm text-gray-500 font-semibold">📅 Check-in</p>
+                      <p class="text-gray-900 font-medium">{{booking.checkIn}}</p>
+                    </div>
+                    
+                    <div>
+                      <p class="text-sm text-gray-500 font-semibold">📅 Check-out</p>
+                      <p class="text-gray-900 font-medium">{{booking.checkOut}}</p>
+                    </div>
+                    
+                    <div>
+                      <p class="text-sm text-gray-500 font-semibold">💰 Total Amount</p>
+                      <p class="text-2xl font-bold text-teal-700">₱{{booking.totalAmount}}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Right Column -->
+                <div>
+                  {{#if booking.Room}}
+                  <div class="mb-8">
+                    <h2 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-cyan-200">🛏️ Room Information</h2>
+                    <div class="space-y-4">
+                      <div>
+                        <p class="text-sm text-gray-500 font-semibold">Room Number</p>
+                        <p class="text-lg text-gray-900 font-medium">{{booking.Room.roomNumber}}</p>
+                      </div>
+                      <div>
+                        <p class="text-sm text-gray-500 font-semibold">Room Type</p>
+                        <p class="text-lg text-gray-900 font-medium">{{booking.Room.RoomType.name}}</p>
+                      </div>
+                    </div>
+                  </div>
+                  {{/if}}
+
+                  {{#if booking.Guest}}
+                  <div>
+                    <h2 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-purple-200">👤 Guest Information</h2>
+                    <div class="space-y-4">
+                      <div>
+                        <p class="text-sm text-gray-500 font-semibold">Name</p>
+                        <p class="text-lg text-gray-900 font-medium">{{booking.Guest.firstName}} {{booking.Guest.lastName}}</p>
+                      </div>
+                      <div>
+                        <p class="text-sm text-gray-500 font-semibold">Email</p>
+                        <p class="text-gray-700">{{booking.Guest.email}}</p>
+                      </div>
+                      <div>
+                        <p class="text-sm text-gray-500 font-semibold">Phone</p>
+                        <p class="text-gray-700">{{booking.Guest.phone}}</p>
+                      </div>
+                    </div>
+                  </div>
+                  {{/if}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  {{> footer }}

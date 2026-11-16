@@ -1,0 +1,1064 @@
+{{> head }}
+<body class="font-body">
+  <div class="flex h-screen overflow-hidden" style="background:#f1f5f9;">
+  <!-- ── New Dark Sidebar ── -->
+  <aside id="admin-sidebar"
+         class="flex-shrink-0 w-64 flex flex-col fixed md:relative top-0 left-0 h-screen z-40 transition-transform duration-300"
+         style="background: linear-gradient(180deg,#0f172a 0%,#134e4a 100%); box-shadow: 4px 0 24px rgba(0,0,0,.18);">
+
+    <div class="px-6 py-6 border-b" style="border-color: rgba(255,255,255,.08);">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+             style="background: linear-gradient(135deg,#0d9488,#0891b2);">
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-white font-display leading-none">RJMBook</h1>
+          <p class="text-xs mt-0.5" style="color: rgba(255,255,255,.4);">Admin Panel</p>
+        </div>
+      </div>
+    </div>
+
+    <nav class="flex-1 px-3 py-5 space-y-0.5 overflow-y-auto">
+      <p class="text-xs font-semibold uppercase tracking-widest px-3 mb-3" style="color: rgba(255,255,255,.3);">Management</p>
+      <a href="/admin"              class="sidebar-link "><i class="fa-solid fa-gauge w-4 text-center flex-shrink-0"></i><span>Dashboard</span></a>
+      <a href="/admin/reservations" class="sidebar-link active"><i class="fa-solid fa-calendar-days w-4 text-center flex-shrink-0"></i><span>Reservations</span></a>
+      <a href="/admin/book"         class="sidebar-link"><i class="fa-solid fa-calendar-plus w-4 text-center flex-shrink-0"></i><span>Walk-in Booking</span></a>
+      <a href="/admin/reservation-calendar" class="sidebar-link"><i class="fa-solid fa-calendar w-4 text-center flex-shrink-0"></i><span>Reservation Calendar</span></a>
+      <a href="/admin/room-availability" class="sidebar-link"><i class="fa-solid fa-door-open w-4 text-center flex-shrink-0"></i><span>Room Availability</span></a>
+      <a href="/admin/rooms"        class="sidebar-link "><i class="fa-solid fa-bed w-4 text-center flex-shrink-0"></i><span>Rooms</span></a>
+      <a href="/admin/cottages"     class="sidebar-link "><i class="fa-solid fa-umbrella-beach w-4 text-center flex-shrink-0"></i><span>Cottages</span></a>
+      <a href="/guests"             class="sidebar-link"><i class="fa-solid fa-users w-4 text-center flex-shrink-0"></i><span>Guests</span></a>
+      <div class="my-3 border-t" style="border-color: rgba(255,255,255,.07);"></div>
+      <p class="text-xs font-semibold uppercase tracking-widest px-3 mb-3" style="color: rgba(255,255,255,.3);">Analytics</p>
+      <a href="/dashboard"                class="sidebar-link"><i class="fa-solid fa-chart-pie w-4 text-center flex-shrink-0"></i><span>Analytics</span></a>
+      <a href="/admin/reports"            class="sidebar-link "><i class="fa-solid fa-file-chart-column w-4 text-center flex-shrink-0"></i><span>Reports</span></a>
+      <a href="/admin/sentiment-analysis" class="sidebar-link "><i class="fa-solid fa-brain w-4 text-center flex-shrink-0"></i><span>Sentiment Analysis</span></a>
+      <div class="my-3 border-t" style="border-color: rgba(255,255,255,.07);"></div>
+      <p class="text-xs font-semibold uppercase tracking-widest px-3 mb-3" style="color: rgba(255,255,255,.3);">Account</p>
+      <a href="/admin/payment-settings" class="sidebar-link"><i class="fa-solid fa-peso-sign w-4 text-center flex-shrink-0"></i><span>Payment Settings</span></a>
+      <a href="/admin/staff"        class="sidebar-link"><i class="fa-solid fa-user-tie w-4 text-center flex-shrink-0"></i><span>Manage Staff</span></a>
+      <a href="/account" class="sidebar-link"><i class="fa-solid fa-user-gear w-4 text-center flex-shrink-0"></i><span>Account Settings</span></a>
+    </nav>
+
+    <div class="px-3 py-4 border-t" style="border-color: rgba(255,255,255,.08);">
+      <div class="flex items-center gap-3 px-3 py-3 rounded-xl mb-3" style="background: rgba(255,255,255,.06);">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
+             style="background: linear-gradient(135deg,#0d9488,#0891b2);">
+          {{#if sessionUserName}}{{sessionUserName.[0]}}{{else}}A{{/if}}
+        </div>
+        <div class="min-w-0">
+          <p class="text-xs text-white font-semibold truncate">{{sessionUserName}}</p>
+          <p class="text-xs" style="color: rgba(255,255,255,.4);">Administrator</p>
+        </div>
+      </div>
+      <button id="admin-logout-btn"
+              class="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-white transition-all cursor-pointer border-none"
+              style="background: rgba(220,38,38,.2); border: 1px solid rgba(220,38,38,.3);"
+>
+        <i class="fa-solid fa-right-from-bracket text-red-400"></i>
+        <span class="text-red-300">Sign Out</span>
+      </button>
+    </div>
+  </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+    <header class="flex-shrink-0 flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200" style="box-shadow: 0 1px 8px rgba(0,0,0,.06);">
+      <div class="flex items-center gap-4">
+        <button id="sidebar-toggle" class="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">Reservations Management</h2>
+          <p class="text-xs text-gray-500 mt-0.5">Monitor and manage all guest bookings</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="hidden sm:block text-right">
+          <p class="text-xs text-gray-500">Welcome back,</p>
+          <p class="text-sm font-semibold text-gray-800">{{sessionUserName}}</p>
+        </div>
+        <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white"
+             style="background: linear-gradient(135deg,#0d9488,#0891b2);">
+          {{#if sessionUserName}}{{sessionUserName.[0]}}{{else}}A{{/if}}
+        </div>
+      </div>
+    </header>
+      <!-- Page Content -->
+      <div class="flex-1 overflow-auto p-6" style="background:#f8fafc;">
+
+        <!-- ── Year / Month Filter Bar ── -->
+        <form id="date-filter-form" method="GET" action="/admin/reservations"
+              class="bg-white rounded-2xl shadow-sm border border-gray-100 px-5 py-4 mb-5 flex flex-wrap items-end gap-3">
+          <!-- hidden inputs to preserve sort state -->
+          <input type="hidden" name="sortBy"    value="{{currentSort.sortBy}}">
+          <input type="hidden" name="sortOrder" value="{{currentSort.sortOrder}}">
+          <input type="hidden" name="tab"       id="form-tab" value="{{activeTab}}">
+
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Year</label>
+            <select name="year" id="filter-year"
+                    class="rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-700 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400 transition"
+                    style="min-width:110px;">
+              <option value="">All Years</option>
+              {{#each years}}
+              <option value="{{this}}" {{#if (eq this ../filterYear)}}selected{{/if}}>{{this}}</option>
+              {{/each}}
+            </select>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Month</label>
+            <select name="month" id="filter-month"
+                    class="rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-700 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400 transition"
+                    style="min-width:140px;">
+              <option value="">All Months</option>
+              <option value="1"  {{#if (eq filterMonth 1)}}selected{{/if}}>January</option>
+              <option value="2"  {{#if (eq filterMonth 2)}}selected{{/if}}>February</option>
+              <option value="3"  {{#if (eq filterMonth 3)}}selected{{/if}}>March</option>
+              <option value="4"  {{#if (eq filterMonth 4)}}selected{{/if}}>April</option>
+              <option value="5"  {{#if (eq filterMonth 5)}}selected{{/if}}>May</option>
+              <option value="6"  {{#if (eq filterMonth 6)}}selected{{/if}}>June</option>
+              <option value="7"  {{#if (eq filterMonth 7)}}selected{{/if}}>July</option>
+              <option value="8"  {{#if (eq filterMonth 8)}}selected{{/if}}>August</option>
+              <option value="9"  {{#if (eq filterMonth 9)}}selected{{/if}}>September</option>
+              <option value="10" {{#if (eq filterMonth 10)}}selected{{/if}}>October</option>
+              <option value="11" {{#if (eq filterMonth 11)}}selected{{/if}}>November</option>
+              <option value="12" {{#if (eq filterMonth 12)}}selected{{/if}}>December</option>
+            </select>
+          </div>
+
+          <button type="submit"
+                  class="flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold text-white transition-all"
+                  style="background:linear-gradient(135deg,#0d9488,#0891b2); box-shadow:0 2px 8px rgba(13,148,136,.25);">
+            <i class="fa-solid fa-filter text-xs"></i> Apply Filter
+          </button>
+
+          {{#if (or filterYear filterMonth)}}
+          <a href="/admin/reservations?tab={{activeTab}}"
+             class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all">
+            <i class="fa-solid fa-xmark text-xs"></i> Clear
+          </a>
+          <span class="text-xs text-teal-700 font-semibold px-3 py-1.5 rounded-full"
+                style="background:rgba(13,148,136,.1);">
+            <i class="fa-solid fa-calendar-check text-xs mr-1"></i>
+            Filtered{{#if filterYear}}: {{filterYear}}{{/if}}{{#if filterMonth}} / {{filterMonth}}{{/if}}
+          </span>
+          {{/if}}
+        </form>
+
+        <!-- Stats Section -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-6 stagger">
+          <div class="stat-card animate-fade-in-up" style="border-top-color:#0d9488;">
+            <div class="flex items-start justify-between mb-3">
+              <div class="icon-box bg-teal-100"><i class="fa-solid fa-calendar-days text-teal-600"></i></div>
+              <span class="badge badge-teal text-xs">Active</span>
+            </div>
+            <p class="text-3xl font-bold text-gray-800 mb-1">{{totalBookings}}</p>
+            <p class="text-sm text-gray-500 font-medium">Total Active</p>
+          </div>
+          <div class="stat-card animate-fade-in-up" style="border-top-color:#22c55e;">
+            <div class="flex items-start justify-between mb-3">
+              <div class="icon-box bg-green-100"><i class="fa-solid fa-circle-check text-green-600"></i></div>
+              <span class="badge badge-success text-xs">Active</span>
+            </div>
+            <p class="text-3xl font-bold text-gray-800 mb-1">{{confirmedCount}}</p>
+            <p class="text-sm text-gray-500 font-medium">Confirmed</p>
+          </div>
+          <div class="stat-card animate-fade-in-up" style="border-top-color:#f59e0b;">
+            <div class="flex items-start justify-between mb-3">
+              <div class="icon-box bg-amber-100"><i class="fa-solid fa-clock text-amber-600"></i></div>
+              <span class="badge badge-warning text-xs">Pending</span>
+            </div>
+            <p class="text-3xl font-bold text-gray-800 mb-1">{{pendingCount}}</p>
+            <p class="text-sm text-gray-500 font-medium">Pending Approvals</p>
+          </div>
+          <div class="stat-card animate-fade-in-up" style="border-top-color:#ef4444;">
+            <div class="flex items-start justify-between mb-3">
+              <div class="icon-box bg-red-100"><i class="fa-solid fa-ban text-red-600"></i></div>
+              <span class="badge badge-danger text-xs">Void</span>
+            </div>
+            <p class="text-3xl font-bold text-gray-800 mb-1">{{cancelledCount}}</p>
+            <p class="text-sm text-gray-500 font-medium">Cancelled</p>
+          </div>
+          <div class="stat-card animate-fade-in-up" style="border-top-color:#3b82f6;">
+            <div class="flex items-start justify-between mb-3">
+              <div class="icon-box bg-blue-100"><i class="fa-solid fa-flag-checkered text-blue-600"></i></div>
+              <span class="badge badge-info text-xs">Done</span>
+            </div>
+            <p class="text-3xl font-bold text-gray-800 mb-1">{{completedCount}}</p>
+            <p class="text-sm text-gray-500 font-medium">Completed</p>
+          </div>
+        </div>
+
+        <!-- ── Tab Bar ── -->
+        <div class="mb-5">
+          <div class="flex flex-wrap gap-2" id="tab-bar">
+            <a href="?tab=active&year={{filterYear}}&month={{filterMonth}}&sortBy={{currentSort.sortBy}}&sortOrder={{currentSort.sortOrder}}"
+               class="tab-btn rounded-full text-sm font-semibold transition-all {{#if (eq activeTab 'active')}}text-white active-filter{{else}}bg-gray-100 text-gray-700 hover:bg-gray-200{{/if}}"
+               style="{{#if (eq activeTab 'active')}}background:linear-gradient(135deg,#0d9488,#0891b2);{{/if}} min-width:80px; padding:6px 16px;">
+              <i class="fa-solid fa-list text-xs mr-1"></i>Active
+              <span class="ml-1 px-1.5 py-0.5 rounded-full text-xs font-bold {{#if (eq activeTab 'active')}}bg-white/20{{else}}bg-gray-200 text-gray-600{{/if}}">{{totalBookings}}</span>
+            </a>
+            <a href="?tab=cancelled&year={{filterYear}}&month={{filterMonth}}&sortBy={{currentSort.sortBy}}&sortOrder={{currentSort.sortOrder}}"
+               class="tab-btn rounded-full text-sm font-semibold transition-all {{#if (eq activeTab 'cancelled')}}text-white active-filter{{else}}bg-red-100 text-red-800 hover:bg-red-200{{/if}}"
+               style="{{#if (eq activeTab 'cancelled')}}background:linear-gradient(135deg,#ef4444,#dc2626);{{/if}} min-width:100px; padding:6px 16px;">
+              <i class="fa-solid fa-ban text-xs mr-1"></i>Cancelled
+              <span class="ml-1 px-1.5 py-0.5 rounded-full text-xs font-bold {{#if (eq activeTab 'cancelled')}}bg-white/20{{else}}bg-red-200 text-red-700{{/if}}">{{cancelledCount}}</span>
+            </a>
+            <a href="?tab=archive&year={{filterYear}}&month={{filterMonth}}&sortBy={{currentSort.sortBy}}&sortOrder={{currentSort.sortOrder}}"
+               class="tab-btn rounded-full text-sm font-semibold transition-all {{#if (eq activeTab 'archive')}}text-white active-filter{{else}}bg-gray-100 text-gray-700 hover:bg-gray-200{{/if}}"
+               style="{{#if (eq activeTab 'archive')}}background:linear-gradient(135deg,#3b82f6,#2563eb);{{/if}} min-width:90px; padding:6px 16px;">
+              <i class="fa-solid fa-box-archive text-xs mr-1"></i>Archive
+              <span class="ml-1 px-1.5 py-0.5 rounded-full text-xs font-bold {{#if (eq activeTab 'archive')}}bg-white/20{{else}}bg-gray-200 text-gray-600{{/if}}">{{completedCount}}</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- ════════════════════════════════════════
+             ACTIVE TAB
+        ════════════════════════════════════════ -->
+        {{#if (eq activeTab 'active')}}
+        <div class="table-wrapper">
+          <!-- inline status sub-filter pills -->
+          <div class="flex flex-wrap gap-2 px-1 mb-3">
+            <button class="filter-btn rounded-full text-sm font-semibold transition-all active-filter text-white" data-filter="all" style="background:linear-gradient(135deg,#0d9488,#0891b2); padding:4px 14px;">All</button>
+            <button class="filter-btn rounded-full text-sm font-semibold transition-all bg-amber-100 text-amber-800 hover:bg-amber-200" data-filter="pending" style="padding:4px 14px;">Pending</button>
+            <button class="filter-btn rounded-full text-sm font-semibold transition-all bg-green-100 text-green-800 hover:bg-green-200" data-filter="confirmed" style="padding:4px 14px;">Confirmed</button>
+            <button class="filter-btn rounded-full text-sm font-semibold transition-all bg-blue-100 text-blue-800 hover:bg-blue-200" data-filter="checked_in" style="padding:4px 14px;">Checked In</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="nb-table w-full">
+              <thead>
+                <tr>
+                  <th style="cursor:pointer;user-select:none;" onclick="sortTable('id')" data-sort="id">
+                    ID {{#if (eq currentSort.sortBy 'id')}}<i class="fa-solid fa-arrow-{{#if (eq currentSort.sortOrder 'ASC')}}up{{else}}down{{/if}} text-xs ml-1"></i>{{/if}}
+                  </th>
+                  <th style="cursor:pointer;user-select:none;" onclick="sortTable('guestName')" data-sort="guestName">
+                    Guest Name {{#if (eq currentSort.sortBy 'guestName')}}<i class="fa-solid fa-arrow-{{#if (eq currentSort.sortOrder 'ASC')}}up{{else}}down{{/if}} text-xs ml-1"></i>{{/if}}
+                  </th>
+                  <th style="cursor:pointer;user-select:none;" onclick="sortTable('checkIn')" data-sort="checkIn">
+                    Check-in {{#if (eq currentSort.sortBy 'checkIn')}}<i class="fa-solid fa-arrow-{{#if (eq currentSort.sortOrder 'ASC')}}up{{else}}down{{/if}} text-xs ml-1"></i>{{/if}}
+                  </th>
+                  <th style="cursor:pointer;user-select:none;" onclick="sortTable('checkOut')" data-sort="checkOut">
+                    Check-out {{#if (eq currentSort.sortBy 'checkOut')}}<i class="fa-solid fa-arrow-{{#if (eq currentSort.sortOrder 'ASC')}}up{{else}}down{{/if}} text-xs ml-1"></i>{{/if}}
+                  </th>
+                  <th>Room</th>
+                  <th>Guests</th>
+                  <th>Total Amount</th>
+                  <th>Status</th>
+                  <th class="text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each bookings}}
+                <tr class="booking-row" data-status="{{this.status}}">
+                  <td class="font-medium text-gray-700">#{{this.id}}</td>
+                  <td>
+                    {{#if this.Guest}}
+                    <span class="font-semibold text-gray-900">{{this.Guest.firstName}} {{this.Guest.lastName}}</span><br>
+                    <span class="text-xs text-gray-400">{{this.Guest.email}}</span>
+                    {{else}}<span class="text-gray-400">—</span>{{/if}}
+                  </td>
+                  <td class="text-gray-600">{{this.checkIn}}</td>
+                  <td class="text-gray-600">{{this.checkOut}}</td>
+                  <td>
+                    {{#if this.Room}}
+                    <span class="font-semibold text-gray-900">{{this.Room.roomNumber}}</span><br>
+                    <span class="text-xs text-gray-400">{{this.Room.RoomType.name}}</span>
+                    {{else}}<span class="text-gray-400">—</span>{{/if}}
+                  </td>
+                  <td>
+                    <span class="badge badge-info">{{this.adults}} Adult(s)</span>
+                    {{#if this.children}}<span class="badge badge-neutral ml-1">{{this.children}} Child(ren)</span>{{/if}}
+                  </td>
+                  <td class="font-bold text-teal-700">₱{{this.totalAmount}}</td>
+                  <td>
+                    <span class="badge {{#if (eq this.status 'pending')}}badge-warning{{/if}}{{#if (eq this.status 'confirmed')}}badge-success{{/if}}{{#if (eq this.status 'checked_in')}}badge-info{{/if}}">
+                      {{this.status}}
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    <div class="flex gap-1 justify-center items-center flex-nowrap overflow-x-auto">
+                      <a href="/bookings/{{this.id}}" class="btn btn-xs btn-secondary whitespace-nowrap"><i class="fa-solid fa-eye text-xs"></i> View</a>
+                      {{#if (eq this.status 'pending')}}
+                      <button class="btn btn-xs btn-primary whitespace-nowrap" data-action="confirm" data-id="{{this.id}}"><i class="fa-solid fa-check text-xs"></i> Confirm</button>
+                      <button class="btn btn-xs btn-danger whitespace-nowrap" data-action="cancel" data-id="{{this.id}}"><i class="fa-solid fa-xmark text-xs"></i> Cancel</button>
+                      {{/if}}
+                      {{#if (eq this.status 'confirmed')}}
+                      <button class="btn btn-xs whitespace-nowrap" style="background:#3b82f6;color:#fff;" data-action="checkin" data-id="{{this.id}}"><i class="fa-solid fa-door-open text-xs"></i> Check-in</button>
+                      <button class="btn btn-xs btn-danger whitespace-nowrap" data-action="cancel" data-id="{{this.id}}"><i class="fa-solid fa-xmark text-xs"></i> Cancel</button>
+                      {{/if}}
+                      {{#if (eq this.status 'checked_in')}}
+                      <button class="btn btn-xs whitespace-nowrap" style="background:#f97316;color:#fff;" data-action="earlycheckout" data-id="{{this.id}}"><i class="fa-solid fa-right-from-bracket text-xs"></i> Early Checkout</button>
+                      {{/if}}
+                    </div>
+                  </td>
+                </tr>
+                {{/each}}
+                {{#unless bookings}}
+                <tr><td colspan="9" class="py-12 text-center text-gray-400"><i class="fa-solid fa-calendar-xmark text-3xl mb-3 block"></i><p class="text-base">No active reservations found.</p></td></tr>
+                {{/unless}}
+              </tbody>
+            </table>
+          </div>
+          <!-- Pagination — Active -->
+          {{#if (gt activePagination.totalPages 1)}}
+          <div class="flex items-center justify-between px-2 pt-4 pb-1">
+            <p class="text-sm text-gray-500">
+              Showing page <span class="font-semibold text-gray-700">{{activePagination.page}}</span> of <span class="font-semibold text-gray-700">{{activePagination.totalPages}}</span>
+              &nbsp;({{activePagination.total}} total)
+            </p>
+            <div class="flex items-center gap-1">
+              {{#if activePagination.hasPrev}}
+              <a href="?tab=active&activePage={{activePagination.prevPage}}&year={{filterYear}}&month={{filterMonth}}&sortBy={{currentSort.sortBy}}&sortOrder={{currentSort.sortOrder}}"
+                 class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all">
+                <i class="fa-solid fa-chevron-left text-xs"></i>
+              </a>
+              {{/if}}
+              {{#each activePagination.pages}}
+              <a href="?tab=active&activePage={{this.num}}&year={{../filterYear}}&month={{../filterMonth}}&sortBy={{../currentSort.sortBy}}&sortOrder={{../currentSort.sortOrder}}"
+                 class="px-3 py-1.5 rounded-lg text-sm font-semibold transition-all
+                 {{#if this.isCurrent}}text-white{{else}}bg-white border border-gray-200 text-gray-600 hover:bg-gray-50{{/if}}"
+                 style="{{#if this.isCurrent}}background:linear-gradient(135deg,#0d9488,#0891b2);{{/if}}">
+                {{this.num}}
+              </a>
+              {{/each}}
+              {{#if activePagination.hasNext}}
+              <a href="?tab=active&activePage={{activePagination.nextPage}}&year={{filterYear}}&month={{filterMonth}}&sortBy={{currentSort.sortBy}}&sortOrder={{currentSort.sortOrder}}"
+                 class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all">
+                <i class="fa-solid fa-chevron-right text-xs"></i>
+              </a>
+              {{/if}}
+            </div>
+          </div>
+          {{/if}}
+        </div>
+        {{/if}}
+
+        <!-- ════════════════════════════════════════
+             CANCELLED TAB
+        ════════════════════════════════════════ -->
+        {{#if (eq activeTab 'cancelled')}}
+        <div class="table-wrapper">
+          <div class="overflow-x-auto">
+            <table class="nb-table w-full">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Guest Name</th>
+                  <th>Check-in</th>
+                  <th>Check-out</th>
+                  <th>Room</th>
+                  <th>Guests</th>
+                  <th>Total Amount</th>
+                  <th>Reason</th>
+                  <th class="text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each cancelledBookings}}
+                <tr class="booking-row" data-status="cancelled">
+                  <td class="font-medium text-gray-700">#{{this.id}}</td>
+                  <td>
+                    {{#if this.Guest}}
+                    <span class="font-semibold text-gray-900">{{this.Guest.firstName}} {{this.Guest.lastName}}</span><br>
+                    <span class="text-xs text-gray-400">{{this.Guest.email}}</span>
+                    {{else}}<span class="text-gray-400">—</span>{{/if}}
+                  </td>
+                  <td class="text-gray-600">{{this.checkIn}}</td>
+                  <td class="text-gray-600">{{this.checkOut}}</td>
+                  <td>
+                    {{#if this.Room}}
+                    <span class="font-semibold text-gray-900">{{this.Room.roomNumber}}</span><br>
+                    <span class="text-xs text-gray-400">{{this.Room.RoomType.name}}</span>
+                    {{else}}<span class="text-gray-400">—</span>{{/if}}
+                  </td>
+                  <td>
+                    <span class="badge badge-info">{{this.adults}} Adult(s)</span>
+                    {{#if this.children}}<span class="badge badge-neutral ml-1">{{this.children}} Child(ren)</span>{{/if}}
+                  </td>
+                  <td class="font-bold text-teal-700">₱{{this.totalAmount}}</td>
+                  <td class="text-xs text-gray-500 max-w-[160px] truncate" title="{{this.cancellationReason}}">
+                    {{#if this.cancellationReason}}{{this.cancellationReason}}{{else}}<span class="text-gray-300">—</span>{{/if}}
+                  </td>
+                  <td class="text-center">
+                    <div class="flex gap-1 justify-center items-center flex-nowrap">
+                      <a href="/bookings/{{this.id}}" class="btn btn-xs btn-secondary whitespace-nowrap"><i class="fa-solid fa-eye text-xs"></i> View</a>
+                      <button class="btn btn-xs btn-gold whitespace-nowrap" data-action="reactivate" data-id="{{this.id}}"><i class="fa-solid fa-rotate-left text-xs"></i> Reactivate</button>
+                    </div>
+                  </td>
+                </tr>
+                {{/each}}
+                {{#unless cancelledBookings}}
+                <tr><td colspan="9" class="py-12 text-center text-gray-400"><i class="fa-solid fa-calendar-xmark text-3xl mb-3 block"></i><p class="text-base">No cancelled reservations found.</p></td></tr>
+                {{/unless}}
+              </tbody>
+            </table>
+          </div>
+          <!-- Pagination — Cancelled -->
+          {{#if (gt cancelledPagination.totalPages 1)}}
+          <div class="flex items-center justify-between px-2 pt-4 pb-1">
+            <p class="text-sm text-gray-500">
+              Showing page <span class="font-semibold text-gray-700">{{cancelledPagination.page}}</span> of <span class="font-semibold text-gray-700">{{cancelledPagination.totalPages}}</span>
+              &nbsp;({{cancelledPagination.total}} total)
+            </p>
+            <div class="flex items-center gap-1">
+              {{#if cancelledPagination.hasPrev}}
+              <a href="?tab=cancelled&cancelledPage={{cancelledPagination.prevPage}}&year={{filterYear}}&month={{filterMonth}}&sortBy={{currentSort.sortBy}}&sortOrder={{currentSort.sortOrder}}"
+                 class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all">
+                <i class="fa-solid fa-chevron-left text-xs"></i>
+              </a>
+              {{/if}}
+              {{#each cancelledPagination.pages}}
+              <a href="?tab=cancelled&cancelledPage={{this.num}}&year={{../filterYear}}&month={{../filterMonth}}&sortBy={{../currentSort.sortBy}}&sortOrder={{../currentSort.sortOrder}}"
+                 class="px-3 py-1.5 rounded-lg text-sm font-semibold transition-all
+                 {{#if this.isCurrent}}text-white{{else}}bg-white border border-gray-200 text-gray-600 hover:bg-gray-50{{/if}}"
+                 style="{{#if this.isCurrent}}background:linear-gradient(135deg,#ef4444,#dc2626);{{/if}}">
+                {{this.num}}
+              </a>
+              {{/each}}
+              {{#if cancelledPagination.hasNext}}
+              <a href="?tab=cancelled&cancelledPage={{cancelledPagination.nextPage}}&year={{filterYear}}&month={{filterMonth}}&sortBy={{currentSort.sortBy}}&sortOrder={{currentSort.sortOrder}}"
+                 class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all">
+                <i class="fa-solid fa-chevron-right text-xs"></i>
+              </a>
+              {{/if}}
+            </div>
+          </div>
+          {{/if}}
+        </div>
+        {{/if}}
+
+        <!-- ════════════════════════════════════════
+             ARCHIVE TAB
+        ════════════════════════════════════════ -->
+        {{#if (eq activeTab 'archive')}}
+        <div class="table-wrapper">
+          <div class="overflow-x-auto">
+            <table class="nb-table w-full">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Guest Name</th>
+                  <th>Check-in</th>
+                  <th>Check-out</th>
+                  <th>Room</th>
+                  <th>Guests</th>
+                  <th>Total Amount</th>
+                  <th>Status</th>
+                  <th class="text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each completedBookings}}
+                <tr class="booking-row" data-status="checked_out">
+                  <td class="font-medium text-gray-700">#{{this.id}}</td>
+                  <td>
+                    {{#if this.Guest}}
+                    <span class="font-semibold text-gray-900">{{this.Guest.firstName}} {{this.Guest.lastName}}</span><br>
+                    <span class="text-xs text-gray-400">{{this.Guest.email}}</span>
+                    {{else}}<span class="text-gray-400">—</span>{{/if}}
+                  </td>
+                  <td class="text-gray-600">{{this.checkIn}}</td>
+                  <td class="text-gray-600">
+                    {{#if this.earlyCheckoutDate}}
+                    <span class="badge badge-warning text-xs">Early: {{this.earlyCheckoutDate}}</span>
+                    {{else}}{{this.checkOut}}{{/if}}
+                  </td>
+                  <td>
+                    {{#if this.Room}}
+                    <span class="font-semibold text-gray-900">{{this.Room.roomNumber}}</span><br>
+                    <span class="text-xs text-gray-400">{{this.Room.RoomType.name}}</span>
+                    {{else}}<span class="text-gray-400">—</span>{{/if}}
+                  </td>
+                  <td>
+                    <span class="badge badge-info">{{this.adults}} Adult(s)</span>
+                    {{#if this.children}}<span class="badge badge-neutral ml-1">{{this.children}} Child(ren)</span>{{/if}}
+                  </td>
+                  <td class="font-bold text-teal-700">₱{{this.totalAmount}}</td>
+                  <td><span class="badge badge-neutral">checked out</span></td>
+                  <td class="text-center">
+                    <a href="/bookings/{{this.id}}" class="btn btn-xs btn-secondary whitespace-nowrap"><i class="fa-solid fa-eye text-xs"></i> View</a>
+                  </td>
+                </tr>
+                {{/each}}
+                {{#unless completedBookings}}
+                <tr><td colspan="9" class="py-12 text-center text-gray-400"><i class="fa-solid fa-box-archive text-3xl mb-3 block"></i><p class="text-base">No completed bookings found.</p></td></tr>
+                {{/unless}}
+              </tbody>
+            </table>
+          </div>
+          <!-- Pagination — Archive -->
+          {{#if (gt archivePagination.totalPages 1)}}
+          <div class="flex items-center justify-between px-2 pt-4 pb-1">
+            <p class="text-sm text-gray-500">
+              Showing page <span class="font-semibold text-gray-700">{{archivePagination.page}}</span> of <span class="font-semibold text-gray-700">{{archivePagination.totalPages}}</span>
+              &nbsp;({{archivePagination.total}} total)
+            </p>
+            <div class="flex items-center gap-1">
+              {{#if archivePagination.hasPrev}}
+              <a href="?tab=archive&archivePage={{archivePagination.prevPage}}&year={{filterYear}}&month={{filterMonth}}&sortBy={{currentSort.sortBy}}&sortOrder={{currentSort.sortOrder}}"
+                 class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all">
+                <i class="fa-solid fa-chevron-left text-xs"></i>
+              </a>
+              {{/if}}
+              {{#each archivePagination.pages}}
+              <a href="?tab=archive&archivePage={{this.num}}&year={{../filterYear}}&month={{../filterMonth}}&sortBy={{../currentSort.sortBy}}&sortOrder={{../currentSort.sortOrder}}"
+                 class="px-3 py-1.5 rounded-lg text-sm font-semibold transition-all
+                 {{#if this.isCurrent}}text-white{{else}}bg-white border border-gray-200 text-gray-600 hover:bg-gray-50{{/if}}"
+                 style="{{#if this.isCurrent}}background:linear-gradient(135deg,#3b82f6,#2563eb);{{/if}}">
+                {{this.num}}
+              </a>
+              {{/each}}
+              {{#if archivePagination.hasNext}}
+              <a href="?tab=archive&archivePage={{archivePagination.nextPage}}&year={{filterYear}}&month={{filterMonth}}&sortBy={{currentSort.sortBy}}&sortOrder={{currentSort.sortOrder}}"
+                 class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all">
+                <i class="fa-solid fa-chevron-right text-xs"></i>
+              </a>
+              {{/if}}
+            </div>
+          </div>
+          {{/if}}
+        </div>
+        {{/if}}
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Cancellation Modal -->
+  <div id="cancellationModal" class="hidden fixed inset-0 z-50 items-center justify-center p-4" style="display: none; background: rgba(15,23,42,.6); backdrop-filter: blur(4px);">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 animate-fade-in-up">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-11 h-11 rounded-2xl flex items-center justify-center bg-red-100 flex-shrink-0">
+          <i class="fa-solid fa-ban text-red-600 text-lg"></i>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-900">Cancel Reservation</h2>
+          <p class="text-sm text-gray-500">This action will notify the guest</p>
+        </div>
+      </div>
+      <p class="text-gray-600 mb-4 text-sm">Please provide a reason for cancelling this reservation:</p>
+      <textarea id="cancellationReason" class="input w-full resize-none" rows="4" placeholder="Enter cancellation reason..."></textarea>
+      <div class="flex gap-3 mt-6">
+        <button type="button" id="confirmCancelBtn" class="btn btn-danger flex-1">
+          <i class="fa-solid fa-ban mr-1"></i> Cancel Reservation
+        </button>
+        <button type="button" id="closeCancelBtn" class="btn btn-secondary flex-1">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Generic Confirmation Modal -->
+  <div id="confirmationModal" class="hidden fixed inset-0 z-50 items-center justify-center p-4" style="display: none; background: rgba(15,23,42,.6); backdrop-filter: blur(4px);">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 animate-fade-in-up">
+      <div class="flex items-center gap-4 mb-4">
+        <div id="modalIcon" class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0">
+          <i class="fas text-xl"></i>
+        </div>
+        <div>
+          <h2 id="modalTitle" class="text-xl font-bold text-gray-900"></h2>
+        </div>
+      </div>
+      <p id="modalMessage" class="text-gray-600 mb-8 leading-relaxed text-sm"></p>
+      <div class="flex gap-3">
+        <button id="modalConfirmBtn" class="btn flex-1 text-white font-semibold">
+          Confirm
+        </button>
+        <button id="modalCancelBtn" class="btn btn-secondary flex-1">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Container -->
+  <div id="notificationContainer" class="fixed top-4 right-4 z-40 space-y-3"></div>
+
+<script>
+  // Global state for confirmation modal
+  let confirmationConfig = null;
+
+  // Generic confirmation modal handler
+  function openConfirmationModal(config) {
+    confirmationConfig = config;
+    const modal = document.getElementById('confirmationModal');
+    
+    // Set icon background color and icon based on action type
+    const iconEl = document.querySelector('#modalIcon i');
+    const iconDiv = document.getElementById('modalIcon');
+    const confirmBtn = document.getElementById('modalConfirmBtn');
+    
+    iconDiv.className = 'w-12 h-12 rounded-full flex items-center justify-center';
+    
+    if (config.type === 'warning') {
+      iconDiv.classList.add('bg-amber-100');
+      iconEl.className = 'fas fa-exclamation-triangle text-xl text-amber-600';
+      confirmBtn.className = 'flex-1 px-4 py-3 font-semibold rounded-lg transition-all duration-300 text-white bg-amber-600 hover:bg-amber-700 hover:shadow-lg';
+    } else if (config.type === 'danger') {
+      iconDiv.classList.add('bg-red-100');
+      iconEl.className = 'fas fa-trash-alt text-xl text-red-600';
+      confirmBtn.className = 'flex-1 px-4 py-3 font-semibold rounded-lg transition-all duration-300 text-white bg-red-600 hover:bg-red-700 hover:shadow-lg';
+    } else if (config.type === 'success') {
+      iconDiv.classList.add('bg-green-100');
+      iconEl.className = 'fas fa-check-circle text-xl text-green-600';
+      confirmBtn.className = 'flex-1 px-4 py-3 font-semibold rounded-lg transition-all duration-300 text-white bg-green-600 hover:bg-green-700 hover:shadow-lg';
+    } else {
+      iconDiv.classList.add('bg-blue-100');
+      iconEl.className = 'fas fa-info-circle text-xl text-blue-600';
+      confirmBtn.className = 'flex-1 px-4 py-3 font-semibold rounded-lg transition-all duration-300 text-white bg-blue-600 hover:bg-blue-700 hover:shadow-lg';
+    }
+    
+    document.getElementById('modalTitle').textContent = config.title;
+    document.getElementById('modalMessage').textContent = config.message;
+    confirmBtn.textContent = config.confirmText || 'Confirm';
+    
+    modal.style.display = 'flex';
+    modal.classList.remove('hidden');
+  }
+
+  function closeConfirmationModal() {
+    const modal = document.getElementById('confirmationModal');
+    modal.style.display = 'none';
+    modal.classList.add('hidden');
+    confirmationConfig = null;
+  }
+
+  function checkIn(bookingId) {
+    openConfirmationModal({
+      type: 'success',
+      title: 'Check In Guest',
+      message: 'Are you sure you want to check in this booking? The guest will be marked as checked in.',
+      confirmText: 'Check In',
+      onConfirm: () => {
+        closeConfirmationModal();
+        showNotification('Processing check-in...', 'info');
+        fetch(`/bookings/${bookingId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ status: 'checked_in' })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            showNotification('Check-in successful!', 'success');
+            setTimeout(() => location.reload(), 1500);
+          } else {
+            showNotification('Error: ' + (data.error || 'Could not update booking status'), 'error');
+          }
+        })
+        .catch(err => showNotification('Error: ' + err.message, 'error'));
+      }
+    });
+  }
+
+  function earlyCheckout(bookingId) {
+    openConfirmationModal({
+      type: 'warning',
+      title: 'Early Checkout',
+      message: 'Are you sure you want to process an early checkout for this guest? They will be marked as checked out today.',
+      confirmText: 'Process Early Checkout',
+      onConfirm: () => {
+        closeConfirmationModal();
+        showNotification('Processing early checkout...', 'info');
+        const today = new Date().toISOString().split('T')[0];
+        fetch(`/bookings/${bookingId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ status: 'checked_out', earlyCheckoutDate: today })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            showNotification('Early checkout processed successfully!', 'success');
+            setTimeout(() => location.reload(), 1500);
+          } else {
+            showNotification('Error: ' + (data.error || 'Could not process early checkout'), 'error');
+          }
+        })
+        .catch(err => showNotification('Error: ' + err.message, 'error'));
+      }
+    });
+  }
+
+  function confirmBooking(bookingId) {
+    openConfirmationModal({
+      type: 'success',
+      title: 'Confirm Booking',
+      message: 'Are you sure you want to confirm this booking? The guest will receive a confirmation notification.',
+      confirmText: 'Confirm Booking',
+      onConfirm: () => {
+        closeConfirmationModal();
+        showNotification('Processing confirmation...', 'info');
+        fetch(`/bookings/${bookingId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ status: 'confirmed' })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            showNotification('Booking confirmed successfully!', 'success');
+            setTimeout(() => location.reload(), 1500);
+          } else {
+            showNotification('Error: ' + (data.error || 'Could not update booking status'), 'error');
+          }
+        })
+        .catch(err => showNotification('Error: ' + err.message, 'error'));
+      }
+    });
+  }
+
+  let pendingCancellationId = null;
+
+  function cancelBooking(bookingId) {
+    console.log('[cancelBooking] Opening modal for booking:', bookingId);
+    pendingCancellationId = bookingId;
+    document.getElementById('cancellationReason').value = '';
+    const modal = document.getElementById('cancellationModal');
+    modal.style.display = 'flex';
+    modal.classList.remove('hidden');
+  }
+
+  function closeCancellationModal() {
+    console.log('[closeCancellationModal] Closing modal');
+    const modal = document.getElementById('cancellationModal');
+    modal.style.display = 'none';
+    modal.classList.add('hidden');
+    pendingCancellationId = null;
+  }
+
+  function confirmCancellation() {
+    const reason = document.getElementById('cancellationReason').value.trim();
+    
+    if (!reason) {
+      showNotification('Please provide a reason for cancellation.', 'error');
+      return;
+    }
+
+    if (!pendingCancellationId) {
+      showNotification('Error: No booking selected.', 'error');
+      return;
+    }
+
+    const bookingId = pendingCancellationId;
+    console.log('[confirmCancellation] Cancelling booking:', bookingId);
+    closeCancellationModal();
+    showNotification('Processing cancellation...', 'info');
+
+    fetch(`/bookings/${bookingId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ status: 'cancelled', cancellationReason: reason })
+    })
+    .then(res => {
+      console.log('[confirmCancellation] Response status:', res.status);
+      return res.json();
+    })
+    .then(data => {
+      console.log('[confirmCancellation] Response data:', data);
+      if (data.success) {
+        showNotification('Booking cancelled successfully!', 'success');
+        setTimeout(() => location.reload(), 1500);
+      } else {
+        showNotification('Error: ' + (data.error || 'Could not update booking status'), 'error');
+      }
+    })
+    .catch(err => {
+      console.error('[confirmCancellation] Error:', err);
+      showNotification('Error: ' + err.message, 'error');
+    });
+  }
+
+  // Attach event listeners when page loads
+  document.addEventListener('DOMContentLoaded', function() {
+    // ── Filter buttons ──
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        filterReservations(this.dataset.filter);
+      });
+    });
+
+    // ── Action buttons (confirm, cancel, checkin, earlycheckout, reactivate) ──
+    document.addEventListener('click', function(e) {
+      const btn = e.target.closest('[data-action]');
+      if (!btn) return;
+      const action = btn.dataset.action;
+      const id     = parseInt(btn.dataset.id);
+      if (action === 'confirm')       confirmBooking(id);
+      else if (action === 'cancel')   cancelBooking(id);
+      else if (action === 'checkin')  checkIn(id);
+      else if (action === 'earlycheckout') earlyCheckout(id);
+      else if (action === 'reactivate')    reactivateBooking(id);
+    });
+
+    // ── Cancellation modal buttons ──
+    const confirmBtn = document.getElementById('confirmCancelBtn');
+    const closeBtn   = document.getElementById('closeCancelBtn');
+    if (confirmBtn) confirmBtn.addEventListener('click', function(e) { e.preventDefault(); confirmCancellation(); });
+    if (closeBtn)   closeBtn.addEventListener('click',   function(e) { e.preventDefault(); closeCancellationModal(); });
+
+    // ── Generic confirmation modal buttons ──
+    const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+    const modalCancelBtn  = document.getElementById('modalCancelBtn');
+    if (modalConfirmBtn) {
+      modalConfirmBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (confirmationConfig && confirmationConfig.onConfirm) confirmationConfig.onConfirm();
+      });
+    }
+    if (modalCancelBtn) {
+      modalCancelBtn.addEventListener('click', function(e) { e.preventDefault(); closeConfirmationModal(); });
+    }
+
+    // ── Sign Out button hover effects (click is handled by reservations.js) ──
+    const logoutBtn = document.getElementById('admin-logout-btn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('mouseover', function() { this.style.background = 'rgba(220,38,38,.35)'; });
+      logoutBtn.addEventListener('mouseout',  function() { this.style.background = 'rgba(220,38,38,.2)'; });
+    }
+  });
+
+  function showNotification(message, type = 'info') {
+    const container = document.getElementById('notificationContainer');
+    const notification = document.createElement('div');
+    
+    const bgColor = type === 'success' ? 'bg-green-100' : type === 'error' ? 'bg-red-100' : 'bg-blue-100';
+    const borderColor = type === 'success' ? 'border-green-300' : type === 'error' ? 'border-red-300' : 'border-blue-300';
+    const textColor = type === 'success' ? 'text-green-800' : type === 'error' ? 'text-red-800' : 'text-blue-800';
+    const iconColor = type === 'success' ? 'text-green-600' : type === 'error' ? 'text-red-600' : 'text-blue-600';
+    const iconClass = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+    
+    notification.innerHTML = `
+      <div class="${bgColor} border-l-4 ${borderColor} ${textColor} px-4 py-3 rounded-lg shadow-md animate-fade-in flex items-start gap-3">
+        <i class="fas ${iconClass} ${iconColor} text-lg mt-0.5 flex-shrink-0"></i>
+        <span class="font-medium">${message}</span>
+      </div>
+    `;
+    
+    container.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.classList.add('hidden');
+      notification.remove();
+    }, 4000);
+  }
+
+  function reactivateBooking(bookingId) {
+    openConfirmationModal({
+      type: 'warning',
+      title: 'Reactivate Booking',
+      message: 'Are you sure you want to reactivate this booking? It will be marked as confirmed.',
+      confirmText: 'Reactivate',
+      onConfirm: () => {
+        closeConfirmationModal();
+        showNotification('Processing reactivation...', 'info');
+        fetch(`/bookings/${bookingId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ status: 'confirmed' })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            showNotification('Booking reactivated successfully!', 'success');
+            setTimeout(() => location.reload(), 1500);
+          } else {
+            showNotification('Error: ' + (data.error || 'Could not update booking status'), 'error');
+          }
+        })
+        .catch(err => showNotification('Error: ' + err.message, 'error'));
+      }
+    });
+  }
+
+  function deleteBooking(bookingId) {
+    openConfirmationModal({
+      type: 'danger',
+      title: 'Delete Booking',
+      message: 'Are you sure you want to permanently delete this booking? This action cannot be undone and all associated data will be lost.',
+      confirmText: 'Delete',
+      onConfirm: () => {
+        closeConfirmationModal();
+        showNotification('Deleting booking...', 'info');
+        fetch(`/bookings/${bookingId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            showNotification('Booking deleted successfully!', 'success');
+            setTimeout(() => location.reload(), 1500);
+          } else {
+            showNotification('Error: ' + (data.error || 'Could not delete booking'), 'error');
+          }
+        })
+        .catch(err => showNotification('Error: ' + err.message, 'error'));
+      }
+    });
+  }
+
+  // Logout confirmation - handled by new sidebar JS block below
+
+  // Filter reservations by status — only used on the Active tab sub-filter pills
+  function filterReservations(status) {
+    const restingStyles = {
+      all:        { bg: null,            text: null,             extra: [] },
+      pending:    { bg: 'bg-amber-100',  text: 'text-amber-800', extra: ['hover:bg-amber-200'] },
+      confirmed:  { bg: 'bg-green-100',  text: 'text-green-800', extra: ['hover:bg-green-200'] },
+      checked_in: { bg: 'bg-blue-100',   text: 'text-blue-800',  extra: ['hover:bg-blue-200'] }
+    };
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      const f = btn.dataset.filter;
+      const s = restingStyles[f] || {};
+      btn.style.background = '';
+      btn.classList.remove('active-filter', 'text-white');
+      Object.values(restingStyles).forEach(rs => {
+        if (rs.bg)   btn.classList.remove(rs.bg);
+        if (rs.text) btn.classList.remove(rs.text);
+        rs.extra.forEach(c => btn.classList.remove(c));
+      });
+      if (s.bg)   btn.classList.add(s.bg);
+      if (s.text) btn.classList.add(s.text);
+      s.extra.forEach(c => btn.classList.add(c));
+    });
+
+    const activeBtn = document.querySelector(`.filter-btn[data-filter="${status}"]`);
+    if (activeBtn) {
+      const s = restingStyles[status] || {};
+      if (s.bg)   activeBtn.classList.remove(s.bg);
+      if (s.text) activeBtn.classList.remove(s.text);
+      s.extra.forEach(c => activeBtn.classList.remove(c));
+      activeBtn.classList.add('active-filter', 'text-white');
+      activeBtn.style.background = 'linear-gradient(135deg,#0d9488,#0891b2)';
+    }
+
+    const visibleStatuses = {
+      all:        ['pending', 'confirmed', 'checked_in'],
+      pending:    ['pending'],
+      confirmed:  ['confirmed'],
+      checked_in: ['checked_in']
+    }[status] || ['pending', 'confirmed', 'checked_in'];
+
+    const rows = document.querySelectorAll('.booking-row');
+    let visibleCount = 0;
+    rows.forEach(row => {
+      const rowStatus = row.getAttribute('data-status');
+      if (visibleStatuses.includes(rowStatus)) {
+        row.style.display = 'table-row';
+        visibleCount++;
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+
+  // Sort table by column — preserves tab, year, month filters
+  function sortTable(sortBy) {
+    const params      = new URLSearchParams(window.location.search);
+    const currentSort = params.get('sortBy')    || 'checkIn';
+    const currentOrd  = params.get('sortOrder') || 'DESC';
+    const newOrder    = (sortBy === currentSort && currentOrd === 'DESC') ? 'ASC' : 'DESC';
+
+    params.set('sortBy',    sortBy);
+    params.set('sortOrder', newOrder);
+    // Reset to page 1 when sort changes
+    params.delete('activePage');
+    params.delete('cancelledPage');
+    params.delete('archivePage');
+
+    window.location.href = '?' + params.toString();
+  }
+</script>
+<!-- Logout Confirmation Modal -->
+<div id="logoutConfirmModal"
+     class="hidden fixed inset-0 z-[500] flex items-center justify-center p-4"
+     style="background: rgba(15,23,42,.65); backdrop-filter: blur(6px);">
+  <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 animate-fade-in-up">
+    <div class="flex items-center gap-4 mb-5">
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
+           style="background: linear-gradient(135deg,#fef3c7,#fde68a);">
+        <i class="fa-solid fa-right-from-bracket text-amber-600 text-lg"></i>
+      </div>
+      <div>
+        <h3 class="text-lg font-bold text-gray-900">Sign Out?</h3>
+        <p class="text-sm text-gray-500">You'll need to sign in again to access your account.</p>
+      </div>
+    </div>
+    <div class="flex gap-3 mt-6">
+      <button id="logoutConfirmNo"
+              class="flex-1 px-4 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm transition-colors">
+        Cancel
+      </button>
+      <button id="logoutConfirmYes"
+              class="flex-1 px-4 py-2.5 rounded-xl font-semibold text-sm text-white transition-all"
+              style="background: linear-gradient(135deg,#dc2626,#ef4444); box-shadow: 0 4px 12px rgba(220,38,38,.3);">
+        Sign Out
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const toggle  = document.getElementById('sidebar-toggle');
+  const sidebar = document.getElementById('admin-sidebar');
+  if (toggle && sidebar) {
+    toggle.addEventListener('click', () => sidebar.classList.toggle('-translate-x-full'));
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth < 768 && !sidebar.contains(e.target) && !toggle.contains(e.target)) {
+        sidebar.classList.add('-translate-x-full');
+      }
+    });
+  }
+
+  // Logout functionality
+  let _logoutCb = null;
+
+  window.showLogoutConfirmation = function (cb) {
+    _logoutCb = cb;
+    const m = document.getElementById('logoutConfirmModal');
+    if (m) m.classList.remove('hidden');
+  };
+
+  window.confirmAdminLogout = function () {
+    showLogoutConfirmation(function () {
+      window.location.href = '/logout';
+    });
+  };
+
+  function closeModal() {
+    const modal = document.getElementById('logoutConfirmModal');
+    if (modal) modal.classList.add('hidden');
+    _logoutCb = null;
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const yes = document.getElementById('logoutConfirmYes');
+    const no = document.getElementById('logoutConfirmNo');
+    const modal = document.getElementById('logoutConfirmModal');
+
+    if (yes) yes.addEventListener('click', () => { if (_logoutCb) _logoutCb(); });
+    if (no) no.addEventListener('click', closeModal);
+    if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+  });
+})();
+</script>
+</body>

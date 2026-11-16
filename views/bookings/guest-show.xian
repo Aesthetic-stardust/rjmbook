@@ -1,0 +1,388 @@
+{{> head }}
+<body class="min-h-screen font-body flex flex-col" style="background:#f8fafc;">
+  {{> nav }}
+
+  <main class="flex-1 py-10 px-4">
+    <div class="max-w-3xl mx-auto">
+
+      <!-- Back link -->
+      <a href="/bookings/reservations"
+         class="inline-flex items-center gap-2 text-teal-700 hover:text-teal-900 font-semibold text-sm mb-6 transition-colors group">
+        <i class="fa-solid fa-arrow-left text-xs group-hover:-translate-x-1 transition-transform"></i>
+        Back to My Reservations
+      </a>
+
+      <!-- Status banner -->
+      <div class="card p-5 mb-5 flex items-center justify-between animate-fade-in-up">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
+               style="background: linear-gradient(135deg,#0d9488,#0891b2);">
+            <i class="fa-solid fa-calendar-check text-white text-lg"></i>
+          </div>
+          <div>
+            <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Booking Reference</p>
+            <p class="text-2xl font-bold text-gray-800 font-display">#{{booking.id}}</p>
+          </div>
+        </div>
+        <span class="badge text-sm px-4 py-2
+          {{#if (eq booking.status 'pending')}}badge-warning
+          {{else if (eq booking.status 'confirmed')}}badge-success
+          {{else if (eq booking.status 'checked_in')}}badge-info
+          {{else if (eq booking.status 'checked_out')}}badge-neutral
+          {{else if (eq booking.status 'cancelled')}}badge-danger
+          {{else}}badge-neutral{{/if}}">
+          <i class="fa-solid
+            {{#if (eq booking.status 'pending')}}fa-clock
+            {{else if (eq booking.status 'confirmed')}}fa-circle-check
+            {{else if (eq booking.status 'checked_in')}}fa-door-open
+            {{else if (eq booking.status 'checked_out')}}fa-door-closed
+            {{else if (eq booking.status 'cancelled')}}fa-circle-xmark
+            {{else}}fa-circle{{/if}} mr-1.5"></i>
+          {{booking.status}}
+        </span>
+      </div>
+
+      <!-- Main grid -->
+      <div class="grid md:grid-cols-2 gap-5 mb-5">
+
+        <!-- Booking Details -->
+        <div class="card p-6 animate-fade-in-up">
+          <h3 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-clipboard-list text-teal-500"></i> Booking Details
+          </h3>
+          <div class="space-y-1">
+
+            <div class="flex items-center justify-between py-3 border-b border-gray-50">
+              <div class="flex items-center gap-2 text-gray-500 text-sm">
+                <i class="fa-regular fa-calendar-check text-teal-500 w-4 text-center"></i> Check-in
+              </div>
+              <p class="font-semibold text-gray-800 text-sm">{{booking.checkIn}}</p>
+            </div>
+
+            <div class="flex items-center justify-between py-3 border-b border-gray-50">
+              <div class="flex items-center gap-2 text-gray-500 text-sm">
+                <i class="fa-regular fa-calendar-xmark text-teal-500 w-4 text-center"></i> Check-out
+              </div>
+              <p class="font-semibold text-gray-800 text-sm">{{booking.checkOut}}</p>
+            </div>
+
+            <div class="flex items-center justify-between py-3 border-b border-gray-50">
+              <div class="flex items-center gap-2 text-gray-500 text-sm">
+                <i class="fa-solid fa-users text-teal-500 w-4 text-center"></i> Guests
+              </div>
+              <p class="font-semibold text-gray-800 text-sm">
+                {{booking.adults}} Adult(s){{#if booking.children}}, {{booking.children}} Child(ren){{/if}}
+              </p>
+            </div>
+
+            <div class="flex items-center justify-between py-3">
+              <div class="flex items-center gap-2 text-gray-500 text-sm">
+                <i class="fa-solid fa-peso-sign text-teal-500 w-4 text-center"></i> Total Amount
+              </div>
+              <p class="text-xl font-bold text-teal-700">₱{{booking.totalAmount}}</p>
+            </div>
+
+            {{#if booking.cancellationReason}}
+            <div class="mt-2 p-4 rounded-xl" style="background:#fef2f2; border-left: 3px solid #ef4444;">
+              <p class="text-xs font-bold text-red-600 uppercase tracking-wider mb-1">
+                <i class="fa-solid fa-circle-xmark mr-1"></i> Cancellation Reason
+              </p>
+              <p class="text-sm text-red-800">{{booking.cancellationReason}}</p>
+            </div>
+            {{/if}}
+          </div>
+        </div>
+
+        <!-- Room Info -->
+        <div class="space-y-5">
+          {{#if booking.Room}}
+          <div class="card p-6 animate-fade-in-up">
+            <h3 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+              <i class="fa-solid fa-bed text-teal-500"></i> Room / Cottage
+            </h3>
+            <div class="space-y-3">
+              <div class="flex justify-between items-center py-2 border-b border-gray-50">
+                <span class="text-sm text-gray-500">Number</span>
+                <span class="font-bold text-gray-800">{{booking.Room.roomNumber}}</span>
+              </div>
+              <div class="flex justify-between items-center py-2 border-b border-gray-50">
+                <span class="text-sm text-gray-500">Type</span>
+                <span class="badge badge-teal text-xs">{{booking.Room.RoomType.name}}</span>
+              </div>
+              {{#if booking.Room.RoomType.description}}
+              <div class="pt-2">
+                <p class="text-xs text-gray-400 mb-1">Description</p>
+                <p class="text-sm text-gray-600 leading-relaxed">{{booking.Room.RoomType.description}}</p>
+              </div>
+              {{/if}}
+            </div>
+          </div>
+          {{/if}}
+
+          {{#if booking.roomNotes}}
+          <div class="card p-6 animate-fade-in-up" style="border-left: 3px solid #3b82f6;">
+            <h3 class="text-sm font-bold text-blue-600 uppercase tracking-widest mb-3 flex items-center gap-2">
+              <i class="fa-solid fa-circle-info"></i> Important Notes
+            </h3>
+            <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{{booking.roomNotes}}</p>
+          </div>
+          {{/if}}
+        </div>
+      </div>
+
+      <!-- Special Requests -->
+      {{#if booking.specialRequests}}
+      <div class="card p-6 mb-5 animate-fade-in-up">
+        <h3 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+          <i class="fa-solid fa-note-sticky text-amber-500"></i> Your Special Requests
+        </h3>
+        <p class="text-sm text-gray-700 leading-relaxed">{{booking.specialRequests}}</p>
+      </div>
+      {{/if}}
+
+      <!-- Feedback CTA (only for completed stays) -->
+      {{#if (eq booking.status 'checked_out')}}
+      <div class="rounded-3xl p-7 text-center mb-5 animate-fade-in-up"
+           style="background: linear-gradient(135deg,#fffbeb,#fef3c7); border: 2px solid #fcd34d;">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
+             style="background: linear-gradient(135deg,#d97706,#f59e0b);">
+          <i class="fa-solid fa-star text-white text-xl"></i>
+        </div>
+        <h3 class="text-lg font-bold text-gray-800 mb-2 font-display">How was your stay?</h3>
+        <p class="text-sm text-gray-600 mb-5">Your feedback helps us improve the experience for every guest.</p>
+        <a href="/bookings/{{booking.id}}/feedback"
+           class="btn btn-gold inline-flex items-center gap-2">
+          <i class="fa-solid fa-star"></i> Share Your Experience
+        </a>
+      </div>
+      {{/if}}
+      {{#if (eq booking.status 'early_checkout')}}
+      <div class="rounded-3xl p-7 text-center mb-5 animate-fade-in-up"
+           style="background: linear-gradient(135deg,#fffbeb,#fef3c7); border: 2px solid #fcd34d;">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
+             style="background: linear-gradient(135deg,#d97706,#f59e0b);">
+          <i class="fa-solid fa-star text-white text-xl"></i>
+        </div>
+        <h3 class="text-lg font-bold text-gray-800 mb-2 font-display">How was your stay?</h3>
+        <p class="text-sm text-gray-600 mb-5">Your feedback helps us improve the experience for every guest.</p>
+        <a href="/bookings/{{booking.id}}/feedback"
+           class="btn btn-gold inline-flex items-center gap-2">
+          <i class="fa-solid fa-star"></i> Share Your Experience
+        </a>
+      </div>
+      {{/if}}
+      {{#if (eq booking.status 'completed')}}
+      <div class="rounded-3xl p-7 text-center mb-5 animate-fade-in-up"
+           style="background: linear-gradient(135deg,#fffbeb,#fef3c7); border: 2px solid #fcd34d;">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
+             style="background: linear-gradient(135deg,#d97706,#f59e0b);">
+          <i class="fa-solid fa-star text-white text-xl"></i>
+        </div>
+        <h3 class="text-lg font-bold text-gray-800 mb-2 font-display">How was your stay?</h3>
+        <p class="text-sm text-gray-600 mb-5">Your feedback helps us improve the experience for every guest.</p>
+        <a href="/bookings/{{booking.id}}/feedback"
+           class="btn btn-gold inline-flex items-center gap-2">
+          <i class="fa-solid fa-star"></i> Share Your Experience
+        </a>
+      </div>
+      {{/if}}
+
+      <!-- Cancel Button (for pending/confirmed bookings) -->
+      {{#if (or (eq booking.status 'pending') (eq booking.status 'confirmed'))}}
+      {{#if canCancel}}
+      <div class="card p-6 mb-5 animate-fade-in-up" style="border-left: 3px solid #ef4444;">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
+               style="background: linear-gradient(135deg,#ef4444,#f97316);">
+            <i class="fa-solid fa-triangle-exclamation text-white text-lg"></i>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-sm font-bold text-gray-800 mb-1">Need to Cancel?</h3>
+            <p class="text-xs text-gray-500 mb-4">You can cancel this booking at any time before check-in.</p>
+            <button onclick="openCancelModal()"
+                    class="btn bg-red-500 hover:bg-red-600 text-white inline-flex items-center gap-2">
+              <i class="fa-solid fa-xmark"></i> Cancel Booking
+            </button>
+          </div>
+        </div>
+      </div>
+      {{/if}}
+      {{/if}}
+
+      <!-- Back button -->
+      <div class="text-center">
+        <a href="/bookings/reservations"
+           class="btn btn-secondary inline-flex items-center gap-2">
+          <i class="fa-solid fa-arrow-left text-xs"></i> Back to My Reservations
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Cancel Booking Modal -->
+  <div id="cancelModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl animate-fade-in-up">
+      <!-- Modal Header -->
+      <div class="p-6 border-b border-gray-100">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl flex items-center justify-center"
+               style="background: linear-gradient(135deg,#ef4444,#f97316);">
+            <i class="fa-solid fa-circle-exclamation text-white text-xl"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-gray-800 font-display">Cancel Booking?</h2>
+            <p class="text-sm text-gray-500">Booking #{{booking.id}}</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="p-6">
+        {{#if (eq booking.status 'confirmed')}}
+        <div class="mb-4 p-4 rounded-xl" style="background:#fffbeb; border: 1px solid #fcd34d;">
+          <p class="text-sm text-amber-800 font-medium">
+            <i class="fa-solid fa-circle-info mr-1.5"></i>
+            Your booking has already been <strong>confirmed</strong>. Are you sure you want to cancel?
+          </p>
+        </div>
+        {{/if}}
+        
+        <div class="mb-4">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">
+            Reason for Cancellation <span class="text-red-500">*</span>
+          </label>
+          <textarea id="cancellationReason" rows="3" 
+                    class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    placeholder="Please tell us why you're cancelling this booking..."></textarea>
+          <p id="reasonError" class="text-xs text-red-500 mt-1 hidden">Please provide a reason for cancellation.</p>
+        </div>
+        
+        <div class="p-4 rounded-xl bg-gray-50">
+          <p class="text-xs text-gray-500">
+            <i class="fa-solid fa-info-circle mr-1"></i>
+            This action cannot be undone. Your booking will be permanently cancelled.
+          </p>
+        </div>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="p-6 border-t border-gray-100 flex gap-3">
+        <button onclick="closeCancelModal()"
+                class="btn btn-secondary flex-1 justify-center">
+          Keep Booking
+        </button>
+        <button onclick="confirmCancellation()"
+                id="confirmCancelBtn"
+                class="btn bg-red-500 hover:bg-red-600 text-white flex-1 justify-center">
+          <i class="fa-solid fa-check mr-1"></i> Yes, Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success/Error Toast -->
+  <div id="toast" class="fixed bottom-4 right-4 z-50 hidden">
+    <div class="rounded-xl px-6 py-4 shadow-lg flex items-center gap-3" id="toastContent">
+      <i class="fa-solid" id="toastIcon"></i>
+      <span id="toastMessage"></span>
+    </div>
+  </div>
+
+  <script>
+    const bookingId = {{booking.id}};
+    
+    function openCancelModal() {
+      document.getElementById('cancelModal').classList.remove('hidden');
+      document.getElementById('cancelModal').classList.add('flex');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeCancelModal() {
+      document.getElementById('cancelModal').classList.add('hidden');
+      document.getElementById('cancelModal').classList.remove('flex');
+      document.body.style.overflow = '';
+      document.getElementById('cancellationReason').value = '';
+      document.getElementById('reasonError').classList.add('hidden');
+    }
+    
+    function showToast(message, isSuccess) {
+      const toast = document.getElementById('toast');
+      const toastContent = document.getElementById('toastContent');
+      const toastIcon = document.getElementById('toastIcon');
+      const toastMessage = document.getElementById('toastMessage');
+      
+      toastMessage.textContent = message;
+      toastContent.className = 'rounded-xl px-6 py-4 shadow-lg flex items-center gap-3 ' + 
+        (isSuccess ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800');
+      toastIcon.className = 'fa-solid ' + (isSuccess ? 'fa-circle-check' : 'fa-circle-xmark');
+      
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 4000);
+    }
+    
+    async function confirmCancellation() {
+      const reason = document.getElementById('cancellationReason').value.trim();
+      const reasonError = document.getElementById('reasonError');
+      const confirmBtn = document.getElementById('confirmCancelBtn');
+      
+      if (!reason) {
+        reasonError.classList.remove('hidden');
+        return;
+      }
+      
+      reasonError.classList.add('hidden');
+      confirmBtn.disabled = true;
+      confirmBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Cancelling...';
+      
+      try {
+        const response = await fetch(`/bookings/${bookingId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            status: 'cancelled',
+            cancellationReason: reason
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          closeCancelModal();
+          showToast('Booking cancelled successfully', true);
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
+        } else {
+          showToast(data.error || 'Failed to cancel booking', false);
+          confirmBtn.disabled = false;
+          confirmBtn.innerHTML = '<i class="fa-solid fa-check mr-1"></i> Yes, Cancel';
+        }
+      } catch (err) {
+        showToast('An error occurred. Please try again.', false);
+        confirmBtn.disabled = false;
+        confirmBtn.innerHTML = '<i class="fa-solid fa-check mr-1"></i> Yes, Cancel';
+      }
+    }
+    
+    // Close modal on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeCancelModal();
+      }
+    });
+    
+    // Close modal on backdrop click
+    document.getElementById('cancelModal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('cancelModal')) {
+        closeCancelModal();
+      }
+    });
+  </script>
+
+  {{> footer }}
+</body>

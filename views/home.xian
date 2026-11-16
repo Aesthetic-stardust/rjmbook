@@ -1,0 +1,703 @@
+{{> head }}
+<body class="min-h-screen font-body flex flex-col"
+      style="background-image: url('/landingpage.jpg'); background-size: cover; background-position: center; background-attachment: fixed;">
+
+  <!-- Deep layered overlay for readability -->
+  <div class="fixed inset-0 pointer-events-none" style="z-index:1;
+    background: linear-gradient(160deg, rgba(7,89,79,.68) 0%, rgba(13,148,136,.38) 45%, rgba(8,145,178,.25) 100%);">
+  </div>
+
+  <div class="relative flex flex-col flex-1" style="z-index:2;">
+    {{> nav }}
+
+    <main class="flex-1">
+
+      <!-- ══════════════════════════════════════════
+           HERO
+      ══════════════════════════════════════════ -->
+      <section class="relative flex items-center justify-center text-center px-4 py-16 md:py-24 overflow-hidden">
+
+        <!-- Ambient glow blobs -->
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 rounded-full pointer-events-none"
+             style="background: radial-gradient(circle, rgba(20,184,166,.18) 0%, transparent 70%); filter: blur(40px);"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full pointer-events-none"
+             style="background: radial-gradient(circle, rgba(8,145,178,.14) 0%, transparent 70%); filter: blur(40px);"></div>
+
+        <div class="max-w-4xl mx-auto animate-hero">
+
+          <!-- Live status badge -->
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 trust-pill">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse-slow trust-pill-dot"></span>
+            <span class="text-white/90 text-sm font-medium">Now accepting online reservations</span>
+          </div>
+
+          <!-- Headline -->
+          <h1 class="text-5xl sm:text-6xl md:text-[5rem] font-bold font-display text-white mb-5 leading-[1.05] drop-shadow-lg"
+              style="letter-spacing: -.025em;">
+            RJM<br>
+            <span style="background: linear-gradient(135deg,#5eead4 0%,#67e8f9 45%,#a5f3fc 100%);
+                         -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+                         filter: drop-shadow(0 0 18px rgba(94,234,212,.85)) drop-shadow(0 0 40px rgba(103,232,249,.5));">
+              Beach Resort
+            </span>
+          </h1>
+
+          <!-- Location chip -->
+          <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4"
+               style="background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); backdrop-filter: blur(8px);">
+            <i class="fa-solid fa-location-dot text-teal-300 text-sm"></i>
+            <span class="text-white/90 text-sm font-medium">Tambong, Barangay Proper Bansud · Bansud, Philippines</span>
+          </div>
+
+          <!-- Tagline -->
+          <p class="text-base md:text-lg mb-10 max-w-2xl mx-auto leading-relaxed"
+             style="color: rgba(255,255,255,.95); text-shadow: 0 1px 12px rgba(0,0,0,.6), 0 2px 24px rgba(0,0,0,.4);">
+            Your premier destination for relaxation and adventure on the beautiful shores of Oriental Mindoro.
+            World-class amenities, spacious cottages, and exceptional service await.
+          </p>
+
+          <!-- CTA row -->
+          <div class="flex flex-wrap gap-3 justify-center mb-8">
+            <a href="/bookings/book"
+               class="btn btn-lg btn-pill inline-flex items-center gap-2.5 font-bold"
+               style="background: linear-gradient(135deg,#f97316,#ea580c); color:#fff;
+                      box-shadow: 0 8px 32px rgba(249,115,22,.5), 0 2px 8px rgba(0,0,0,.2);">
+              <i class="fa-solid fa-calendar-check"></i> Book Your Stay
+            </a>
+            <a href="#features"
+               class="btn btn-lg btn-pill btn-outline-white inline-flex items-center gap-2.5">
+              <i class="fa-solid fa-compass"></i> Explore Resort
+            </a>
+          </div>
+
+          <!-- Stats strip -->
+          <div class="inline-flex flex-wrap justify-center gap-px rounded-2xl overflow-hidden"
+               style="background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); backdrop-filter: blur(12px);">
+            <div class="px-7 py-4 text-center" style="border-right: 1px solid rgba(255,255,255,.1);">
+              <p class="stat-number text-white">6<span class="text-teal-300">+</span></p>
+              <p class="stat-label text-white/45">Cottage Types</p>
+            </div>
+            <div class="px-7 py-4 text-center" style="border-right: 1px solid rgba(255,255,255,.1);">
+              <p class="stat-number text-white">50</p>
+              <p class="stat-label text-white/45">Max Capacity</p>
+            </div>
+            <div class="px-7 py-4 text-center" style="border-right: 1px solid rgba(255,255,255,.1);">
+              <p class="stat-number text-white">24<span class="text-teal-300">/7</span></p>
+              <p class="stat-label text-white/45">Operations</p>
+            </div>
+            <div class="px-7 py-4 text-center">
+              <p class="stat-number text-white" style="font-size:1.75rem;">Fast</p>
+              <p class="stat-label text-white/45">Easy Booking</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Scroll hint -->
+      <div class="flex justify-center pb-10 -mt-4">
+        <a href="#features" class="flex flex-col items-center gap-1.5 text-white/38 hover:text-white/65 transition-colors text-xs font-semibold uppercase tracking-widest">
+          <span>Scroll to explore</span>
+          <i class="fa-solid fa-chevron-down text-sm animate-float"></i>
+        </a>
+      </div>
+
+
+      <!-- ══════════════════════════════════════════
+           FEATURES
+      ══════════════════════════════════════════ -->
+      <section id="features" class="px-4 pb-24">
+        <div class="max-w-6xl mx-auto">
+
+          <div class="text-center mb-12 reveal">
+            <p class="eyebrow text-teal-300 mb-3">
+              <i class="fa-solid fa-star-of-life text-[9px]"></i> Why Choose Us
+            </p>
+            <h2 class="text-3xl md:text-4xl font-bold font-display text-white drop-shadow" style="letter-spacing:-.02em;">
+              Resort Highlights
+            </h2>
+            <p class="text-white/55 mt-3 text-base max-w-xl mx-auto leading-relaxed">
+              Everything you need for an unforgettable getaway, all in one place.
+            </p>
+          </div>
+
+          <div class="grid md:grid-cols-3 gap-5 stagger-reveal">
+
+            <div class="card p-7 reveal">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="feature-icon" style="background: linear-gradient(135deg,#ccfbf1,#99f6e4);">
+                  <i class="fa-solid fa-umbrella-beach text-teal-700"></i>
+                </div>
+                <h3 class="text-base font-bold text-gray-800 font-display">Comfortable Cottages</h3>
+              </div>
+              <p class="text-gray-500 text-sm leading-relaxed">
+                Choose from 6 cottage types accommodating 12 to 50 people — perfect for families, groups, and special events.
+              </p>
+            </div>
+
+            <div class="card p-7 reveal">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="feature-icon" style="background: linear-gradient(135deg,#cffafe,#a5f3fc);">
+                  <i class="fa-solid fa-umbrella-beach text-cyan-700"></i>
+                </div>
+                <h3 class="text-base font-bold text-gray-800 font-display">Private Beach Access</h3>
+              </div>
+              <p class="text-gray-500 text-sm leading-relaxed">
+                Enjoy exclusive access to our pristine beachfront — perfect for swimming, sunbathing, and sunset views.
+              </p>
+            </div>
+
+            <div class="card p-7 reveal">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="feature-icon" style="background: linear-gradient(135deg,#dbeafe,#bfdbfe);">
+                  <i class="fa-solid fa-plug text-blue-700"></i>
+                </div>
+                <h3 class="text-base font-bold text-gray-800 font-display">Modern Facilities</h3>
+              </div>
+              <p class="text-gray-500 text-sm leading-relaxed">
+                Electric fans, rice cookers, and Bluetooth speakers available for your convenience during your stay.
+              </p>
+            </div>
+
+            <div class="card p-7 reveal">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="feature-icon" style="background: linear-gradient(135deg,#dcfce7,#bbf7d0);">
+                  <i class="fa-solid fa-map-location-dot text-green-700"></i>
+                </div>
+                <h3 class="text-base font-bold text-gray-800 font-display">Scenic Location</h3>
+              </div>
+              <p class="text-gray-500 text-sm leading-relaxed">
+                Nestled in Bansud, Oriental Mindoro, surrounded by natural beauty and pristine beachside views.
+              </p>
+            </div>
+
+            <div class="card p-7 reveal">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="feature-icon" style="background: linear-gradient(135deg,#fef9c3,#fde68a);">
+                  <i class="fa-solid fa-water-ladder text-amber-700"></i>
+                </div>
+                <h3 class="text-base font-bold text-gray-800 font-display">Pool & Recreation</h3>
+              </div>
+              <p class="text-gray-500 text-sm leading-relaxed">
+                Dive into our refreshing swimming pool and enjoy recreational activities for guests of all ages.
+              </p>
+            </div>
+
+            <div class="card p-7 reveal">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="feature-icon" style="background: linear-gradient(135deg,#ede9fe,#ddd6fe);">
+                  <i class="fa-solid fa-robot text-purple-700"></i>
+                </div>
+                <h3 class="text-base font-bold text-gray-800 font-display">AI-Powered Service</h3>
+              </div>
+              <p class="text-gray-500 text-sm leading-relaxed">
+                Smart booking system with AI chatbot, guest sentiment analysis, and personalized recommendations.
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ══════════════════════════════════════════
+           ABOUT
+      ══════════════════════════════════════════ -->
+      <section id="about" class="px-4 pb-24">
+        <div class="max-w-6xl mx-auto">
+          <div class="card-premium p-8 md:p-12 reveal">
+
+            <div class="text-center mb-10">
+              <p class="eyebrow text-teal-600 mb-3">
+                <i class="fa-solid fa-anchor text-[9px]"></i> Our Story
+              </p>
+              <h2 class="section-title">About RJM Beach Resort</h2>
+              <p class="section-subtitle mx-auto">A sanctuary where luxury meets the natural beauty of Oriental Mindoro</p>
+            </div>
+
+            <!-- Photo carousel -->
+            <div class="relative w-full h-68 md:h-[26rem] overflow-hidden rounded-2xl shadow-xl mb-10 reveal-scale">
+              <div class="carousel-container relative w-full h-full">
+                <div class="carousel-slide absolute inset-0 opacity-100 transition-opacity duration-1000" style="z-index:1;">
+                  <img src="/rjmresort/photo_2026-10-06_03-16-27.jpg" alt="RJM Beach Resort" class="w-full h-full object-cover">
+                </div>
+                <div class="carousel-slide absolute inset-0 opacity-0 transition-opacity duration-1000">
+                  <img src="/rjmresort/photo_2026-10-06_03-16-30.jpg" alt="RJM Beach Resort" class="w-full h-full object-cover">
+                </div>
+                <div class="carousel-slide absolute inset-0 opacity-0 transition-opacity duration-1000">
+                  <img src="/rjmresort/photo_2026-10-06_03-16-31.jpg" alt="RJM Beach Resort" class="w-full h-full object-cover">
+                </div>
+                <div class="carousel-slide absolute inset-0 opacity-0 transition-opacity duration-1000">
+                  <img src="/rjmresort/photo_2026-10-06_03-16-36.jpg" alt="RJM Beach Resort" class="w-full h-full object-cover">
+                </div>
+                <div class="carousel-slide absolute inset-0 opacity-0 transition-opacity duration-1000">
+                  <img src="/rjmresort/photo_2026-10-06_03-18-32.jpg" alt="RJM Beach Resort" class="w-full h-full object-cover">
+                </div>
+
+                <!-- Gradient overlay -->
+                <div class="absolute inset-0 pointer-events-none"
+                     style="background: linear-gradient(to top, rgba(0,0,0,.4) 0%, transparent 55%); z-index:5;"></div>
+
+                <!-- Caption -->
+                <div class="absolute bottom-5 left-6 z-10">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-white"
+                        style="background: rgba(13,148,136,.82); backdrop-filter: blur(6px);">
+                    <i class="fa-solid fa-location-dot"></i> Bansud, Oriental Mindoro
+                  </span>
+                </div>
+
+                <!-- Prev/Next -->
+                <button class="carousel-btn-prev absolute left-4 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full flex items-center justify-center text-white transition-all duration-200"
+                        style="background:rgba(0,0,0,.35); backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.15);"
+                        onmouseover="this.style.background='rgba(0,0,0,.6)'"
+                        onmouseout="this.style.background='rgba(0,0,0,.35)'">
+                  <i class="fa-solid fa-chevron-left text-sm"></i>
+                </button>
+                <button class="carousel-btn-next absolute right-4 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full flex items-center justify-center text-white transition-all duration-200"
+                        style="background:rgba(0,0,0,.35); backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.15);"
+                        onmouseover="this.style.background='rgba(0,0,0,.6)'"
+                        onmouseout="this.style.background='rgba(0,0,0,.35)'">
+                  <i class="fa-solid fa-chevron-right text-sm"></i>
+                </button>
+
+                <!-- Dots -->
+                <div class="absolute bottom-5 right-6 z-10 flex gap-1.5">
+                  <button class="carousel-indicator h-1.5 rounded-full bg-white transition-all duration-300" style="width:1.5rem;" data-slide="0"></button>
+                  <button class="carousel-indicator h-1.5 rounded-full bg-white/40 transition-all duration-300" style="width:.5rem;" data-slide="1"></button>
+                  <button class="carousel-indicator h-1.5 rounded-full bg-white/40 transition-all duration-300" style="width:.5rem;" data-slide="2"></button>
+                  <button class="carousel-indicator h-1.5 rounded-full bg-white/40 transition-all duration-300" style="width:.5rem;" data-slide="3"></button>
+                  <button class="carousel-indicator h-1.5 rounded-full bg-white/40 transition-all duration-300" style="width:.5rem;" data-slide="4"></button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Two-column copy -->
+            <div class="grid md:grid-cols-2 gap-10">
+              <div class="reveal-left">
+                <h3 class="text-xl font-bold text-teal-700 mb-3 font-display flex items-center gap-2">
+                  <span class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
+                        style="background: linear-gradient(135deg,#f0fdfa,#ccfbf1);">
+                    <i class="fa-solid fa-book-open text-teal-600 text-xs"></i>
+                  </span>
+                  Our Story
+                </h3>
+                <p class="text-gray-600 leading-relaxed text-sm mb-4">
+                  RJM Beach Resort represents the pinnacle of resort hospitality on the beautiful island of Mindoro. Founded with a vision to blend luxury with sustainability, we've created a sanctuary for travelers seeking authentic experiences combined with modern comfort.
+                </p>
+                <p class="text-gray-600 leading-relaxed text-sm">
+                  Our commitment to excellence extends beyond accommodation — it encompasses environmental stewardship, community engagement, and a genuine dedication to guest satisfaction.
+                </p>
+              </div>
+              <div class="reveal-right">
+                <h3 class="text-xl font-bold text-teal-700 mb-3 font-display flex items-center gap-2">
+                  <span class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
+                        style="background: linear-gradient(135deg,#f0fdfa,#ccfbf1);">
+                    <i class="fa-solid fa-star text-teal-600 text-xs"></i>
+                  </span>
+                  What Sets Us Apart
+                </h3>
+                <ul class="space-y-3.5">
+                  <li class="flex items-start gap-3 text-sm text-gray-600">
+                    <div class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
+                         style="background: linear-gradient(135deg,#0d9488,#0891b2);">
+                      <i class="fa-solid fa-check text-white text-[9px]"></i>
+                    </div>
+                    AI-powered booking system for seamless reservations
+                  </li>
+                  <li class="flex items-start gap-3 text-sm text-gray-600">
+                    <div class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
+                         style="background: linear-gradient(135deg,#0d9488,#0891b2);">
+                      <i class="fa-solid fa-check text-white text-[9px]"></i>
+                    </div>
+                    Personalized recommendations based on guest preferences
+                  </li>
+                  <li class="flex items-start gap-3 text-sm text-gray-600">
+                    <div class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
+                         style="background: linear-gradient(135deg,#0d9488,#0891b2);">
+                      <i class="fa-solid fa-check text-white text-[9px]"></i>
+                    </div>
+                    Sustainable practices integrated throughout operations
+                  </li>
+                  <li class="flex items-start gap-3 text-sm text-gray-600">
+                    <div class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
+                         style="background: linear-gradient(135deg,#0d9488,#0891b2);">
+                      <i class="fa-solid fa-check text-white text-[9px]"></i>
+                    </div>
+                    Dedicated staff with award-winning service and world-class amenities
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ══════════════════════════════════════════
+           FEEDBACK CTA
+      ══════════════════════════════════════════ -->
+      <section class="px-4 pb-24">
+        <div class="max-w-6xl mx-auto reveal">
+          <div class="rounded-3xl p-8 md:p-12 relative overflow-hidden"
+               style="background: linear-gradient(135deg,#fffbeb 0%,#fef3c7 55%,#fde68a 100%);
+                      border: 1.5px solid #fcd34d;
+                      box-shadow: 0 12px 40px rgba(217,119,6,.12), 0 4px 12px rgba(0,0,0,.04);">
+
+            <!-- Decorative blobs -->
+            <div class="absolute -top-16 -right-16 w-56 h-56 rounded-full pointer-events-none"
+                 style="background: radial-gradient(circle,rgba(245,158,11,.22),transparent 70%); filter:blur(20px);"></div>
+            <div class="absolute -bottom-12 -left-12 w-40 h-40 rounded-full pointer-events-none"
+                 style="background: radial-gradient(circle,rgba(251,191,36,.18),transparent 70%); filter:blur(16px);"></div>
+
+            <div class="relative grid md:grid-cols-2 gap-8 items-center">
+              <div>
+                <p class="eyebrow text-amber-700 mb-3">
+                  <i class="fa-solid fa-brain text-[9px]"></i> AI-Powered Analysis
+                </p>
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 font-display mb-3" style="letter-spacing:-.02em;">
+                  Share Your Experience
+                </h2>
+                <p class="text-gray-600 text-sm leading-relaxed mb-6">
+                  Every review directly influences how we serve you better. Our AI system analyses each piece of feedback to help us continuously improve.
+                </p>
+                {{#if sessionUserId}}
+                <a href="/bookings/reservations" class="btn btn-gold btn-pill inline-flex items-center gap-2">
+                  <i class="fa-solid fa-star"></i> Leave Your Feedback
+                </a>
+                {{else}}
+                <a href="/login" class="btn btn-primary btn-pill inline-flex items-center gap-2">
+                  <i class="fa-solid fa-right-to-bracket"></i> Sign In to Leave Feedback
+                </a>
+                {{/if}}
+              </div>
+
+              <div class="grid grid-cols-3 gap-3">
+                <div class="bg-white rounded-2xl p-5 shadow-sm text-center"
+                     style="border: 1px solid rgba(253,211,77,.3);">
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-3"
+                       style="background: linear-gradient(135deg,#f0fdfa,#ccfbf1);">
+                    <i class="fa-solid fa-bullseye text-teal-600 text-sm"></i>
+                  </div>
+                  <p class="text-xs font-bold text-gray-800 mb-0.5">Your Voice</p>
+                  <p class="text-[11px] text-gray-400 leading-tight">Every review helps</p>
+                </div>
+                <div class="bg-white rounded-2xl p-5 shadow-sm text-center"
+                     style="border: 1px solid rgba(253,211,77,.3);">
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-3"
+                       style="background: linear-gradient(135deg,#eff6ff,#dbeafe);">
+                    <i class="fa-solid fa-chart-bar text-blue-600 text-sm"></i>
+                  </div>
+                  <p class="text-xs font-bold text-gray-800 mb-0.5">AI Analysis</p>
+                  <p class="text-[11px] text-gray-400 leading-tight">Smart detection</p>
+                </div>
+                <div class="bg-white rounded-2xl p-5 shadow-sm text-center"
+                     style="border: 1px solid rgba(253,211,77,.3);">
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-3"
+                       style="background: linear-gradient(135deg,#fef9c3,#fde68a);">
+                    <i class="fa-solid fa-lightbulb text-amber-600 text-sm"></i>
+                  </div>
+                  <p class="text-xs font-bold text-gray-800 mb-0.5">Improvement</p>
+                  <p class="text-[11px] text-gray-400 leading-tight">Drives excellence</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ══════════════════════════════════════════
+           LOCATION
+      ══════════════════════════════════════════ -->
+      <section class="px-4 pb-24">
+        <div class="max-w-6xl mx-auto">
+          <div class="text-center mb-10 reveal">
+            <p class="eyebrow text-teal-300 mb-3">
+              <i class="fa-solid fa-map-pin text-[9px]"></i> Find Us
+            </p>
+            <h2 class="text-3xl font-bold font-display text-white drop-shadow" style="letter-spacing:-.02em;">Our Location</h2>
+          </div>
+
+          <div class="card-premium overflow-hidden reveal-scale">
+            <a href="https://maps.app.goo.gl/E6GqeCxR6SNR9PJM8" target="_blank" rel="noopener noreferrer"
+               class="group block relative h-72 md:h-80 overflow-hidden">
+              <img src="/googlemap.png" alt="RJM Beach Resort Location"
+                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+
+              <!-- Hover overlay -->
+              <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                   style="background: rgba(0,0,0,.38);">
+                <div class="text-center text-white">
+                  <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3"
+                       style="background: rgba(255,255,255,.15); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,.25);">
+                    <i class="fa-solid fa-map-location-dot text-2xl drop-shadow-lg"></i>
+                  </div>
+                  <p class="font-bold text-lg">Open in Google Maps</p>
+                  <p class="text-sm opacity-75 mt-1">Click to get directions</p>
+                </div>
+              </div>
+
+              <!-- Location badge -->
+              <div class="absolute top-4 left-4 z-10">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-white"
+                      style="background: rgba(13,148,136,.88); backdrop-filter: blur(6px); border:1px solid rgba(255,255,255,.15);">
+                  <i class="fa-solid fa-location-dot"></i> Bansud, Oriental Mindoro
+                </span>
+              </div>
+
+              <!-- Open in maps badge -->
+              <div class="absolute top-4 right-4 z-10">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      style="background: rgba(0,0,0,.5); backdrop-filter:blur(6px);">
+                  <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> Google Maps
+                </span>
+              </div>
+            </a>
+
+            <div class="p-7 grid md:grid-cols-2 gap-6">
+              <div class="flex items-start gap-4">
+                <div class="icon-box bg-teal-50 flex-shrink-0"
+                     style="border: 1px solid rgba(153,246,228,.3);">
+                  <i class="fa-solid fa-location-dot text-teal-600"></i>
+                </div>
+                <div>
+                  <h4 class="font-bold text-gray-800 mb-1.5 text-sm">Address</h4>
+                  <p class="text-sm text-gray-500 leading-relaxed">
+                    RJM Beach Resort<br>
+                    Tambong, Barangay Proper Bansud<br>
+                    Bansud, Philippines 5210
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4">
+                <div class="icon-box bg-cyan-50 flex-shrink-0"
+                     style="border: 1px solid rgba(165,243,252,.3);">
+                  <i class="fa-solid fa-route text-cyan-600"></i>
+                </div>
+                <div>
+                  <h4 class="font-bold text-gray-800 mb-1.5 text-sm">How to Find Us</h4>
+                  <p class="text-sm text-gray-500 leading-relaxed">
+                    Located on the scenic coast of Oriental Mindoro. Easily accessible from major highways. Use Google Maps for real-time navigation.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ══════════════════════════════════════════
+           TESTIMONIALS
+      ══════════════════════════════════════════ -->
+      <section class="px-4 pb-24">
+        <div class="max-w-6xl mx-auto">
+          <div class="card-premium p-8 md:p-12 reveal">
+            <div class="text-center mb-10">
+              <p class="eyebrow text-teal-600 mb-3">
+                <i class="fa-solid fa-comments text-[9px]"></i> Guest Reviews
+              </p>
+              <h2 class="section-title">What Our Guests Say</h2>
+              <p class="section-subtitle mx-auto">
+                Real experiences from verified guests who have stayed at RJM Beach Resort.
+              </p>
+
+              {{#if avgRating}}
+              <div class="inline-flex items-center gap-2.5 mt-5 px-6 py-3 rounded-full"
+                   style="background: linear-gradient(135deg,#f0fdfa,#e0f2fe); border: 1.5px solid #99f6e4;
+                          box-shadow: 0 2px 12px rgba(13,148,136,.1);">
+                <i class="fa-solid fa-star text-amber-400"></i>
+                <span class="text-2xl font-bold text-teal-700 font-display">{{avgRating}}</span>
+                <div class="flex gap-0.5">
+                  {{#each overallStars.fullStars}}<i class="fa-solid fa-star text-amber-400 text-sm"></i>{{/each}}
+                  {{#if overallStars.hasHalf}}<i class="fa-solid fa-star-half-stroke text-amber-400 text-sm"></i>{{/if}}
+                  {{#each overallStars.emptyStars}}<i class="fa-regular fa-star text-amber-300 text-sm"></i>{{/each}}
+                </div>
+                <span class="text-sm text-gray-500 font-medium">
+                  Based on {{totalReviews}} review{{#if (gt totalReviews 1)}}s{{/if}}
+                </span>
+              </div>
+              {{/if}}
+            </div>
+
+            {{#if testimonials.length}}
+            <div class="grid md:grid-cols-3 gap-5 stagger-reveal">
+              {{#each testimonials}}
+              <div class="flex flex-col p-6 rounded-2xl relative reveal"
+                   style="background:#f8fafc; border: 1.5px solid #e2e8f0;
+                          transition: box-shadow .3s, transform .3s, border-color .3s;"
+                   onmouseover="this.style.boxShadow='0 10px 32px rgba(0,0,0,.1)'; this.style.transform='translateY(-4px)'; this.style.borderColor='rgba(45,212,191,.3)'"
+                   onmouseout="this.style.boxShadow=''; this.style.transform=''; this.style.borderColor='#e2e8f0'">
+                <!-- Quote icon -->
+                <i class="fa-solid fa-quote-left text-teal-100 text-3xl absolute top-4 right-5"></i>
+                <!-- Stars -->
+                <div class="flex gap-0.5 mb-3">
+                  {{#each fullStars}}<i class="fa-solid fa-star text-amber-400 text-xs"></i>{{/each}}
+                  {{#if hasHalf}}<i class="fa-solid fa-star-half-stroke text-amber-400 text-xs"></i>{{/if}}
+                  {{#each emptyStars}}<i class="fa-regular fa-star text-amber-300 text-xs"></i>{{/each}}
+                </div>
+                <p class="text-sm text-gray-600 leading-relaxed flex-1 mb-5">"{{comment}}"</p>
+                <div class="flex items-center gap-3 mt-auto pt-4"
+                     style="border-top: 1px solid #f1f5f9;">
+                  <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
+                       style="background: {{avatarGradient}};">{{initials}}</div>
+                  <div>
+                    <p class="font-semibold text-gray-800 text-sm">{{displayName}}</p>
+                    <p class="text-[11px] text-gray-400 flex items-center gap-1 mt-0.5">
+                      <i class="fa-solid fa-circle-check text-teal-400 text-[10px]"></i> Verified Guest
+                    </p>
+                  </div>
+                </div>
+              </div>
+              {{/each}}
+            </div>
+            {{else}}
+            <div class="text-center py-14">
+              <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
+                   style="background: linear-gradient(135deg,#f0fdfa,#e0f2fe);">
+                <i class="fa-solid fa-star text-teal-400 text-2xl"></i>
+              </div>
+              <p class="text-gray-500 text-sm">No reviews yet — be the first to share your experience!</p>
+            </div>
+            {{/if}}
+
+            <div class="text-center mt-8 pt-6" style="border-top: 1px solid #f1f5f9;">
+              <a href="/bookings/book"
+                 class="inline-flex items-center gap-2 text-sm font-semibold text-teal-600 hover:text-teal-800 transition-colors group">
+                <i class="fa-solid fa-pen-to-square"></i>
+                Book your stay and share your experience
+                <i class="fa-solid fa-arrow-right text-xs transition-transform duration-200 group-hover:translate-x-1"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ══════════════════════════════════════════
+           FINAL CTA
+      ══════════════════════════════════════════ -->
+      <section class="px-4 pb-24">
+        <div class="max-w-6xl mx-auto reveal-scale">
+          <div class="rounded-3xl p-10 md:p-16 text-center text-white relative overflow-hidden"
+               style="background: linear-gradient(135deg,#0f766e 0%,#0d9488 50%,#0891b2 100%);
+                      box-shadow: 0 24px 64px rgba(13,148,136,.3), 0 4px 16px rgba(0,0,0,.12);">
+
+            <!-- Decorative circles -->
+            <div class="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl">
+              <div class="absolute -top-24 -right-24 w-72 h-72 rounded-full"
+                   style="background: radial-gradient(circle, rgba(255,255,255,.08), transparent 65%);"></div>
+              <div class="absolute -bottom-20 -left-20 w-56 h-56 rounded-full"
+                   style="background: radial-gradient(circle, rgba(255,255,255,.06), transparent 65%);"></div>
+            </div>
+
+            <div class="relative">
+              <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6"
+                   style="background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.2);">
+                <i class="fa-solid fa-sailboat text-white text-2xl"></i>
+              </div>
+              <h2 class="text-3xl md:text-4xl font-bold font-display mb-4" style="letter-spacing:-.02em;">
+                Ready for Your Perfect Getaway?
+              </h2>
+              <p class="text-teal-100/80 text-lg mb-8 max-w-xl mx-auto leading-relaxed">
+                Join thousands of guests who have experienced the magic of RJM Beach Resort.
+              </p>
+              <div class="flex flex-wrap gap-4 justify-center">
+                <a href="/bookings/book"
+                   class="btn btn-lg btn-pill inline-flex items-center gap-2 bg-white text-teal-700 hover:bg-teal-50 font-bold"
+                   style="box-shadow: 0 8px 28px rgba(0,0,0,.2);">
+                  <i class="fa-solid fa-calendar-check"></i> Book Now
+                </a>
+                {{#unless sessionUserId}}
+                <a href="/login"
+                   class="btn btn-lg btn-pill btn-outline-white inline-flex items-center gap-2">
+                  <i class="fa-solid fa-right-to-bracket"></i> Sign In
+                </a>
+                {{/unless}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    {{> footer }}
+  </div>
+
+  <!-- Carousel JS -->
+  <script>
+  (function () {
+    const slides     = document.querySelectorAll('.carousel-slide');
+    const indicators = document.querySelectorAll('.carousel-indicator');
+    let current = 0, timer = null;
+
+    function show(n) {
+      slides.forEach((s, i) => {
+        s.style.opacity = i === n ? '1' : '0';
+        s.style.zIndex  = i === n ? '1' : '0';
+      });
+      indicators.forEach((d, i) => {
+        if (i === n) {
+          d.style.opacity = '1';
+          d.style.width   = '1.5rem';
+          d.style.background = '#fff';
+        } else {
+          d.style.opacity = '0.45';
+          d.style.width   = '.5rem';
+          d.style.background = '#fff';
+        }
+      });
+      current = n;
+    }
+
+    function next() { show((current + 1) % slides.length); }
+    function prev() { show((current - 1 + slides.length) % slides.length); }
+    function startTimer() { timer = setInterval(next, 5500); }
+    function resetTimer()  { clearInterval(timer); startTimer(); }
+
+    const nextBtn = document.querySelector('.carousel-btn-next');
+    const prevBtn = document.querySelector('.carousel-btn-prev');
+    if (nextBtn) nextBtn.addEventListener('click', () => { next(); resetTimer(); });
+    if (prevBtn) prevBtn.addEventListener('click', () => { prev(); resetTimer(); });
+    indicators.forEach(d => d.addEventListener('click', () => { show(+d.dataset.slide); resetTimer(); }));
+
+    const cc = document.querySelector('.carousel-container');
+    if (cc) {
+      cc.addEventListener('mouseenter', () => clearInterval(timer));
+      cc.addEventListener('mouseleave', startTimer);
+    }
+
+    show(0);
+    startTimer();
+  })();
+
+  // ── Scroll reveal ──
+  (function () {
+    const selectors = '.reveal, .reveal-left, .reveal-right, .reveal-scale';
+    const els = document.querySelectorAll(selectors);
+    if (!els.length) return;
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // Apply stagger to siblings inside .stagger-reveal
+          const parent = entry.target.closest('.stagger-reveal');
+          if (parent) {
+            const siblings = Array.from(parent.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale'));
+            const idx = siblings.indexOf(entry.target);
+            entry.target.style.transitionDelay = (idx * 0.08) + 's';
+          }
+          entry.target.classList.add('visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    els.forEach(el => io.observe(el));
+  })();
+  </script>
+
+  {{> chatbot }}
+</body>
+</html>

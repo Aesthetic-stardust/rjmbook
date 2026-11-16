@@ -1,0 +1,282 @@
+<!-- ══════════════════════════════════════════════
+     RJMBook — Account Settings Form Partial
+     Used by views/account/settings.xian
+     ══════════════════════════════════════════════ -->
+<div class="max-w-2xl space-y-6">
+
+  <!-- ── Page Header ── -->
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+         style="background: linear-gradient(135deg,#0d9488,#0891b2);">
+      <i class="fa-solid fa-user-gear text-white"></i>
+    </div>
+    <div>
+      <h2 class="text-xl font-bold text-gray-800">Account Settings</h2>
+      <p class="text-sm text-gray-500">Update your profile information and password</p>
+    </div>
+  </div>
+
+  <!-- ── Profile Card ── -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-100" style="background: linear-gradient(135deg,#f0fdfa,#ecfeff);">
+      <h3 class="text-base font-semibold text-gray-800 flex items-center gap-2">
+        <i class="fa-solid fa-id-card text-teal-600"></i> Profile Information
+      </h3>
+      <p class="text-xs text-gray-500 mt-0.5">Update your name and email address</p>
+    </div>
+    <div class="p-6">
+      <div id="profile-error"
+           class="hidden mb-4 px-4 py-3 rounded-xl text-sm font-medium text-red-700 bg-red-50 border border-red-200"
+           style="display:none;">
+        <i class="fa-solid fa-circle-xmark mr-2"></i><span></span>
+      </div>
+      <div id="profile-success"
+           class="hidden mb-4 px-4 py-3 rounded-xl text-sm font-medium text-teal-700 bg-teal-50 border border-teal-200"
+           style="display:none;">
+        <i class="fa-solid fa-circle-check mr-2"></i><span></span>
+      </div>
+
+      <form id="profile-form" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Full Name</label>
+          <div class="relative">
+            <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+            <input type="text" name="name" id="profile-name"
+                   value="{{accountName}}" required
+                   class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all"
+                   placeholder="Your full name" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
+          <div class="relative">
+            <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+            <input type="email" name="email" id="profile-email"
+                   value="{{accountEmail}}" required
+                   class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent transition-all"
+                   placeholder="your@email.com" />
+          </div>
+        </div>
+
+        <div class="pt-1">
+          <button type="submit" id="profile-btn"
+                  class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
+                  style="background: linear-gradient(135deg,#0d9488,#0891b2); box-shadow: 0 4px 12px rgba(13,148,136,.3);">
+            <i class="fa-solid fa-floppy-disk"></i> Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Password Card ── -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-100" style="background: linear-gradient(135deg,#fdf4ff,#fae8ff);">
+      <h3 class="text-base font-semibold text-gray-800 flex items-center gap-2">
+        <i class="fa-solid fa-lock text-purple-600"></i> Change Password
+      </h3>
+      <p class="text-xs text-gray-500 mt-0.5">Choose a strong password of at least 8 characters</p>
+    </div>
+    <div class="p-6">
+      <div id="password-error"
+           class="hidden mb-4 px-4 py-3 rounded-xl text-sm font-medium text-red-700 bg-red-50 border border-red-200"
+           style="display:none;">
+        <i class="fa-solid fa-circle-xmark mr-2"></i><span></span>
+      </div>
+      <div id="password-success"
+           class="hidden mb-4 px-4 py-3 rounded-xl text-sm font-medium text-teal-700 bg-teal-50 border border-teal-200"
+           style="display:none;">
+        <i class="fa-solid fa-circle-check mr-2"></i><span></span>
+      </div>
+
+      <form id="password-form" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Current Password</label>
+          <div class="relative">
+            <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+            <input type="password" name="currentPassword" id="current-password" required
+                   class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all"
+                   placeholder="Enter current password" />
+            <button type="button" class="toggle-pw absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors" data-target="current-password">
+              <i class="fa-solid fa-eye text-sm"></i>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">New Password</label>
+          <div class="relative">
+            <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+            <input type="password" name="newPassword" id="new-password" required
+                   class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all"
+                   placeholder="At least 8 characters" />
+            <button type="button" class="toggle-pw absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors" data-target="new-password">
+              <i class="fa-solid fa-eye text-sm"></i>
+            </button>
+          </div>
+          <!-- Strength bar -->
+          <div class="mt-2 h-1.5 rounded-full bg-gray-100 overflow-hidden">
+            <div id="strength-bar" class="h-full rounded-full transition-all duration-300" style="width:0%;"></div>
+          </div>
+          <p id="strength-label" class="text-xs text-gray-400 mt-1 h-4"></p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1.5">Confirm New Password</label>
+          <div class="relative">
+            <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+            <input type="password" name="confirmPassword" id="confirm-password" required
+                   class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all"
+                   placeholder="Repeat new password" />
+            <button type="button" class="toggle-pw absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors" data-target="confirm-password">
+              <i class="fa-solid fa-eye text-sm"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="pt-1">
+          <button type="submit" id="password-btn"
+                  class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
+                  style="background: linear-gradient(135deg,#7c3aed,#a855f7); box-shadow: 0 4px 12px rgba(124,58,237,.3);">
+            <i class="fa-solid fa-key"></i> Change Password
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  // ── Toggle password visibility ──
+  document.querySelectorAll('.toggle-pw').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var inp  = document.getElementById(this.dataset.target);
+      var icon = this.querySelector('i');
+      if (inp.type === 'password') {
+        inp.type = 'text';
+        icon.className = 'fa-solid fa-eye-slash text-sm';
+      } else {
+        inp.type = 'password';
+        icon.className = 'fa-solid fa-eye text-sm';
+      }
+    });
+  });
+
+  // ── Password strength meter ──
+  var newPwInput  = document.getElementById('new-password');
+  var strengthBar = document.getElementById('strength-bar');
+  var strengthLbl = document.getElementById('strength-label');
+  var colors = ['#ef4444','#f97316','#eab308','#22c55e','#16a34a'];
+  var labels = ['Very weak','Weak','Fair','Strong','Very strong'];
+
+  function calcStrength(pw) {
+    var score = 0;
+    if (pw.length >= 8)  score++;
+    if (pw.length >= 12) score++;
+    if (/[A-Z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+    return score;
+  }
+
+  newPwInput.addEventListener('input', function () {
+    var score = calcStrength(this.value);
+    strengthBar.style.width      = ((score / 5) * 100) + '%';
+    strengthBar.style.background = this.value ? (colors[score - 1] || '#e5e7eb') : '#e5e7eb';
+    strengthLbl.textContent      = this.value ? (labels[score - 1] || '') : '';
+    strengthLbl.style.color      = colors[score - 1] || '#9ca3af';
+  });
+
+  // ── Alert helpers ──
+  function showAlert(id, message, isError) {
+    var el = document.getElementById(id);
+    el.querySelector('span').textContent = message;
+    el.style.display = 'block';
+    el.classList.remove('hidden');
+    if (!isError) setTimeout(function () { hideAlert(id); }, 4000);
+  }
+  function hideAlert(id) {
+    var el = document.getElementById(id);
+    el.style.display = 'none';
+    el.classList.add('hidden');
+  }
+
+  // ── Profile form ──
+  document.getElementById('profile-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    hideAlert('profile-error');
+    hideAlert('profile-success');
+
+    var btn  = document.getElementById('profile-btn');
+    var data = Object.fromEntries(new FormData(e.target));
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving…';
+
+    try {
+      var res  = await fetch('/account/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      var json = await res.json();
+
+      if (!res.ok) {
+        showAlert('profile-error', json.error || 'Update failed.', true);
+      } else {
+        showAlert('profile-success', json.message || 'Profile updated.', false);
+        // Refresh visible name in sidebar / topbar without a full reload
+        var sidebarName = document.getElementById('sidebar-name');
+        var topbarName  = document.getElementById('topbar-name');
+        if (sidebarName) sidebarName.textContent = data.name;
+        if (topbarName)  topbarName.textContent  = data.name;
+      }
+    } catch (err) {
+      showAlert('profile-error', 'An error occurred. Please try again.', true);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
+    }
+  });
+
+  // ── Password form ──
+  document.getElementById('password-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    hideAlert('password-error');
+    hideAlert('password-success');
+
+    var btn  = document.getElementById('password-btn');
+    var data = Object.fromEntries(new FormData(e.target));
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Changing…';
+
+    try {
+      var res  = await fetch('/account/password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      var json = await res.json();
+
+      if (!res.ok) {
+        showAlert('password-error', json.error || 'Password change failed.', true);
+      } else {
+        showAlert('password-success', json.message || 'Password changed successfully.', false);
+        e.target.reset();
+        strengthBar.style.width = '0%';
+        strengthBar.style.background = '#e5e7eb';
+        strengthLbl.textContent = '';
+      }
+    } catch (err) {
+      showAlert('password-error', 'An error occurred. Please try again.', true);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-key"></i> Change Password';
+    }
+  });
+})();
+</script>

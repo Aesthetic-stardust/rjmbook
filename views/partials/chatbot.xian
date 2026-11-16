@@ -1,0 +1,8 @@
+<!-- Chatbot Widget Container -->
+<div id="chatbot-container"></div>
+
+<!-- Chatbot CSS -->
+<link rel="stylesheet" href="/css/chatbot.css">
+
+<!-- Chatbot JS -->
+<script src="/js/chatbot.js"></script>

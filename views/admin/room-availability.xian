@@ -1,0 +1,242 @@
+{{> head }}
+<body class="font-body">
+<div class="flex h-screen overflow-hidden" style="background:#f1f5f9;">
+
+  <!-- ── Admin Sidebar ── -->
+  <aside id="admin-sidebar"
+         class="flex-shrink-0 w-64 flex flex-col fixed md:relative top-0 left-0 h-screen z-40 transition-transform duration-300"
+         style="background: linear-gradient(180deg,#0f172a 0%,#134e4a 100%); box-shadow: 4px 0 24px rgba(0,0,0,.18);">
+    <div class="px-6 py-6 border-b" style="border-color: rgba(255,255,255,.08);">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+             style="background: linear-gradient(135deg,#0d9488,#0891b2);">
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-white font-display leading-none">RJMBook</h1>
+          <p class="text-xs mt-0.5" style="color: rgba(255,255,255,.4);">Admin Panel</p>
+        </div>
+      </div>
+    </div>
+    <nav class="flex-1 px-3 py-5 space-y-0.5 overflow-y-auto">
+      <p class="text-xs font-semibold uppercase tracking-widest px-3 mb-3" style="color: rgba(255,255,255,.3);">Management</p>
+      <a href="/admin"              class="sidebar-link"><i class="fa-solid fa-gauge w-4 text-center flex-shrink-0"></i><span>Dashboard</span></a>
+      <a href="/admin/reservations" class="sidebar-link"><i class="fa-solid fa-calendar-days w-4 text-center flex-shrink-0"></i><span>Reservations</span></a>
+      <a href="/admin/book"         class="sidebar-link"><i class="fa-solid fa-calendar-plus w-4 text-center flex-shrink-0"></i><span>Walk-in Booking</span></a>
+      <a href="/admin/reservation-calendar" class="sidebar-link"><i class="fa-solid fa-calendar w-4 text-center flex-shrink-0"></i><span>Reservation Calendar</span></a>
+      <a href="/admin/room-availability" class="sidebar-link active"><i class="fa-solid fa-door-open w-4 text-center flex-shrink-0"></i><span>Room Availability</span></a>
+      <a href="/admin/rooms"        class="sidebar-link"><i class="fa-solid fa-bed w-4 text-center flex-shrink-0"></i><span>Rooms</span></a>
+      <a href="/admin/cottages"     class="sidebar-link"><i class="fa-solid fa-umbrella-beach w-4 text-center flex-shrink-0"></i><span>Cottages</span></a>
+      <a href="/guests"             class="sidebar-link"><i class="fa-solid fa-users w-4 text-center flex-shrink-0"></i><span>Guests</span></a>
+      <div class="my-3 border-t" style="border-color: rgba(255,255,255,.07);"></div>
+      <p class="text-xs font-semibold uppercase tracking-widest px-3 mb-3" style="color: rgba(255,255,255,.3);">Analytics</p>
+      <a href="/dashboard"                class="sidebar-link"><i class="fa-solid fa-chart-pie w-4 text-center flex-shrink-0"></i><span>Analytics</span></a>
+      <a href="/admin/reports"            class="sidebar-link"><i class="fa-solid fa-file-chart-column w-4 text-center flex-shrink-0"></i><span>Reports</span></a>
+      <a href="/admin/sentiment-analysis" class="sidebar-link"><i class="fa-solid fa-brain w-4 text-center flex-shrink-0"></i><span>Sentiment Analysis</span></a>
+      <div class="my-3 border-t" style="border-color: rgba(255,255,255,.07);"></div>
+      <p class="text-xs font-semibold uppercase tracking-widest px-3 mb-3" style="color: rgba(255,255,255,.3);">Account</p>
+      <a href="/admin/payment-settings" class="sidebar-link"><i class="fa-solid fa-peso-sign w-4 text-center flex-shrink-0"></i><span>Payment Settings</span></a>
+      <a href="/admin/staff"        class="sidebar-link"><i class="fa-solid fa-user-tie w-4 text-center flex-shrink-0"></i><span>Manage Staff</span></a>
+      <a href="/account" class="sidebar-link"><i class="fa-solid fa-user-gear w-4 text-center flex-shrink-0"></i><span>Account Settings</span></a>
+    </nav>
+    <div class="px-3 py-4 border-t" style="border-color: rgba(255,255,255,.08);">
+      <div class="flex items-center gap-3 px-3 py-3 rounded-xl mb-3" style="background: rgba(255,255,255,.06);">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
+             style="background: linear-gradient(135deg,#0d9488,#0891b2);">
+          {{#if sessionUserName}}{{sessionUserName.[0]}}{{else}}A{{/if}}
+        </div>
+        <div class="min-w-0">
+          <p class="text-xs text-white font-semibold truncate">{{sessionUserName}}</p>
+          <p class="text-xs" style="color: rgba(255,255,255,.4);">Administrator</p>
+        </div>
+      </div>
+      <button id="adminLogoutBtn"
+              class="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-white transition-all cursor-pointer border-none"
+              style="background: rgba(220,38,38,.2); border: 1px solid rgba(220,38,38,.3);"
+>
+        <i class="fa-solid fa-right-from-bracket text-red-400"></i>
+        <span class="text-red-300">Sign Out</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <main class="flex-1 flex flex-col overflow-hidden">
+    <header class="flex-shrink-0 flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200"
+            style="box-shadow: 0 1px 8px rgba(0,0,0,.06);">
+      <div class="flex items-center gap-4">
+        <button id="sidebar-toggle" class="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">Room Availability</h2>
+          <p class="text-xs text-gray-500 mt-0.5">Live occupancy overview — {{today}}</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="hidden sm:block text-right">
+          <p class="text-xs text-gray-500">Welcome back,</p>
+          <p class="text-sm font-semibold text-gray-800">{{sessionUserName}}</p>
+        </div>
+        <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white"
+             style="background: linear-gradient(135deg,#0d9488,#0891b2);">
+          {{#if sessionUserName}}{{sessionUserName.[0]}}{{else}}A{{/if}}
+        </div>
+      </div>
+    </header>
+
+    <div class="flex-1 overflow-auto p-6" style="background:#f8fafc;">
+
+      <!-- Summary Cards -->
+      <div class="grid grid-cols-3 gap-4 mb-6">
+        <div class="card p-5 text-center animate-fade-in-up">
+          <p class="text-3xl font-bold text-gray-800 mb-1">{{totalRooms}}</p>
+          <p class="text-sm text-gray-500 font-medium">Total Rooms</p>
+        </div>
+        <div class="card p-5 text-center animate-fade-in-up" style="border-top: 3px solid #ef4444;">
+          <p class="text-3xl font-bold text-red-600 mb-1">{{occupiedCount}}</p>
+          <p class="text-sm text-gray-500 font-medium">Occupied</p>
+        </div>
+        <div class="card p-5 text-center animate-fade-in-up" style="border-top: 3px solid #22c55e;">
+          <p class="text-3xl font-bold text-green-600 mb-1">{{availableCount}}</p>
+          <p class="text-sm text-gray-500 font-medium">Available</p>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="flex gap-4 mb-5 flex-wrap">
+        <div class="flex items-center gap-2 text-sm text-gray-600">
+          <div class="w-3 h-3 rounded-full bg-red-400"></div> Occupied
+        </div>
+        <div class="flex items-center gap-2 text-sm text-gray-600">
+          <div class="w-3 h-3 rounded-full bg-green-400"></div> Available
+        </div>
+        <div class="flex items-center gap-2 text-sm text-gray-600">
+          <div class="w-3 h-3 rounded-full bg-gray-300"></div> Unavailable
+        </div>
+      </div>
+
+      <!-- Room Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+        {{#each rooms}}
+        <div class="card p-4 text-center transition-all hover:shadow-lg cursor-default
+          {{#if this.isOccupied}}border-red-200{{else if this.RoomType.isAvailable}}border-green-200{{else}}border-gray-200 opacity-60{{/if}}"
+             style="border-top: 3px solid {{#if this.isOccupied}}#ef4444{{else if this.RoomType.isAvailable}}#22c55e{{else}}#d1d5db{{/if}};">
+
+          <!-- Status dot -->
+          <div class="flex justify-center mb-2">
+            <div class="w-3 h-3 rounded-full
+              {{#if this.isOccupied}}bg-red-400
+              {{else if this.RoomType.isAvailable}}bg-green-400
+              {{else}}bg-gray-300{{/if}}"></div>
+          </div>
+
+          <p class="font-bold text-gray-800 text-sm mb-0.5">{{this.roomNumber}}</p>
+          <p class="text-xs text-gray-500 mb-2">{{this.RoomType.name}}</p>
+
+          {{#if this.isOccupied}}
+          <div class="text-xs text-red-600 font-medium">
+            {{#if this.currentBooking}}
+            <p class="truncate">{{this.currentBooking.Guest.firstName}} {{this.currentBooking.Guest.lastName}}</p>
+            <p class="text-gray-400">Out: {{this.currentBooking.checkOut}}</p>
+            {{else}}
+            <p>Occupied</p>
+            {{/if}}
+          </div>
+          {{else if this.RoomType.isAvailable}}
+          <p class="text-xs text-green-600 font-medium">Available</p>
+          {{else}}
+          <p class="text-xs text-gray-400 font-medium">Unavailable</p>
+          {{/if}}
+        </div>
+        {{else}}
+        <div class="col-span-full text-center py-12 text-gray-400">
+          <i class="fa-solid fa-bed text-4xl mb-3 block"></i>
+          No rooms found
+        </div>
+        {{/each}}
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Logout Confirmation Modal -->
+<div id="logoutConfirmModal"
+     class="hidden fixed inset-0 z-[500] flex items-center justify-center p-4"
+     style="background: rgba(15,23,42,.65); backdrop-filter: blur(6px);">
+  <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 animate-fade-in-up">
+    <div class="flex items-center gap-4 mb-5">
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
+           style="background: linear-gradient(135deg,#fef3c7,#fde68a);">
+        <i class="fa-solid fa-right-from-bracket text-amber-600 text-lg"></i>
+      </div>
+      <div>
+        <h3 class="text-lg font-bold text-gray-900">Sign Out?</h3>
+        <p class="text-sm text-gray-500">You'll need to sign in again to access your account.</p>
+      </div>
+    </div>
+    <div class="flex gap-3 mt-6">
+      <button id="logoutConfirmNo"
+              class="flex-1 px-4 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm transition-colors">
+        Cancel
+      </button>
+      <button id="logoutConfirmYes"
+              class="flex-1 px-4 py-2.5 rounded-xl font-semibold text-sm text-white transition-all"
+              style="background: linear-gradient(135deg,#dc2626,#ef4444); box-shadow: 0 4px 12px rgba(220,38,38,.3);">
+        Sign Out
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const toggle  = document.getElementById('sidebar-toggle');
+  const sidebar = document.getElementById('admin-sidebar');
+  if (toggle && sidebar) {
+    toggle.addEventListener('click', () => sidebar.classList.toggle('-translate-x-full'));
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth < 768 && !sidebar.contains(e.target) && !toggle.contains(e.target))
+        sidebar.classList.add('-translate-x-full');
+    });
+  }
+
+  // Logout functionality
+  let _logoutCb = null;
+
+  window.showLogoutConfirmation = function (cb) {
+    _logoutCb = cb;
+    const m = document.getElementById('logoutConfirmModal');
+    if (m) m.classList.remove('hidden');
+  };
+
+  window.confirmAdminLogout = function () {
+    showLogoutConfirmation(function () {
+      window.location.href = '/logout';
+    });
+  };
+
+  function closeModal() {
+    const modal = document.getElementById('logoutConfirmModal');
+    if (modal) modal.classList.add('hidden');
+    _logoutCb = null;
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    // Wire up logout button
+    const logoutBtn = document.getElementById('adminLogoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', window.confirmAdminLogout);
+    }
+
+    const yes = document.getElementById('logoutConfirmYes');
+    const no = document.getElementById('logoutConfirmNo');
+    const modal = document.getElementById('logoutConfirmModal');
+
+    if (yes) yes.addEventListener('click', () => { if (_logoutCb) _logoutCb(); });
+    if (no) no.addEventListener('click', closeModal);
+    if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+  });
+})();
+</script>
+</body>

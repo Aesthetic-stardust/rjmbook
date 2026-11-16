@@ -1,0 +1,372 @@
+{{> head }}
+<body class="min-h-screen font-body flex flex-col" style="background:#f8fafc;">
+  {{> nav }}
+
+  <!-- Page header -->
+  <div class="px-4 py-10 relative overflow-hidden"
+       style="background:linear-gradient(135deg,#0f766e 0%,#0d9488 55%,#0891b2 100%);">
+    <div class="absolute inset-0 pointer-events-none"
+         style="background:radial-gradient(ellipse at 80% 50%,rgba(255,255,255,.07) 0%,transparent 60%);"></div>
+    <div class="max-w-6xl mx-auto relative">
+      <div class="flex items-center gap-2 text-teal-200/70 text-xs font-medium mb-3">
+        <a href="/" class="hover:text-white transition-colors flex items-center gap-1">
+          <i class="fa-solid fa-house text-[10px]"></i> Home
+        </a>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        <span class="text-white/80">Rooms</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+             style="background:rgba(255,255,255,.15);">
+          <i class="fa-solid fa-bed text-white text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-3xl md:text-4xl font-bold font-display text-white">Our Rooms</h1>
+          <p class="text-teal-100/80 text-sm mt-0.5">Comfortable, well-appointed rooms with modern amenities</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="flex-1 py-12 px-4">
+    <div class="max-w-6xl mx-auto">
+
+      <!-- Filter/info bar -->
+      <div class="flex items-center justify-between mb-8 flex-wrap gap-3">
+        <p class="text-sm text-gray-500 flex items-center gap-2">
+          <i class="fa-solid fa-circle-info text-teal-500 text-xs"></i>
+          All rooms include a 24-hour stay period. Prices shown per room per night.
+        </p>
+        <a href="/bookings/book"
+           class="btn btn-primary btn-sm inline-flex items-center gap-1.5">
+          <i class="fa-solid fa-calendar-check text-xs"></i> Book Now
+        </a>
+      </div>
+
+      <!-- Room grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {{#each roomTypes}}
+        <div class="room-card animate-fade-in-up {{#unless this.isAvailable}}opacity-60{{/unless}} cursor-pointer"
+             data-modal-room
+             data-id="{{this.id}}"
+             data-name="{{this.name}}"
+             data-description="{{this.description}}"
+             data-max-guests="{{this.maxGuests}}"
+             data-price="{{this.basePricePerNight}}"
+             data-available="{{this.isAvailable}}"
+             data-pool="{{this.poolFeesIncluded}}"
+             data-unavailable-reason="{{this.unavailableReason}}">
+
+          <!-- Carousel -->
+          <div class="nb-carousel" data-id="{{this.id}}" data-name="{{this.name}}">
+            <div class="nb-track"></div>
+            <div class="nb-loading"><i class="fa-solid fa-spinner fa-spin text-teal-500 text-xl"></i></div>
+            <button class="nb-btn nb-prev" type="button" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="nb-btn nb-next" type="button" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
+            <div class="nb-dots"></div>
+            {{#unless this.isAvailable}}
+            <div class="nb-overlay">
+              <i class="fa-solid fa-circle-xmark text-3xl mb-2 block text-red-400"></i>
+              <p class="font-bold text-sm">Unavailable</p>
+              {{#if this.unavailableReason}}<p class="text-xs opacity-80 mt-1">{{this.unavailableReason}}</p>{{/if}}
+            </div>
+            {{/unless}}
+            {{#if this.isAvailable}}
+            <div class="nb-badge">
+              {{#if this.poolFeesIncluded}}
+              <span class="badge badge-success text-xs"><i class="fa-solid fa-check mr-1"></i>Pool Included</span>
+              {{else}}
+              <span class="badge badge-warning text-xs"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Pool Extra</span>
+              {{/if}}
+            </div>
+            {{/if}}
+          </div>
+
+          <div class="p-5">
+            <div class="flex items-start justify-between mb-2">
+              <h3 class="text-base font-bold text-gray-800 font-display">{{this.name}}</h3>
+              <span class="badge badge-neutral text-xs flex-shrink-0 ml-2">
+                <i class="fa-solid fa-users mr-1"></i>{{this.maxGuests}}
+              </span>
+            </div>
+
+            <p class="text-sm text-gray-500 leading-relaxed mb-4 line-clamp-2">{{this.description}}</p>
+
+            <div class="flex items-end justify-between pt-4 border-t border-gray-100">
+              <div>
+                <p class="text-[11px] text-gray-400 font-medium uppercase tracking-wider mb-0.5">Per Day (24 hrs)</p>
+                <p class="text-2xl font-bold text-teal-700 font-display">₱{{this.basePricePerNight}}</p>
+              </div>
+              {{#if this.isAvailable}}
+              <a href="/bookings/book?roomTypeId={{this.id}}"
+                 class="btn btn-primary btn-sm" onclick="event.stopPropagation()">
+                Book <i class="fa-solid fa-arrow-right text-xs ml-0.5"></i>
+              </a>
+              {{else}}
+              <span class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-200 text-gray-400 cursor-not-allowed flex items-center gap-1">
+                <i class="fa-solid fa-ban text-xs"></i> Unavailable
+              </span>
+              {{/if}}
+            </div>
+          </div>
+        </div>
+        {{else}}
+        <div class="col-span-full text-center py-20 text-gray-400">
+          <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
+               style="background:#f1f5f9;">
+            <i class="fa-solid fa-bed text-gray-300 text-2xl"></i>
+          </div>
+          <p class="font-medium text-gray-500">No rooms available at the moment.</p>
+          <p class="text-sm mt-1">Please check back soon.</p>
+        </div>
+        {{/each}}
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Room Detail Modal -->
+  <div id="roomModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4" style="animation: fadeIn 0.2s ease-out;">
+    <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl" style="animation: slideUp 0.3s ease-out;" onclick="event.stopPropagation()">
+      <!-- Modal Header -->
+      <div class="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between z-10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#0f766e,#0d9488);">
+            <i class="fa-solid fa-bed text-white"></i>
+          </div>
+          <div>
+            <h2 id="modalRoomName" class="text-xl font-bold text-gray-800 font-display">Room Name</h2>
+            <p class="text-sm text-gray-500 flex items-center gap-2 mt-0.5">
+              <span id="modalMaxGuests" class="flex items-center gap-1"><i class="fa-solid fa-users text-xs"></i> 3 guests</span>
+              <span class="text-gray-300">•</span>
+              <span id="modalPoolBadge"></span>
+            </p>
+          </div>
+        </div>
+        <button onclick="closeRoomModal()" class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors">
+          <i class="fa-solid fa-xmark text-gray-400 text-xl"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6">
+        <!-- Image Carousel -->
+        <div class="relative mb-6 rounded-xl overflow-hidden bg-gray-100" style="height: 400px;">
+          <div id="modalCarouselTrack" class="w-full h-full relative">
+            <div class="absolute inset-0 flex items-center justify-center">
+              <i class="fa-solid fa-spinner fa-spin text-teal-500 text-2xl"></i>
+            </div>
+          </div>
+          <button id="modalPrevBtn" class="hidden absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white shadow-lg flex items-center justify-center transition-all z-10" onclick="modalPrevImage()">
+            <i class="fa-solid fa-chevron-left text-gray-700"></i>
+          </button>
+          <button id="modalNextBtn" class="hidden absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white shadow-lg flex items-center justify-center transition-all z-10" onclick="modalNextImage()">
+            <i class="fa-solid fa-chevron-right text-gray-700"></i>
+          </button>
+          <div id="modalDots" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10"></div>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-6">
+          <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-2">Description</h3>
+          <p id="modalDescription" class="text-gray-600 leading-relaxed">Room description goes here...</p>
+        </div>
+
+        <!-- Pricing -->
+        <div class="mb-6 p-4 rounded-xl" style="background:linear-gradient(135deg,#f0fdfa,#ecfeff);">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs text-teal-600 font-medium uppercase tracking-wider mb-1">24-Hour Stay Period</p>
+              <p id="modalPrice" class="text-3xl font-bold text-teal-700 font-display">₱1,800.00</p>
+            </div>
+            <div class="text-right">
+              <p class="text-xs text-gray-500 mb-1">Per Room Per Night</p>
+              <div id="modalAvailabilityBadge"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-3">
+          <button onclick="closeRoomModal()" class="flex-1 px-4 py-2.5 rounded-lg border-2 border-gray-200 text-gray-700 font-semibold hover:bg-gray-50 transition-colors">
+            Close
+          </button>
+          <a id="modalBookBtn" href="#" class="flex-1 px-4 py-2.5 rounded-lg font-semibold text-white text-center transition-all" style="background:linear-gradient(135deg,#0f766e,#0d9488);">
+            Book Now <i class="fa-solid fa-arrow-right text-sm ml-1"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{> footer }}
+
+  <script>
+  // ── Room Detail Modal ──────────────────────────────────────────────
+  var _modal = { imgs: [], idx: 0 };
+
+  function openRoomModal(card) {
+    var id          = card.dataset.id;
+    var name        = card.dataset.name;
+    var desc        = card.dataset.description;
+    var maxGuests   = card.dataset.maxGuests;
+    var price       = parseFloat(card.dataset.price || 0).toLocaleString('en-PH', {minimumFractionDigits:2});
+    var available   = card.dataset.available === 'true';
+    var pool        = card.dataset.pool === 'true';
+    var reason      = card.dataset.unavailableReason;
+
+    // Populate text fields
+    document.getElementById('modalRoomName').textContent  = name;
+    document.getElementById('modalMaxGuests').innerHTML   = '<i class="fa-solid fa-users text-xs"></i> ' + maxGuests + ' guests';
+    document.getElementById('modalDescription').textContent = desc;
+    document.getElementById('modalPrice').textContent     = '₱' + price;
+
+    // Pool badge
+    var poolBadge = document.getElementById('modalPoolBadge');
+    poolBadge.innerHTML = pool
+      ? '<span class="inline-flex items-center gap-1 text-xs font-semibold text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full"><i class="fa-solid fa-check text-[10px]"></i> Pool Included</span>'
+      : '<span class="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full"><i class="fa-solid fa-triangle-exclamation text-[10px]"></i> Pool Extra</span>';
+
+    // Availability badge & book button
+    var avBadge  = document.getElementById('modalAvailabilityBadge');
+    var bookBtn  = document.getElementById('modalBookBtn');
+    if (available) {
+      avBadge.innerHTML = '<span class="inline-flex items-center gap-1 text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded-full"><i class="fa-solid fa-circle text-[8px]"></i> Available</span>';
+      bookBtn.href      = '/bookings/book?roomTypeId=' + id;
+      bookBtn.classList.remove('opacity-50','cursor-not-allowed','pointer-events-none');
+    } else {
+      avBadge.innerHTML = '<span class="inline-flex items-center gap-1 text-xs font-semibold text-red-600 bg-red-50 px-2 py-1 rounded-full"><i class="fa-solid fa-ban text-[10px]"></i> ' + (reason || 'Unavailable') + '</span>';
+      bookBtn.href      = '#';
+      bookBtn.classList.add('opacity-50','cursor-not-allowed','pointer-events-none');
+    }
+
+    // Reset carousel
+    _modal.imgs = []; _modal.idx = 0;
+    var track = document.getElementById('modalCarouselTrack');
+    var dots  = document.getElementById('modalDots');
+    track.innerHTML = '<div class="absolute inset-0 flex items-center justify-center"><i class="fa-solid fa-spinner fa-spin text-teal-500 text-2xl"></i></div>';
+    dots.innerHTML  = '';
+    document.getElementById('modalPrevBtn').classList.add('hidden');
+    document.getElementById('modalNextBtn').classList.add('hidden');
+
+    // Show modal
+    var modal = document.getElementById('roomModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+
+    // Fetch images
+    fetch('/rooms/api/' + id + '/images')
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        track.innerHTML = '';
+        var imgs = data.images || [];
+        if (!imgs.length) {
+          track.innerHTML = '<div class="absolute inset-0 flex flex-col items-center justify-center text-gray-300"><i class="fa-regular fa-image text-4xl mb-2"></i><p class="text-sm">No photos yet</p></div>';
+          return;
+        }
+        _modal.imgs = imgs;
+        imgs.forEach(function(img, i) {
+          var slide = document.createElement('div');
+          slide.className = 'absolute inset-0 transition-opacity duration-300';
+          slide.style.display = i === 0 ? 'block' : 'none';
+          var image = document.createElement('img');
+          image.src = img.url; image.alt = name;
+          image.className = 'w-full h-full object-cover';
+          slide.appendChild(image);
+          track.appendChild(slide);
+          if (imgs.length > 1) {
+            var dot = document.createElement('span');
+            dot.className = 'w-2 h-2 rounded-full cursor-pointer transition-all ' + (i===0 ? 'bg-white scale-125' : 'bg-white/50');
+            dot.setAttribute('data-idx', i);
+            dot.addEventListener('click', function(){ modalGoto(parseInt(this.getAttribute('data-idx'))); });
+            dots.appendChild(dot);
+          }
+        });
+        if (imgs.length > 1) {
+          document.getElementById('modalPrevBtn').classList.remove('hidden');
+          document.getElementById('modalNextBtn').classList.remove('hidden');
+        }
+      })
+      .catch(function(){ track.innerHTML = '<div class="absolute inset-0 flex items-center justify-center text-gray-300"><i class="fa-regular fa-image text-4xl"></i></div>'; });
+  }
+
+  function modalGoto(idx) {
+    var track = document.getElementById('modalCarouselTrack');
+    var slides = track.querySelectorAll('div');
+    var dots   = document.getElementById('modalDots').querySelectorAll('span');
+    slides.forEach(function(s,i){ s.style.display = i===idx ? 'block':'none'; });
+    dots.forEach(function(d,i){
+      d.className = 'w-2 h-2 rounded-full cursor-pointer transition-all ' + (i===idx ? 'bg-white scale-125':'bg-white/50');
+    });
+    _modal.idx = idx;
+  }
+
+  function modalPrevImage() { modalGoto((_modal.idx - 1 + _modal.imgs.length) % _modal.imgs.length); }
+  function modalNextImage() { modalGoto((_modal.idx + 1) % _modal.imgs.length); }
+
+  function closeRoomModal() {
+    var modal = document.getElementById('roomModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    // Open modal on card click
+    document.querySelectorAll('[data-modal-room]').forEach(function(card){
+      card.addEventListener('click', function(){ openRoomModal(card); });
+    });
+    // Close on backdrop click
+    document.getElementById('roomModal').addEventListener('click', closeRoomModal);
+    // Close on Escape
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeRoomModal(); });
+  });
+  </script>
+
+  <style>
+  @keyframes fadeIn  { from{opacity:0} to{opacity:1} }
+  @keyframes slideUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+  </style>
+
+  <script>
+  (function () {
+    function goto(el, idx) {
+      el.querySelectorAll('.nb-slide').forEach((s,i) => s.style.display = i===idx ? 'block':'none');
+      el.querySelectorAll('.nb-dot').forEach((d,i)  => d.className = 'nb-dot'+(i===idx?' on':''));
+      el._c.i = idx;
+    }
+    function init(el, apiBase) {
+      var id=el.getAttribute('data-id'), name=el.getAttribute('data-name');
+      var track=el.querySelector('.nb-track'), load=el.querySelector('.nb-loading');
+      var dots=el.querySelector('.nb-dots'), prev=el.querySelector('.nb-prev'), next=el.querySelector('.nb-next');
+      fetch(apiBase+id+'/images')
+        .then(r=>r.json())
+        .then(data=>{
+          if(load) load.remove();
+          var imgs=data.images||[];
+          if(!imgs.length){ track.innerHTML='<div class="nb-no-img"><i class="fa-regular fa-image"></i></div>'; return; }
+          imgs.forEach((img,i)=>{
+            var slide=document.createElement('div'); slide.className='nb-slide'; slide.style.display=i===0?'block':'none';
+            var image=document.createElement('img'); image.src=img.url; image.alt=name;
+            slide.appendChild(image); track.appendChild(slide);
+            if(imgs.length>1){
+              var dot=document.createElement('span'); dot.className='nb-dot'+(i===0?' on':''); dot.setAttribute('data-idx',i); dots.appendChild(dot);
+            }
+          });
+          el._c={i:0,n:imgs.length};
+          if(imgs.length>1){
+            prev.style.display='flex'; next.style.display='flex';
+            prev.addEventListener('click',e=>{e.stopPropagation();goto(el,(el._c.i-1+el._c.n)%el._c.n);});
+            next.addEventListener('click',e=>{e.stopPropagation();goto(el,(el._c.i+1)%el._c.n);});
+            dots.addEventListener('click',e=>{var dot=e.target.closest('.nb-dot');if(dot)goto(el,parseInt(dot.getAttribute('data-idx')));});
+          }
+        })
+        .catch(e=>{console.error('Carousel:',e);if(load)load.remove();});
+    }
+    document.addEventListener('DOMContentLoaded',()=>{
+      document.querySelectorAll('.nb-carousel').forEach(el=>init(el,'/rooms/api/'));
+    });
+  })();
+  </script>
+</body>
