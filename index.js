@@ -47,6 +47,9 @@ const __dirname = dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust reverse proxy (Nginx) for secure cookies and protocol detection
+app.set("trust proxy", 1);
+
 // ── Persistent session store (survives server restarts) ──
 const SequelizeStore = connectSessionSequelize(session.Store);
 const sessionStore = new SequelizeStore({
