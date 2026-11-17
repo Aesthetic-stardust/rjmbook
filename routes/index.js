@@ -31,11 +31,19 @@ router.post("/register", register);
 // ── Google OAuth ──
 router.get(
   "/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  (req, res, next) => {
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+      return res.redirect("/login?error=oauth_not_configured");
+    }
+    passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
+  }
 );
 router.get(
   "/auth/google/callback",
   (req, res, next) => {
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+      return res.redirect("/login?error=oauth_not_configured");
+    }
     passport.authenticate("google", { session: false }, async (err, user, info) => {
       if (err) {
         console.error("❌ Passport error:", err);
