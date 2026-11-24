@@ -163,7 +163,7 @@
   <script>
     // Chat functionality with database integration
     const sessionRole = "{{sessionRole}}";
-    const sessionUserId = {{sessionUserId}};
+    const sessionUserId = {{#if sessionUserId}}{{sessionUserId}}{{else}}null{{/if}};
     const chatUserItems = document.querySelectorAll('.chat-user-item');
     const messagesContainer = document.getElementById('messages-container');
     const messageInput = document.getElementById('message-input');
