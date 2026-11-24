@@ -33,6 +33,22 @@ async function seed() {
       console.log("⏭ Admin user already exists — skipping.");
     }
 
+    // 1b. Seed default staff if no staff exists
+    const staffExists = await User.findOne({ where: { role: "staff" } });
+    if (!staffExists) {
+      const staffPassword = process.env.STAFF_SEED_PASSWORD || "staff123";
+      const hashedStaffPassword = await bcrypt.hash(staffPassword, 10);
+      await User.create({
+        name: "Resort Staff",
+        email: "staff@rjmresort.com",
+        password: hashedStaffPassword,
+        role: "staff"
+      });
+      console.log("✅ Staff user created: staff@rjmresort.com");
+    } else {
+      console.log("⏭ Staff user already exists — skipping.");
+    }
+
     // 2. Seed Room Types
     let roomTypes = await RoomType.findAll();
     if (roomTypes.length === 0) {
