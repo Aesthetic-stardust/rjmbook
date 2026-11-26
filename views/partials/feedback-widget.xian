@@ -1,6 +1,9 @@
-<!-- Floating Feedback Widget — guest-facing only -->
+<!-- Floating Feedback Widget — guest-facing only (hidden on rooms, cottages, and booking pages) -->
 {{#unless (eq sessionRole "admin")}}
 {{#unless (eq sessionRole "staff")}}
+{{#unless (eq currentPage "rooms")}}
+{{#unless (eq currentPage "cottages")}}
+{{#unless (eq currentPage "bookings")}}
 <div id="feedback-widget-container" class="fixed bottom-8 left-8 z-40">
   <button id="feedback-btn" class="group relative w-16 h-16 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg hover:shadow-2xl hover:scale-110 transition-all duration-300 flex items-center justify-center animate-bounce font-bold text-2xl"
     title="Share your feedback"
@@ -69,5 +72,8 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 }
 </style>
+{{/unless}}
+{{/unless}}
+{{/unless}}
 {{/unless}}
 {{/unless}}
