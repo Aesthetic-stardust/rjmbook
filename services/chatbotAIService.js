@@ -1,14 +1,17 @@
 /*
   RJMBook — Chatbot AI Service (Google Gemini)
-  Grounds responses with live RoomType and Service data from MySQL.
+  Grounds responses with live RoomType, Service, and Booking data from MySQL via Sequelize.
 */
 
+import "dotenv/config";
 import { RoomType } from "../models/RoomType.js";
 import { Service } from "../models/Service.js";
+import { Booking } from "../models/Booking.js";
+import { Room } from "../models/Room.js";
 
-const DEFAULT_GEMINI_MODEL = "gemini-flash-latest";
+const DEFAULT_GEMINI_MODEL = "gemini-3.5-flash-lite";
 const RESORT_CONTEXT_TTL_MS = 2 * 60 * 1000; // 2 minutes
-const GEMINI_TIMEOUT_MS = 12000;
+const GEMINI_TIMEOUT_MS = 15000;
 
 let cachedContext = {
   text: null,
@@ -23,7 +26,7 @@ function formatRoomTypeLine(rt) {
   const basePrice = rt.basePricePerNight ? `₱${parseFloat(rt.basePricePerNight).toLocaleString()}` : "N/A";
   const dayPrice = rt.dayPrice ? `, Day (8AM-5PM): ₱${parseFloat(rt.dayPrice).toLocaleString()}` : "";
   const nightPrice = rt.nightPrice ? `, Night (6PM-11PM): ₱${parseFloat(rt.nightPrice).toLocaleString()}` : "";
-  const poolFee = rt.poolFeesIncluded ? "Pool fees included" : "Pool fees not included";
+  const poolFee = rt.poolFeesIncluded ? "Pool fees included" : "Pool fees NOT included";
   const amenities = Array.isArray(rt.amenities) && rt.amenities.length > 0
     ? `Amenities: ${rt.amenities.join(", ")}`
     : "";
@@ -85,7 +88,7 @@ async function getLiveResortContext() {
     console.error("Chatbot AI context error (Service):", err.message);
   }
 
-  const contextText = `AVAILABLE ACCOMMODATIONS (live from database):
+  const contextText = `LIVE RESORT DATABASE (ACCOMMODATIONS & SERVICES):
 ${roomsSection}
 
 RESORT SERVICES & ENTRANCE FEES (live from database):
@@ -100,30 +103,79 @@ ${servicesSection}`;
 }
 
 /**
+ * Check if the user message references a specific Booking ID, and if so, fetch it live via Sequelize.
+ */
+async function getBookingContextIfMentioned(userMessage) {
+  if (!userMessage) return null;
+  const idMatch = userMessage.match(/(?:booking|reservation|reserba|id|#)\s*#?\s*(\d{1,7})/i);
+  if (!idMatch) return null;
+
+  const bookingId = parseInt(idMatch[1], 10);
+  if (!bookingId || isNaN(bookingId)) return null;
+
+  try {
+    const booking = await Booking.findByPk(bookingId, {
+      include: [
+        { model: Room, include: [{ model: RoomType, attributes: ["name", "category"] }] }
+      ]
+    });
+
+    if (!booking) {
+      return `[BOOKING LOOKUP RESULT]: Booking ID #${bookingId} was NOT FOUND in the database. Tell the guest politely that Booking #${bookingId} does not exist and ask them to verify their booking confirmation number.`;
+    }
+
+    const roomName = booking.Room?.RoomType?.name || booking.Room?.name || "N/A";
+    const guestCount = (booking.adults || 0) + (booking.children || 0);
+
+    return `[BOOKING LOOKUP RESULT FOR BOOKING #${bookingId} (live from database)]:
+- Status: ${booking.status}
+- Payment Status: ${booking.paymentStatus}
+- Accommodation: ${roomName}
+- Guests: ${guestCount} (${booking.adults || 0} adults, ${booking.children || 0} children)
+- Check-in: ${booking.checkIn}
+- Check-out: ${booking.checkOut}
+- Total Amount: ₱${parseFloat(booking.totalAmount || 0).toLocaleString()}
+- Rate Type: ${booking.rateType || "Standard"}
+- Special Requests: ${booking.specialRequests || "None"}`;
+  } catch (err) {
+    console.error("Chatbot AI booking context error:", err.message);
+    return null;
+  }
+}
+
+/**
  * Build the system instruction for the resort concierge assistant.
  */
-async function buildSystemInstruction() {
+async function buildSystemInstruction(bookingContext = null) {
   const liveData = await getLiveResortContext();
 
-  return `You are the friendly AI booking concierge for RJM Beach Resort (RJMBook / Naruwan Resort).
+  let instruction = `You are the friendly, professional, and knowledgeable AI concierge for RJM Beach Resort (also known as RJMBook / Naruwan Resort).
 
 RESORT INFORMATION:
 - Location: Tambong, Barangay Proper Bansud, Bansud, Oriental Mindoro 5210
 - Phone: +63 919 378 9570
 - Email: rjm.beachresortph@gmail.com
-- Standard Check-in: 2:00 PM | Standard Check-out: 12:00 PM (early check-in / late check-out upon request)
-- Amenities & Policies: Free Wi-Fi throughout the resort, free spacious parking, pet-friendly (with a small surcharge; inform us during booking), and customizable packages for weddings/events/parties.
-- Website paths: Book at /bookings/book, view rooms at /rooms, cottages at /cottages, services at /services.
+- Standard Check-in: 2:00 PM | Standard Check-out: 12:00 PM (early check-in or late check-out upon request)
+- Amenities & Policies: Free Wi-Fi throughout the resort, free spacious parking, pet-friendly (with a small surcharge; inform us during booking), and customizable packages for events/weddings/parties.
+- Direct booking path: /bookings/book, rooms gallery: /rooms, cottages gallery: /cottages, services: /services.
 
-${liveData}
+${liveData}`;
+
+  if (bookingContext) {
+    instruction += `\n\n${bookingContext}`;
+  }
+
+  instruction += `
 
 RESPONSE RULES:
-1. Reply naturally in the same language as the guest (English, Tagalog, or Taglish).
-2. Be warm, helpful, and concise (under 180 words unless listing options).
-3. ONLY quote accommodation names, capacities, rates, amenities, and services from the live database list above. Never invent rooms, prices, or discounts.
-4. Format replies using plain text, **bold** for emphasis, and "• " for bullet points. Avoid Markdown tables or headings (#).
-5. If a guest asks to check their booking or reservation status, tell them to type "check my booking" and provide their Booking ID so the system can look it up securely.
-6. If a question cannot be answered from the facts above (such as exact real-time date availability or custom event quotes), politely advise them to check /bookings/book or contact +63 919 378 9570 / rjm.beachresortph@gmail.com.`;
+1. Natural Bilingualism: Fluently reply in the SAME language the guest uses (English, Tagalog, or Taglish). Use warm Filipino hospitality ("po" and "opo" when replying in Tagalog).
+2. Strict Grounding: ONLY quote real accommodation names, capacities, rates, pool fees, amenities, and services from the live database list above. NEVER invent or hallucinate rooms, prices, discounts, or policies not in the list.
+3. Personalized Recommendations: When guests ask for recommendations (e.g., for X guests or a certain budget), recommend the most suitable room(s) or cottage(s) from the database list above and briefly highlight why they fit.
+4. Booking Lookup: If a guest asks about a booking and booking data is shown above, summarize the status accurately. If they ask about a booking without providing an ID, kindly ask them for their Booking ID number (e.g. "#42").
+5. Formatting: Use plain text with **bold** for key names/prices and "• " for bullet points. Keep replies concise and easy to read on mobile screens (under 180 words unless giving a detailed breakdown).
+6. Booking & Inquiries: Encourage guests to book at /bookings/book. For custom event packages or questions beyond the facts above, invite them to contact us directly at +63 919 378 9570 or rjm.beachresortph@gmail.com.`;
+
+  return instruction;
 }
 
 /**
@@ -131,16 +183,17 @@ RESPONSE RULES:
  * Returns null if GEMINI_API_KEY is missing or if the request fails, so the caller can fall back to rule-based replies.
  */
 export async function generateGeminiReply(userMessage, history = []) {
-  const apiKey = process.env.GEMINI_API_KEY?.trim();
+  const apiKey = (process.env.GEMINI_API_KEY || "").trim();
   if (!apiKey || apiKey === "your_gemini_api_key") {
     return null;
   }
 
-  const model = process.env.GEMINI_MODEL?.trim() || DEFAULT_GEMINI_MODEL;
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
+  const model = (process.env.GEMINI_MODEL || "").trim() || DEFAULT_GEMINI_MODEL;
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
 
   try {
-    const systemInstruction = await buildSystemInstruction();
+    const bookingContext = await getBookingContextIfMentioned(userMessage);
+    const systemInstruction = await buildSystemInstruction(bookingContext);
 
     const recentHistory = history.slice(-10).map((turn) => ({
       role: turn.role === "model" ? "model" : "user",
@@ -164,8 +217,8 @@ export async function generateGeminiReply(userMessage, history = []) {
         },
         contents,
         generationConfig: {
-          temperature: 0.4,
-          maxOutputTokens: 500,
+          temperature: 0.5,
+          maxOutputTokens: 600,
         },
       }),
       signal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
