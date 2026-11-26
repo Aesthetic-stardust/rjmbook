@@ -4,10 +4,8 @@
 */
 
 import "dotenv/config";
-import { RoomType } from "../models/RoomType.js";
-import { Service } from "../models/Service.js";
-import { Booking } from "../models/Booking.js";
-import { Room } from "../models/Room.js";
+import { Op } from "sequelize";
+import { RoomType, Service, Booking, Room, Guest, User } from "../models/index.js";
 
 const DEFAULT_GEMINI_MODEL = "gemini-3.5-flash-lite";
 const RESORT_CONTEXT_TTL_MS = 2 * 60 * 1000; // 2 minutes
@@ -144,9 +142,88 @@ async function getBookingContextIfMentioned(userMessage) {
 }
 
 /**
+ * Fetch the currently authenticated user's profile and bookings from MySQL via Sequelize.
+ */
+export async function getLoggedInUserBookings(sessionContext) {
+  if (!sessionContext?.userId) return null;
+
+  try {
+    const user = await User.findByPk(sessionContext.userId, {
+      attributes: ["id", "name", "email", "role"],
+    });
+
+    const userName = user?.name || sessionContext.userName || "Guest";
+    const userEmail = user?.email || sessionContext.userEmail || null;
+
+    const guestConditions = [{ userId: sessionContext.userId }];
+    if (userEmail) {
+      guestConditions.push({ email: userEmail });
+    }
+
+    const guests = await Guest.findAll({
+      where: { [Op.or]: guestConditions },
+      attributes: ["id"],
+    });
+
+    let bookings = [];
+    if (guests.length > 0) {
+      const guestIds = guests.map((g) => g.id);
+      bookings = await Booking.findAll({
+        where: { guestId: { [Op.in]: guestIds } },
+        include: [
+          { model: Room, include: [{ model: RoomType, attributes: ["name", "category"] }] },
+        ],
+        order: [["createdAt", "DESC"]],
+        limit: 5,
+      });
+    }
+
+    return { userName, userEmail, role: user?.role || sessionContext.role || "user", bookings };
+  } catch (err) {
+    console.error("Chatbot AI authenticated user lookup error:", err.message);
+    return null;
+  }
+}
+
+/**
+ * Format the logged-in user and their live bookings into context text for Gemini.
+ */
+async function getAuthenticatedUserContext(sessionContext) {
+  if (!sessionContext?.userId) {
+    return `[CURRENT VISITOR SESSION]:
+- Status: Not logged in (anonymous visitor).
+- Note: If they ask "check my booking" or "what is my booking status" without providing a Booking ID, invite them to either log in to their account (/login) so you can check automatically, OR provide their Booking ID number (e.g., #42).`;
+  }
+
+  const info = await getLoggedInUserBookings(sessionContext);
+  if (!info) return null;
+
+  let bookingsText = "This guest currently has NO bookings on record in the database.";
+  if (info.bookings.length > 0) {
+    bookingsText = info.bookings
+      .map((b) => {
+        const roomName = b.Room?.RoomType?.name || b.Room?.roomNumber || "N/A";
+        const total = b.totalAmount ? `₱${parseFloat(b.totalAmount).toLocaleString()}` : "N/A";
+        const guestsCount = (b.adults || 0) + (b.children || 0);
+        const reason = b.cancellationReason ? ` | Cancellation Reason: ${b.cancellationReason}` : "";
+        return `- Booking #${b.id} | Accommodation: ${roomName} | Status: ${b.status} | Payment: ${b.paymentStatus} | Check-in: ${b.checkIn} | Check-out: ${b.checkOut} | Guests: ${guestsCount} | Total: ${total}${reason}`;
+      })
+      .join("\n");
+  }
+
+  return `[CURRENT LOGGED-IN USER (authenticated session)]:
+- Name: ${info.userName}
+- Email: ${info.userEmail || "N/A"}
+- Role: ${info.role}
+
+[THIS USER'S LIVE BOOKINGS IN DATABASE]:
+${bookingsText}`;
+}
+
+/**
  * Build the system instruction for the resort concierge assistant.
  */
-async function buildSystemInstruction(bookingContext = null) {
+async function buildSystemInstruction(bookingContext = null, userContext = null) {
   const liveData = await getLiveResortContext();
 
   let instruction = `You are the friendly, professional, and dedicated customer service AI Concierge for RJM Beach Resort (also known as RJMBook / Naruwan Resort in Bansud, Oriental Mindoro).
@@ -158,7 +235,7 @@ ALLOWED TOPICS (ONLY ANSWER THESE):
 1. Inquiries about RJM Beach Resort's actual accommodations: room and cottage names, rates, guest capacities, amenities (AC, Wi-Fi, private bathroom, pool access).
 2. Inquiries about RJM Beach Resort's services & fees: entrance fees (day/night, adult/kids), pool fees and pool access, equipment rentals (rice cooker, speaker, electric fan).
 3. Inquiries about RJM Beach Resort's policies & logistics: check-in (2:00 PM), check-out (12:00 PM), pet policy, parking, location in Tambong, Bansud, Oriental Mindoro, contact numbers (+63 919 378 9570, rjm.beachresortph@gmail.com).
-4. Direct assistance with booking at /bookings/book or looking up an existing booking ID.
+4. Direct assistance with booking at /bookings/book, greeting the logged-in user by name, or reporting the logged-in user's own reservations and booking statuses.
 
 FORBIDDEN TOPICS (MUST ALWAYS REFUSE):
 1. Language translation, dictionary definitions, grammar, or vocabulary questions (for example: "anong tagalog ng...", "what is the meaning of...", "translate...", "define..."). Even if the word is "available", "room", "resort", or "booking", YOU MUST REFUSE if the user is asking for a translation or definition rather than asking about our resort's actual rooms or services.
@@ -184,6 +261,10 @@ RESORT INFORMATION:
 
 ${liveData}`;
 
+  if (userContext) {
+    instruction += `\n\n${userContext}`;
+  }
+
   if (bookingContext) {
     instruction += `\n\n${bookingContext}`;
   }
@@ -194,7 +275,11 @@ RESPONSE RULES:
 1. Natural Bilingualism: Fluently reply in the SAME language the guest uses (English, Tagalog, or Taglish). Use warm Filipino hospitality ("po" and "opo" when replying in Tagalog).
 2. Strict Grounding: ONLY quote real accommodation names, capacities, rates, pool fees, amenities, and services from the live database list above. NEVER invent or hallucinate rooms, prices, discounts, or policies not in the list.
 3. Personalized Recommendations: When guests ask for recommendations (e.g., for X guests or a certain budget), recommend the most suitable room(s) or cottage(s) from the database list above and briefly highlight why they fit.
-4. Booking Lookup: If a guest asks about a booking and booking data is shown above, summarize the status accurately. If they ask about a booking without providing an ID, kindly ask them for their Booking ID number (e.g. "#42").
+4. Automatic User & Booking Identification:
+   - If [CURRENT LOGGED-IN USER] is provided above, you already know who they are! Address them warmly by their name when greeting or checking their bookings.
+   - If they ask about their booking status (e.g., "check my booking", "kamusta reservation ko", "what is my booking status") WITHOUT providing a Booking ID, DO NOT ask them for a Booking ID — immediately report the exact booking(s) listed in [THIS USER'S LIVE BOOKINGS IN DATABASE]!
+   - If they have 0 bookings on record, let them know politely and invite them to book at /bookings/book.
+   - Only ask for a Booking ID if the visitor is NOT logged in and didn't provide an ID.
 5. Formatting: Use plain text with **bold** for key names/prices and "• " for bullet points. Keep replies concise and easy to read on mobile screens (under 180 words unless giving a detailed breakdown).
 6. Booking & Inquiries: Encourage guests to book at /bookings/book. For custom event packages or questions beyond the facts above, invite them to contact us directly at +63 919 378 9570 or rjm.beachresortph@gmail.com.`;
 
@@ -205,7 +290,7 @@ RESPONSE RULES:
  * Generate a conversational reply using Google Gemini REST API.
  * Returns null if GEMINI_API_KEY is missing or if the request fails, so the caller can fall back to rule-based replies.
  */
-export async function generateGeminiReply(userMessage, history = []) {
+export async function generateGeminiReply(userMessage, history = [], sessionContext = null) {
   const apiKey = (process.env.GEMINI_API_KEY || "").trim();
   if (!apiKey || apiKey === "your_gemini_api_key") {
     return null;
@@ -215,8 +300,11 @@ export async function generateGeminiReply(userMessage, history = []) {
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
 
   try {
-    const bookingContext = await getBookingContextIfMentioned(userMessage);
-    const systemInstruction = await buildSystemInstruction(bookingContext);
+    const [bookingContext, userContext] = await Promise.all([
+      getBookingContextIfMentioned(userMessage),
+      getAuthenticatedUserContext(sessionContext),
+    ]);
+    const systemInstruction = await buildSystemInstruction(bookingContext, userContext);
 
     const recentHistory = history.slice(-10).map((turn) => ({
       role: turn.role === "model" ? "model" : "user",

@@ -354,6 +354,10 @@ class ChatbotWidget {
       /\/services\b/g,
       '<a href="/services" class="chat-inline-link">View Services</a>'
     );
+    formatted = formatted.replace(
+      /\/login\b/g,
+      '<a href="/login" class="chat-inline-link">Sign In</a>'
+    );
 
     // Format phone numbers
     formatted = formatted.replace(

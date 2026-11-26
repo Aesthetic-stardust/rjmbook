@@ -9,7 +9,7 @@ import { Room } from "../models/Room.js";
 import { RoomType } from "../models/RoomType.js";
 import { Service } from "../models/Service.js";
 import { Booking } from "../models/Booking.js";
-import { generateGeminiReply } from "../services/chatbotAIService.js";
+import { generateGeminiReply, getLoggedInUserBookings } from "../services/chatbotAIService.js";
 
 // Store conversation state per user (in-memory for simplicity, can be moved to Redis/DB)
 const conversationStates = new Map();
@@ -71,11 +71,19 @@ export const sendMessage = async (req, res) => {
 
     const lowerMessage = trimmedMessage.toLowerCase();
 
+    // Capture logged-in user session info so the bot can identify them automatically
+    const sessionContext = {
+      userId: req.session?.userId || null,
+      userName: req.session?.userName || null,
+      userEmail: req.session?.userEmail || null,
+      role: req.session?.role || null,
+    };
+
     // Get or create conversation state
     const state = conversationStates.get(userId) || createState();
     state.lastActivity = Date.now();
 
-    const botResponse = await generateResponse(trimmedMessage, lowerMessage, userId, state);
+    const botResponse = await generateResponse(trimmedMessage, lowerMessage, userId, state, sessionContext);
 
     // Save history if conversation wasn't just cleared
     if (conversationStates.has(userId) || state.step !== "initial" || state.history.length > 0 || botResponse) {
@@ -98,8 +106,26 @@ export const sendMessage = async (req, res) => {
   }
 };
 
+// Fallback formatter for logged-in users when Gemini is unavailable
+async function formatUserBookingsFallback(sessionContext) {
+  const info = await getLoggedInUserBookings(sessionContext);
+  if (!info) return null;
+
+  if (!info.bookings || info.bookings.length === 0) {
+    return `👋 Hi **${info.userName}**! You don't have any bookings on record yet.\n\nYou can reserve a room or cottage anytime at /bookings/book.`;
+  }
+
+  const lines = info.bookings.map((b) => {
+    const roomName = b.Room?.RoomType?.name || b.Room?.roomNumber || "Accommodation";
+    const total = b.totalAmount ? `₱${parseFloat(b.totalAmount).toLocaleString()}` : "N/A";
+    return `• **Booking #${b.id}** (${roomName}) — Status: **${b.status}** | Payment: **${b.paymentStatus}** | ${b.checkIn} to ${b.checkOut} | ${total}`;
+  });
+
+  return `📋 **Hi ${info.userName}, here are your recent bookings:**\n\n${lines.join("\n")}\n\nNeed help with any reservation? Contact us at **+63 919 378 9570**.`;
+}
+
 // Generate intelligent responses using deterministic flows + Gemini AI + rule fallback
-async function generateResponse(rawMessage, message, userId, state) {
+async function generateResponse(rawMessage, message, userId, state, sessionContext = null) {
   // Reset conversation if user types "start over", "restart", or "reset"
   if (message.includes("start over") || message.includes("restart") || message.includes("reset")) {
     state.step = "initial";
@@ -128,8 +154,8 @@ async function generateResponse(rawMessage, message, userId, state) {
     }
   }
 
-  // Booking status inquiry — handled deterministically in code for accuracy & privacy
-  if (
+  // Booking status inquiry
+  const isBookingStatusQuery =
     message.includes("my booking") ||
     message.includes("booking status") ||
     message.includes("check booking") ||
@@ -140,15 +166,21 @@ async function generateResponse(rawMessage, message, userId, state) {
     message.includes("booking number") ||
     message.includes("track booking") ||
     message.includes("track my booking") ||
-    message.includes("where is my booking")
-  ) {
+    message.includes("where is my booking");
+
+  if (isBookingStatusQuery) {
     // Support single-turn lookup if user already included an ID (e.g. "check my booking #42")
     const inlineIdMatch = message.match(/(?:id|#|booking|number)\s*(\d+)/i);
     if (inlineIdMatch) {
       return await handleBookingStatusFlow(message, state);
     }
-    state.step = "asking_booking_id";
-    return "🔍 I can look up your booking for you!\n\nPlease enter your **Booking ID** (the number from your confirmation, e.g. **42**):";
+
+    // If NOT logged in, ask for Booking ID or invite them to log in
+    if (!sessionContext?.userId) {
+      state.step = "asking_booking_id";
+      return "🔍 I can look up your booking for you!\n\nPlease enter your **Booking ID** (the number from your confirmation, e.g. **42**), or sign in to your account at /login so I can check your bookings automatically.";
+    }
+    // If logged in, fall through to Gemini (or deterministic fallback) which already has their bookings!
   }
 
   // Start guided recommendation wizard on explicit trigger (or when AI isn't configured)
@@ -175,10 +207,16 @@ async function generateResponse(rawMessage, message, userId, state) {
 • Type **"any"** if either works`;
   }
 
-  // Primary AI response (Google Gemini grounded with live DB data)
-  const aiReply = await generateGeminiReply(rawMessage, state.history);
+  // Primary AI response (Google Gemini grounded with live DB data + logged-in user bookings)
+  const aiReply = await generateGeminiReply(rawMessage, state.history, sessionContext);
   if (aiReply) {
     return aiReply;
+  }
+
+  // Deterministic fallback for logged-in booking queries
+  if (isBookingStatusQuery && sessionContext?.userId) {
+    const fallbackBookings = await formatUserBookingsFallback(sessionContext);
+    if (fallbackBookings) return fallbackBookings;
   }
 
   // Fallback to rule-based responses when Gemini is unavailable or unconfigured
