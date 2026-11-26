@@ -1,6 +1,6 @@
 /*
   RJMBook Chatbot Widget
-  Client-side chat interface with real-time messaging and room recommendations
+  Modern Resort Concierge UI (Powered by Google Gemini AI)
 */
 
 class ChatbotWidget {
@@ -37,33 +37,89 @@ class ChatbotWidget {
 
     container.innerHTML = `
       <div class="chatbot-widget">
-        <!-- Chat Button (Float) -->
-        <button class="chatbot-toggle" aria-label="Open chat">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-          </svg>
-          <span class="notification-badge" style="display: none;">1</span>
+        <!-- Floating Teaser Bubble -->
+        <div class="chatbot-teaser" id="chatbot-teaser" style="display: none;">
+          <div class="teaser-text">
+            <strong>RJM Concierge</strong>
+            <span>👋 Need help booking or have questions? Chat with our AI!</span>
+          </div>
+          <button type="button" class="teaser-close" aria-label="Dismiss">&times;</button>
+        </div>
+
+        <!-- Float Trigger Button -->
+        <button class="chatbot-toggle" aria-label="Open resort concierge chat" title="Chat with RJM Concierge">
+          <div class="toggle-icon-chat">
+            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              <path d="M12 7v.01"></path>
+              <path d="M8 11v.01"></path>
+              <path d="M16 11v.01"></path>
+            </svg>
+          </div>
+          <div class="toggle-icon-close">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </div>
+          <span class="online-indicator-dot" title="Online"></span>
         </button>
 
         <!-- Chat Window -->
         <div class="chatbot-window" style="display: none;">
           <!-- Header -->
           <div class="chatbot-header">
-            <div class="header-content">
-              <h3>🏖️ RJM Beach Resort Chat</h3>
-              <p class="status">Your personal booking assistant</p>
+            <div class="header-left">
+              <div class="resort-avatar-wrap">
+                <img src="/rjmlogo.jpg" alt="RJM Beach Resort" class="resort-avatar" onerror="this.src='/imgs/rjmlogo.jpg'">
+                <span class="avatar-status-dot"></span>
+              </div>
+              <div class="header-titles">
+                <h3 class="resort-title">RJM AI Concierge</h3>
+                <p class="resort-status">
+                  <span class="status-pulse"></span>
+                  Online • Powered by Gemini AI
+                </p>
+              </div>
             </div>
-            <button class="chatbot-close" aria-label="Close chat">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
+            <div class="header-actions">
+              <button type="button" class="chatbot-action-btn chatbot-restart-btn" title="Restart conversation / Start over" aria-label="Restart chat">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="1 4 1 10 7 10"></polyline>
+                  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                </svg>
+              </button>
+              <button type="button" class="chatbot-action-btn chatbot-close-btn" title="Close chat" aria-label="Close chat">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
           </div>
 
           <!-- Messages Container -->
           <div class="chatbot-messages">
             <div class="messages-list"></div>
+          </div>
+
+          <!-- Quick Action Chips -->
+          <div class="chatbot-quick-actions">
+            <button type="button" class="quick-chip" data-message="recommend">
+              <span>🏠</span> Find a Room
+            </button>
+            <button type="button" class="quick-chip" data-message="Magkano ang rates ng rooms at cottages?">
+              <span>💰</span> Rates & Pricing
+            </button>
+            <button type="button" class="quick-chip" data-message="May available bang cottage para sa 10 tao?">
+              <span>🏖️</span> Cottages
+            </button>
+            <button type="button" class="quick-chip" data-message="check my booking">
+              <span>🔍</span> Track Booking
+            </button>
+            <button type="button" class="quick-chip" data-message="What are your standard check-in times and amenities?">
+              <span>🔑</span> Check-in & Policies
+            </button>
           </div>
 
           <!-- Input Area -->
@@ -72,27 +128,20 @@ class ChatbotWidget {
               <input
                 type="text"
                 class="chatbot-input"
-                placeholder="Type 'recommend' or 'check my booking'..."
+                placeholder="Ask in English or Tagalog..."
                 autocomplete="off"
+                maxlength="1000"
               />
-              <button type="submit" class="chatbot-send" aria-label="Send message">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <button type="submit" class="chatbot-send" aria-label="Send message" title="Send">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="22" y1="2" x2="11" y2="13"></line>
                   <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                 </svg>
               </button>
             </form>
-            <div class="chatbot-quick-actions">
-              <button type="button" class="quick-action" data-message="recommend">Find a Room</button>
-              <button type="button" class="quick-action" data-message="Show me the prices">Pricing</button>
-              <button type="button" class="quick-action" data-message="Book a cottage">Book Now</button>
-              <button type="button" class="quick-action" data-message="check my booking">Check Booking</button>
+            <div class="chatbot-footer-caption">
+              RJM Beach Resort • Bansud, Oriental Mindoro
             </div>
-          </div>
-
-          <!-- Powered by note -->
-          <div class="chatbot-footer">
-            Powered by RJM Beach Resort AI
           </div>
         </div>
       </div>
@@ -101,25 +150,44 @@ class ChatbotWidget {
 
   attachEventListeners() {
     const toggleBtn = document.querySelector(".chatbot-toggle");
-    const closeBtn = document.querySelector(".chatbot-close");
+    const closeBtn = document.querySelector(".chatbot-close-btn");
+    const restartBtn = document.querySelector(".chatbot-restart-btn");
     const form = document.querySelector(".chatbot-form");
-    const quickActions = document.querySelectorAll(".quick-action");
+    const quickChips = document.querySelectorAll(".quick-chip");
+    const teaser = document.getElementById("chatbot-teaser");
+    const teaserClose = document.querySelector(".teaser-close");
 
     toggleBtn?.addEventListener("click", () => this.toggleChat());
     closeBtn?.addEventListener("click", () => this.closeChat());
+    restartBtn?.addEventListener("click", () => this.restartConversation());
     form?.addEventListener("submit", (e) => this.handleFormSubmit(e));
 
-    quickActions.forEach((btn) => {
+    teaserClose?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (teaser) teaser.style.display = "none";
+      sessionStorage.setItem("chatbot_teaser_dismissed", "true");
+    });
+
+    quickChips.forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.preventDefault();
-        const message = btn.getAttribute("data-message");
-        this.sendMessage(message);
+        const msg = btn.getAttribute("data-message");
+        if (msg) this.sendMessage(msg);
       });
     });
 
-    // Attach keyboard shortcut (Alt+C)
+    // Show friendly teaser after 3 seconds if not dismissed
+    if (!sessionStorage.getItem("chatbot_teaser_dismissed")) {
+      setTimeout(() => {
+        if (!this.isOpen && teaser) {
+          teaser.style.display = "flex";
+        }
+      }, 3000);
+    }
+
+    // Keyboard shortcut (Alt+C)
     document.addEventListener("keydown", (e) => {
-      if (e.altKey && e.key === "c") {
+      if (e.altKey && (e.key === "c" || e.key === "C")) {
         e.preventDefault();
         this.toggleChat();
       }
@@ -133,19 +201,23 @@ class ChatbotWidget {
   openChat() {
     const chatWindow = document.querySelector(".chatbot-window");
     const toggleBtn = document.querySelector(".chatbot-toggle");
+    const teaser = document.getElementById("chatbot-teaser");
+
+    if (teaser) teaser.style.display = "none";
 
     chatWindow.style.display = "flex";
     toggleBtn.classList.add("active");
     this.isOpen = true;
 
-    // Hide notification badge
-    const badge = document.querySelector(".notification-badge");
-    if (badge) badge.style.display = "none";
+    // Scroll to bottom
+    const messagesContainer = document.querySelector(".chatbot-messages");
+    if (messagesContainer) {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
 
-    // Focus input
     setTimeout(() => {
       document.querySelector(".chatbot-input")?.focus();
-    }, 100);
+    }, 150);
   }
 
   closeChat() {
@@ -187,7 +259,6 @@ class ChatbotWidget {
         }),
       });
 
-      // Remove typing indicator
       this.removeTypingIndicator();
 
       if (response.ok) {
@@ -195,7 +266,7 @@ class ChatbotWidget {
         this.addMessageToUI(data.message, "bot");
       } else {
         this.addMessageToUI(
-          "Sorry, I couldn't process your message. Please try again.",
+          "Paumanhin, nagkaroon po ng problema sa pagsagot. Pakisubukang muli o mag-message sa aming staff sa +63 919 378 9570.",
           "bot"
         );
       }
@@ -203,7 +274,7 @@ class ChatbotWidget {
       console.error("Chat error:", error);
       this.removeTypingIndicator();
       this.addMessageToUI(
-        "Connection error. Please check your internet and try again.",
+        "Connection error. Please check your internet connection and try again.",
         "bot"
       );
     }
@@ -211,92 +282,145 @@ class ChatbotWidget {
 
   addMessageToUI(message, sender) {
     const messagesList = document.querySelector(".messages-list");
+    if (!messagesList) return;
+
     const messageEl = document.createElement("div");
     messageEl.className = `message message-${sender}`;
 
-    const contentEl = document.createElement("div");
-    contentEl.className = "message-content";
-    
-    // Parse markdown-style formatting
-    const formattedMessage = this.formatMessage(message);
-    contentEl.innerHTML = formattedMessage;
+    const timeStr = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-    messageEl.appendChild(contentEl);
+    if (sender === "bot") {
+      messageEl.innerHTML = `
+        <div class="message-avatar">
+          <img src="/rjmlogo.jpg" alt="RJM AI" onerror="this.src='/imgs/rjmlogo.jpg'">
+        </div>
+        <div class="message-bubble-wrap">
+          <div class="message-content">${this.formatMessage(message)}</div>
+          <span class="message-time">${timeStr}</span>
+        </div>
+      `;
+    } else {
+      messageEl.innerHTML = `
+        <div class="message-bubble-wrap">
+          <div class="message-content">${this.formatMessage(message)}</div>
+          <span class="message-time">${timeStr}</span>
+        </div>
+      `;
+    }
+
     messagesList.appendChild(messageEl);
 
-    // Scroll to bottom
+    // Scroll to bottom smoothly
     const messagesContainer = document.querySelector(".chatbot-messages");
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    if (messagesContainer) {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
 
-    // Store message
     this.messages.push({ sender, message, timestamp: new Date() });
   }
 
-  // Format message with basic markdown support
   formatMessage(message) {
-    // Escape HTML first
+    if (!message) return "";
+
+    // Escape raw HTML
     let formatted = message
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
 
     // Convert markdown headings (### Title) to bold text
-    formatted = formatted.replace(/^#{1,6}\s+(.+)$/gm, '<strong>$1</strong>');
+    formatted = formatted.replace(/^#{1,6}\s+(.+)$/gm, "<strong>$1</strong>");
 
-    // Convert leading "- " or "* " bullets to "• "
-    formatted = formatted.replace(/^[-*]\s+/gm, '• ');
+    // Convert bullets
+    formatted = formatted.replace(/^[-*]\s+/gm, "• ");
 
     // Bold text **text**
-    formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    formatted = formatted.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+
+    // Format resort booking paths into clickable action buttons/links
+    formatted = formatted.replace(
+      /\/bookings\/book\b/g,
+      '<a href="/bookings/book" class="chat-inline-link"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg> Book Online Now</a>'
+    );
+    formatted = formatted.replace(
+      /\/rooms\b/g,
+      '<a href="/rooms" class="chat-inline-link">View Rooms</a>'
+    );
+    formatted = formatted.replace(
+      /\/cottages\b/g,
+      '<a href="/cottages" class="chat-inline-link">View Cottages</a>'
+    );
+    formatted = formatted.replace(
+      /\/services\b/g,
+      '<a href="/services" class="chat-inline-link">View Services</a>'
+    );
+
+    // Format phone numbers
+    formatted = formatted.replace(
+      /\+63\s*919\s*378\s*9570/g,
+      '<a href="tel:+639193789570" class="chat-contact-link">+63 919 378 9570</a>'
+    );
+
+    // Format emails
+    formatted = formatted.replace(
+      /rjm\.beachresortph@gmail\.com/g,
+      '<a href="mailto:rjm.beachresortph@gmail.com" class="chat-contact-link">rjm.beachresortph@gmail.com</a>'
+    );
 
     // Line breaks
-    formatted = formatted.replace(/\n/g, '<br>');
+    formatted = formatted.replace(/\n/g, "<br>");
 
     return formatted;
   }
 
   showTypingIndicator() {
     const messagesList = document.querySelector(".messages-list");
+    if (!messagesList) return;
+
+    this.removeTypingIndicator();
+
     const typingEl = document.createElement("div");
-    typingEl.className = "message message-bot typing-indicator";
+    typingEl.className = "message message-bot typing-indicator-wrap";
+    typingEl.id = "typing-indicator";
     typingEl.innerHTML = `
-      <div class="message-content">
-        <span></span><span></span><span></span>
+      <div class="message-avatar">
+        <img src="/rjmlogo.jpg" alt="RJM AI" onerror="this.src='/imgs/rjmlogo.jpg'">
+      </div>
+      <div class="message-bubble-wrap">
+        <div class="message-content typing-dots">
+          <span></span><span></span><span></span>
+        </div>
       </div>
     `;
-    typingEl.id = "typing-indicator";
     messagesList.appendChild(typingEl);
 
     const messagesContainer = document.querySelector(".chatbot-messages");
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    if (messagesContainer) {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
   }
 
   removeTypingIndicator() {
     const typingEl = document.getElementById("typing-indicator");
-    if (typingEl) {
-      typingEl.remove();
-    }
+    if (typingEl) typingEl.remove();
   }
 
   showWelcomeMessage() {
-    // Delay welcome message to appear naturally
     setTimeout(() => {
       this.addMessageToUI(
-        "👋 Hello! I'm the RJM Beach Resort Chat Assistant. I can help you find the perfect room for your stay!\n\nType **'recommend'** for personalized room suggestions, or **'check my booking'** to look up your reservation status.",
+        "👋 **Mabuhay! Welcome to RJM Beach Resort!**\n\nAko ang inyong personal AI Concierge. Puwede niyo akong tanungin tungkol sa:\n• **Rooms & Cottages** (rates at availability)\n• **Pool fees at Entrance rates**\n• **Check-in time at Resort amenities**\n• O i-type ang **'check my booking'** para i-track ang inyong reservation!\n\nAno po ang maitutulong ko sa inyo ngayong araw?",
         "bot"
       );
-    }, 500);
+    }, 400);
   }
 
-  // Export chat history
-  exportChat() {
-    return JSON.stringify(this.messages, null, 2);
+  restartConversation() {
+    this.sendMessage("start over");
   }
 
-  // Clear chat history
   clearChat() {
     const messagesList = document.querySelector(".messages-list");
-    messagesList.innerHTML = "";
+    if (messagesList) messagesList.innerHTML = "";
     this.messages = [];
     this.showWelcomeMessage();
   }
