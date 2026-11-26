@@ -52,7 +52,7 @@ export const emailService = {
     const params = {
       guest_email: guestEmail,
       guest_name: guestName,
-      subject: 'Booking Request Received - Naruwan Resort',
+      subject: 'Booking Request Received - RJM Beach Resort',
       room_name: roomName || (bookingDetails.Room?.RoomType?.name) || 'a Room/Cottage',
       adults: bookingDetails.adults,
       children: bookingDetails.children,
@@ -60,7 +60,7 @@ export const emailService = {
       check_in: new Date(bookingDetails.checkIn).toLocaleDateString(),
       check_out: new Date(bookingDetails.checkOut).toLocaleDateString(),
       status: 'Pending / Created',
-      message_body: `We have received your booking request for Naruwan Resort. If you haven't completed the payment yet, please ensure it's finalized so we can confirm your stay.`,
+      message_body: `We have received your booking request for RJM Beach Resort. If you haven't completed the payment yet, please ensure it's finalized so we can confirm your stay.`,
     };
     return await sendEmail(getTemplateId(), params);
   },
@@ -72,7 +72,7 @@ export const emailService = {
     const params = {
       guest_email: guestEmail,
       guest_name: guestName,
-      subject: 'Payment Successful! Booking Confirmed - Naruwan Resort',
+      subject: 'Payment Successful! Booking Confirmed - RJM Beach Resort',
       room_name: roomName || (bookingDetails.Room?.RoomType?.name) || 'a Room/Cottage',
       adults: bookingDetails.adults,
       children: bookingDetails.children,
@@ -80,7 +80,7 @@ export const emailService = {
       check_in: new Date(bookingDetails.checkIn).toLocaleDateString(),
       check_out: new Date(bookingDetails.checkOut).toLocaleDateString(),
       status: 'Confirmed',
-      message_body: `Great news! Your payment has been successfully processed. Your booking is now fully CONFIRMED. We look forward to welcoming you to Naruwan Resort!`,
+      message_body: `Great news! Your payment has been successfully processed. Your booking is now fully CONFIRMED. We look forward to welcoming you to RJM Beach Resort!`,
     };
     return await sendEmail(getTemplateId(), params);
   },
@@ -92,7 +92,7 @@ export const emailService = {
     const params = {
       guest_email: guestEmail,
       guest_name: guestName,
-      subject: 'Booking Cancelled - Naruwan Resort',
+      subject: 'Booking Cancelled - RJM Beach Resort',
       room_name: roomName || (bookingDetails.Room?.RoomType?.name) || 'a Room/Cottage',
       adults: bookingDetails.adults,
       children: bookingDetails.children,
@@ -112,7 +112,7 @@ export const emailService = {
     const params = {
       guest_email: guestEmail,
       guest_name: guestName,
-      subject: 'Upcoming Stay Reminder - Naruwan Resort',
+      subject: 'Upcoming Stay Reminder - RJM Beach Resort',
       room_name: roomName || (bookingDetails.Room?.RoomType?.name) || 'a Room/Cottage',
       adults: bookingDetails.adults,
       children: bookingDetails.children,
@@ -120,7 +120,7 @@ export const emailService = {
       check_in: new Date(bookingDetails.checkIn).toLocaleDateString(),
       check_out: new Date(bookingDetails.checkOut).toLocaleDateString(),
       status: 'Confirmed (Upcoming)',
-      message_body: `This is a friendly reminder that your stay at Naruwan Resort is coming up soon! We are excited to host you starting on ${new Date(bookingDetails.checkIn).toLocaleDateString()}. Safe travels!`,
+      message_body: `This is a friendly reminder that your stay at RJM Beach Resort is coming up soon! We are excited to host you starting on ${new Date(bookingDetails.checkIn).toLocaleDateString()}. Safe travels!`,
     };
     return await sendEmail(getTemplateId(), params);
   }

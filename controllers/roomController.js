@@ -16,7 +16,7 @@ export async function listRoomTypes(req, res) {
       include: [{ model: Room, attributes: ["id", "roomNumber", "floor", "viewType", "isAvailable"] }]
     });
     res.render("rooms/list", {
-      title: "Rooms | Naruwan Bay Resort Hotel",
+      title: "Rooms | RJM Beach Resort",
       roomTypes: all.map(r => r.toJSON()),
       recommended: recommended.map((r) => r.id),
       guestId
@@ -36,7 +36,7 @@ export async function listCottageTypes(req, res) {
       include: [{ model: Room, attributes: ["id", "roomNumber", "floor", "viewType", "isAvailable"] }]
     });
     res.render("cottages/list", {
-      title: "Cottages | Naruwan Bay Resort Hotel",
+      title: "Cottages | RJM Beach Resort",
       roomTypes: all.map(r => r.toJSON()),
       recommended: recommended.map((r) => r.id),
       guestId
@@ -74,7 +74,7 @@ export async function adminRoomManagement(req, res) {
     });
 
     res.render("admin/rooms", {
-      title: "Room Management | Naruwan Resort",
+      title: "Room Management | RJM Beach Resort",
       roomTypes: roomTypesWithImages
     });
   } catch (err) {
@@ -110,7 +110,7 @@ export async function adminCottageManagement(req, res) {
     });
 
     res.render("admin/cottages", {
-      title: "Cottage Management | Naruwan Resort",
+      title: "Cottage Management | RJM Beach Resort",
       roomTypes: roomTypesWithImages
     });
   } catch (err) {

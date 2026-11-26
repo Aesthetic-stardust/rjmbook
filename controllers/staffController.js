@@ -63,7 +63,7 @@ export async function staffDashboard(req, res) {
     const occupancyRate = totalRooms > 0 ? Math.round((currentlyOccupied / totalRooms) * 100) : 0;
 
     res.render("staff/dashboard", {
-      title: "Staff Dashboard | Naruwan Resort",
+      title: "Staff Dashboard | RJM Beach Resort",
       staffName: req.session.userName,
       today,
       totalRooms,

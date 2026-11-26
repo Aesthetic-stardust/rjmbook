@@ -78,7 +78,7 @@ router.get("/reservation-calendar", isAdmin, async (req, res) => {
     });
     
     res.render("admin/reservation-calendar", {
-      title: "Reservation Calendar | Naruwan Resort",
+      title: "Reservation Calendar | RJM Beach Resort",
       bookings: bookings.map(b => b.toJSON()),
       bookingsByDate: JSON.stringify(bookingsByDate),
       roomTypes,

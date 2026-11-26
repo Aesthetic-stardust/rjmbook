@@ -36,7 +36,7 @@ export async function bookingForm(req, res) {
     const lastName = nameParts.slice(1).join(' ') || "";
 
     res.render("bookings/form", {
-      title: "Book Your Stay | Naruwan Resort",
+      title: "Book Your Stay | RJM Beach Resort",
       rooms,
       cottages,
       firstName,
@@ -469,7 +469,7 @@ export async function showBooking(req, res) {
     }
 
     res.render(view, {
-      title: "Booking Details | Naruwan Resort",
+      title: "Booking Details | RJM Beach Resort",
       booking: bookingData,
       canCancel
     });
@@ -487,7 +487,7 @@ export async function listBookings(req, res) {
         { model: Guest }
       ]
     });
-    res.render("bookings/list", { title: "Reservations | Naruwan Resort", bookings: bookings.map(b => b.toJSON()) });
+    res.render("bookings/list", { title: "Reservations | RJM Beach Resort", bookings: bookings.map(b => b.toJSON()) });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -610,7 +610,7 @@ export async function customerReservations(req, res) {
 
     if (!guests || guests.length === 0) {
       return res.render("bookings/my-reservations", {
-        title: "My Reservations | Naruwan Resort",
+        title: "My Reservations | RJM Beach Resort",
         currentReservations: [],
         pastReservations: [],
         userName: req.session.userName
@@ -645,7 +645,7 @@ export async function customerReservations(req, res) {
     });
 
     res.render("bookings/my-reservations", {
-      title: "My Reservations | Naruwan Resort",
+      title: "My Reservations | RJM Beach Resort",
       currentReservations,
       pastReservations,
       userName: req.session.userName,
@@ -824,7 +824,7 @@ export async function reservationHistory(req, res) {
     }
 
     res.render("bookings/reservations", {
-      title: "My Reservations | Naruwan Resort",
+      title: "My Reservations | RJM Beach Resort",
       currentReservations,
       pastReservations,
       userName: req.session.userName,

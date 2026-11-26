@@ -15,7 +15,7 @@ export async function listStaff(req, res) {
     });
 
     res.render("admin/staff", {
-      title: "Manage Staff | Naruwan Resort",
+      title: "Manage Staff | RJM Beach Resort",
       staffList: staffList.map(s => s.toJSON())
     });
   } catch (err) {

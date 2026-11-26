@@ -10,7 +10,7 @@ export async function listServices(req, res) {
     const recommended = await getServiceRecommendations(guestId, 6);
     const all = await Service.findAll({ order: [["category", "ASC"], ["name", "ASC"]] });
     res.render("services/list", {
-      title: "Resort Services | Naruwan Resort",
+      title: "Resort Services | RJM Beach Resort",
       services: all,
       recommendedIds: recommended.map((s) => s.id)
     });
