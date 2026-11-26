@@ -28,40 +28,134 @@
     </div>
   </div>
 
+  <style>
+    /* Desktop (>= 1024px): fixed left sidebar */
+    .booking-step-panel {
+      position: fixed;
+      left: 1.25rem;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 40;
+      background: rgba(255, 255, 255, 0.97);
+      backdrop-filter: blur(8px);
+      border-radius: 1rem;
+      padding: 1.25rem 1rem;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    .booking-step-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .booking-step-label {
+      font-size: 10px;
+      text-align: center;
+      max-width: 56px;
+      line-height: 1.2;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    .booking-step-item.active .booking-step-label {
+      color: #0f766e;
+      font-weight: 600;
+    }
+
+    .booking-step-line {
+      width: 2px;
+      height: 28px;
+      background: #e2e8f0;
+      margin: 2px 0;
+      border-radius: 2px;
+      transition: background 0.3s;
+    }
+
+    /* Mobile & Tablet (< 1024px): smaller horizontal bar above form, fixed when scrolled down */
+    @media (max-width: 1023px) {
+      .booking-step-panel {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 74px;
+        left: auto;
+        transform: none;
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 0.55rem 0.75rem;
+        margin-bottom: 1.25rem;
+        border-radius: 0.875rem;
+        border: 1px solid rgba(226, 232, 240, 0.95);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      }
+
+      .booking-step-item {
+        gap: 3px;
+        flex-shrink: 0;
+      }
+
+      .booking-step-panel .step-dot {
+        width: 1.625rem;
+        height: 1.625rem;
+        font-size: 0.65rem;
+      }
+
+      .booking-step-panel .step-dot i {
+        font-size: 9px;
+      }
+
+      .booking-step-label {
+        font-size: 9px;
+        line-height: 1.15;
+        max-width: 52px;
+      }
+
+      .booking-step-line {
+        flex: 1;
+        width: auto;
+        height: 2px;
+        margin: 12px 4px 0 4px;
+        min-width: 10px;
+      }
+    }
+  </style>
+
   <main class="container mx-auto px-3 sm:px-4 py-8 max-w-3xl flex-1" style="min-height: calc(100vh - 220px);">
 
-    <!-- Step indicator (fixed left sidebar) -->
-    <div id="step-indicator-wrapper"
-         style="position:fixed; left:1.25rem; top:50%; transform:translateY(-50%); z-index:40;
-                background:rgba(255,255,255,0.97); backdrop-filter:blur(8px);
-                border-radius:1rem; padding:1.25rem 1rem;
-                box-shadow:0 4px 24px rgba(0,0,0,0.10); display:flex; flex-direction:column;
-                align-items:center; gap:0;">
+    <!-- Step indicator (fixed left sidebar on desktop; compact sticky bar above form on phone) -->
+    <div id="step-indicator-wrapper" class="booking-step-panel">
       <!-- Step 1 -->
-      <div class="step active" id="step-1-indicator" style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+      <div class="step active booking-step-item" id="step-1-indicator">
         <div class="step-dot"><i class="fa-solid fa-search text-[10px]"></i></div>
-        <span style="font-size:10px;text-align:center;max-width:56px;line-height:1.2;color:#0f766e;font-weight:600;">Choose &amp;<br>Search</span>
+        <span class="booking-step-label">Choose &amp;<br>Search</span>
       </div>
       <!-- connector -->
-      <div id="step-line-1" style="width:2px;height:28px;background:#e2e8f0;margin:2px 0;border-radius:2px;transition:background .3s;"></div>
+      <div id="step-line-1" class="booking-step-line"></div>
       <!-- Step 2 -->
-      <div class="step" id="step-2-indicator" style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+      <div class="step booking-step-item" id="step-2-indicator">
         <div class="step-dot">2</div>
-        <span style="font-size:10px;text-align:center;max-width:56px;line-height:1.2;color:#94a3b8;font-weight:500;">Select<br>Option</span>
+        <span class="booking-step-label">Select<br>Option</span>
       </div>
       <!-- connector -->
-      <div id="step-line-2" style="width:2px;height:28px;background:#e2e8f0;margin:2px 0;border-radius:2px;transition:background .3s;"></div>
+      <div id="step-line-2" class="booking-step-line"></div>
       <!-- Step 3 -->
-      <div class="step" id="step-3-indicator" style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+      <div class="step booking-step-item" id="step-3-indicator">
         <div class="step-dot">3</div>
-        <span style="font-size:10px;text-align:center;max-width:56px;line-height:1.2;color:#94a3b8;font-weight:500;">Your<br>Details</span>
+        <span class="booking-step-label">Your<br>Details</span>
       </div>
       <!-- connector -->
-      <div id="step-line-3" style="width:2px;height:28px;background:#e2e8f0;margin:2px 0;border-radius:2px;transition:background .3s;"></div>
+      <div id="step-line-3" class="booking-step-line"></div>
       <!-- Step 4 -->
-      <div class="step" id="step-4-indicator" style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+      <div class="step booking-step-item" id="step-4-indicator">
         <div class="step-dot"><i class="fa-solid fa-check text-[10px]"></i></div>
-        <span style="font-size:10px;text-align:center;max-width:56px;line-height:1.2;color:#94a3b8;font-weight:500;">Confirm</span>
+        <span class="booking-step-label">Confirm</span>
       </div>
     </div>
 
