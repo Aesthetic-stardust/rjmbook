@@ -239,13 +239,19 @@ class ChatbotWidget {
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
-    
+
+    // Convert markdown headings (### Title) to bold text
+    formatted = formatted.replace(/^#{1,6}\s+(.+)$/gm, '<strong>$1</strong>');
+
+    // Convert leading "- " or "* " bullets to "• "
+    formatted = formatted.replace(/^[-*]\s+/gm, '• ');
+
     // Bold text **text**
     formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    
+
     // Line breaks
     formatted = formatted.replace(/\n/g, '<br>');
-    
+
     return formatted;
   }
 

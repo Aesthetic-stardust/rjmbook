@@ -1,6 +1,7 @@
 /*
   RJMBook Chatbot Controller
-  Handles AI-powered responses for guest inquiries with intelligent room recommendations
+  Handles AI-powered responses (Google Gemini + live DB context) with deterministic
+  multi-step flows for room recommendations and booking status lookups, plus rule-based fallback.
 */
 
 import { Op } from "sequelize";
@@ -8,83 +9,164 @@ import { Room } from "../models/Room.js";
 import { RoomType } from "../models/RoomType.js";
 import { Service } from "../models/Service.js";
 import { Booking } from "../models/Booking.js";
-import { Guest } from "../models/Guest.js";
+import { generateGeminiReply } from "../services/chatbotAIService.js";
 
 // Store conversation state per user (in-memory for simplicity, can be moved to Redis/DB)
 const conversationStates = new Map();
+const STATE_TTL_MS = 60 * 60 * 1000; // 1 hour
+const MAX_HISTORY_TURNS = 10;
+const MAX_MESSAGE_LENGTH = 1000;
 
 // Conversation state structure
-const createState = (userId) => ({
-  step: 'initial',
+const createState = () => ({
+  step: "initial",
   data: {
     groupSize: null,
     budget: null,
-    preferredCategory: null
+    preferredCategory: null,
   },
-  lastActivity: Date.now()
+  history: [],
+  lastActivity: Date.now(),
 });
+
+function pruneExpiredStates() {
+  const cutoff = Date.now() - STATE_TTL_MS;
+  for (const [key, state] of conversationStates.entries()) {
+    if (state.lastActivity < cutoff) {
+      conversationStates.delete(key);
+    }
+  }
+}
+
+function appendHistory(state, role, text) {
+  if (!text) return;
+  state.history.push({ role, text, timestamp: new Date().toISOString() });
+  if (state.history.length > MAX_HISTORY_TURNS) {
+    state.history = state.history.slice(-MAX_HISTORY_TURNS);
+  }
+}
 
 // Chatbot response handler
 export const sendMessage = async (req, res) => {
   try {
-    const { message, userId } = req.body;
+    const { message, userId: rawUserId } = req.body;
 
-    if (!message || !message.trim()) {
+    if (!message || typeof message !== "string" || !message.trim()) {
       return res.status(400).json({ error: "Message cannot be empty" });
     }
 
-    const userMessage = message.toLowerCase().trim();
-    
+    const trimmedMessage = message.trim();
+    if (trimmedMessage.length > MAX_MESSAGE_LENGTH) {
+      return res.status(400).json({
+        error: "Message is too long",
+        message: `Please keep your message under ${MAX_MESSAGE_LENGTH} characters.`,
+      });
+    }
+
+    pruneExpiredStates();
+
+    const userId =
+      (typeof rawUserId === "string" && rawUserId.trim()) ||
+      (req.session?.userId ? `session_${req.session.userId}` : req.ip || "anonymous");
+
+    const lowerMessage = trimmedMessage.toLowerCase();
+
     // Get or create conversation state
-    let state = conversationStates.get(userId) || createState(userId);
+    const state = conversationStates.get(userId) || createState();
     state.lastActivity = Date.now();
-    
-    let botResponse = await generateResponse(userMessage, userId, state);
-    
-    // Save updated state
-    conversationStates.set(userId, state);
+
+    const botResponse = await generateResponse(trimmedMessage, lowerMessage, userId, state);
+
+    // Save history if conversation wasn't just cleared
+    if (conversationStates.has(userId) || state.step !== "initial" || state.history.length > 0 || botResponse) {
+      appendHistory(state, "user", trimmedMessage);
+      appendHistory(state, "model", botResponse);
+      conversationStates.set(userId, state);
+    }
 
     res.json({
       success: true,
       message: botResponse,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
   } catch (error) {
     console.error("Chatbot error:", error);
     res.status(500).json({
       error: "Failed to process message",
-      message: "Sorry, I encountered an error. Please try again."
+      message: "Sorry, I encountered an error. Please try again.",
     });
   }
 };
 
-// Generate intelligent responses based on keywords and conversation state
-async function generateResponse(message, userId, state) {
-  // Reset conversation if user types "start over" or "restart"
+// Generate intelligent responses using deterministic flows + Gemini AI + rule fallback
+async function generateResponse(rawMessage, message, userId, state) {
+  // Reset conversation if user types "start over", "restart", or "reset"
   if (message.includes("start over") || message.includes("restart") || message.includes("reset")) {
-    conversationStates.delete(userId);
+    state.step = "initial";
+    state.data = { groupSize: null, budget: null, preferredCategory: null };
+    state.history = [];
     return "🔄 Let's start fresh! What would you like help with? Type 'recommend' to find the perfect room, or ask about rooms, pricing, bookings, or services.";
   }
 
-  // Greeting responses
-  if (
-    message.includes("hello") ||
-    message.includes("hi") ||
-    message.includes("hey")
-  ) {
-    return "👋 Hello! Welcome to RJM Beach Resort. I'm here to help you find the perfect accommodation. Type 'recommend' to get personalized room suggestions, or ask me about rooms, pricing, bookings, and services!";
+  // Handle active recommendation conversation flow
+  const recommendationSteps = ["asking_preference", "asking_group_size", "asking_group_size_clarify", "asking_budget"];
+  if (state.step && recommendationSteps.includes(state.step)) {
+    return await handleRecommendationFlow(message, userId, state);
   }
 
-  // Start recommendation flow
+  // Handle active booking status lookup flow
+  if (state.step === "asking_booking_id") {
+    return await handleBookingStatusFlow(message, state);
+  }
+
+  // Room details lookup ("details Family Hut")
+  const detailsMatch = rawMessage.match(/^details(?:\s+for|\s+about)?\s+(.+)$/i);
+  if (detailsMatch) {
+    const detailsReply = await getRoomDetails(detailsMatch[1].trim());
+    if (detailsReply) {
+      return detailsReply;
+    }
+  }
+
+  // Booking status inquiry — handled deterministically in code for accuracy & privacy
   if (
-    message.includes("recommend") ||
-    message.includes("suggest") ||
-    message.includes("find me") ||
-    message.includes("which room") ||
-    message.includes("which cottage") ||
-    (message.includes("room") && (message.includes("for") || message.includes("need")))
+    message.includes("my booking") ||
+    message.includes("booking status") ||
+    message.includes("check booking") ||
+    message.includes("check my booking") ||
+    message.includes("reservation status") ||
+    message.includes("status of my") ||
+    message.includes("booking id") ||
+    message.includes("booking number") ||
+    message.includes("track booking") ||
+    message.includes("track my booking") ||
+    message.includes("where is my booking")
   ) {
-    state.step = 'asking_preference';
+    // Support single-turn lookup if user already included an ID (e.g. "check my booking #42")
+    const inlineIdMatch = message.match(/(?:id|#|booking|number)\s*(\d+)/i);
+    if (inlineIdMatch) {
+      return await handleBookingStatusFlow(message, state);
+    }
+    state.step = "asking_booking_id";
+    return "🔍 I can look up your booking for you!\n\nPlease enter your **Booking ID** (the number from your confirmation, e.g. **42**):";
+  }
+
+  // Start guided recommendation wizard on explicit trigger (or when AI isn't configured)
+  const hasGeminiKey = Boolean(process.env.GEMINI_API_KEY?.trim() && process.env.GEMINI_API_KEY.trim() !== "your_gemini_api_key");
+  const isGuidedRecommendTrigger =
+    message === "recommend" ||
+    message === "find a room" ||
+    message === "recommend a room" ||
+    (!hasGeminiKey &&
+      (message.includes("recommend") ||
+        message.includes("suggest") ||
+        message.includes("find me") ||
+        message.includes("which room") ||
+        message.includes("which cottage") ||
+        (message.includes("room") && (message.includes("for") || message.includes("need")))));
+
+  if (isGuidedRecommendTrigger) {
+    state.step = "asking_preference";
     return `🏠 I'd love to help you find the perfect accommodation!
 
 **What type of accommodation are you looking for?**
@@ -93,15 +175,25 @@ async function generateResponse(message, userId, state) {
 • Type **"any"** if either works`;
   }
 
-  // Handle recommendation conversation flow
-  const recommendationSteps = ['asking_preference', 'asking_group_size', 'asking_group_size_clarify', 'asking_budget', 'showing_recommendations'];
-  if (state.step && recommendationSteps.includes(state.step)) {
-    return await handleRecommendationFlow(message, userId, state);
+  // Primary AI response (Google Gemini grounded with live DB data)
+  const aiReply = await generateGeminiReply(rawMessage, state.history);
+  if (aiReply) {
+    return aiReply;
   }
 
-  // Handle booking status lookup flow
-  if (state.step === 'asking_booking_id') {
-    return await handleBookingStatusFlow(message, state);
+  // Fallback to rule-based responses when Gemini is unavailable or unconfigured
+  return await generateRuleBasedResponse(message);
+}
+
+// Rule-based fallback responses
+async function generateRuleBasedResponse(message) {
+  // Greeting responses
+  if (
+    message.includes("hello") ||
+    message.includes("hi") ||
+    message.includes("hey")
+  ) {
+    return "👋 Hello! Welcome to RJM Beach Resort. I'm here to help you find the perfect accommodation. Type 'recommend' to get personalized room suggestions, or ask me about rooms, pricing, bookings, and services!";
   }
 
   // Rooms & Cottages inquiry (enhanced)
@@ -112,20 +204,21 @@ async function generateResponse(message, userId, state) {
     message.includes("available")
   ) {
     try {
-      const roomTypes = await RoomType.findAll({ 
+      const roomTypes = await RoomType.findAll({
         where: { isAvailable: true },
-        order: [['basePricePerNight', 'ASC']]
+        order: [["basePricePerNight", "ASC"]],
       });
-      
+
       if (roomTypes.length > 0) {
-        let roomList = roomTypes.slice(0, 5).map(r => 
-          `• **${r.name}** - Up to ${r.maxGuests} guests`
-        ).join('\n');
-        
+        const roomList = roomTypes
+          .slice(0, 5)
+          .map((r) => `• **${r.name}** - Up to ${r.maxGuests} guests`)
+          .join("\n");
+
         return `🏖️ We have ${roomTypes.length} beautiful accommodations at RJM Beach Resort!\n\n${roomList}\n\nWould you like me to **recommend** the best option for you? Just tell me your group size and budget!`;
       }
     } catch (error) {
-      console.error('Error fetching rooms:', error);
+      console.error("Error fetching rooms:", error);
     }
     return "🏖️ We offer a variety of cottages ranging from cozy huts to spacious villas. Type 'recommend' to find the perfect one for you!";
   }
@@ -140,39 +233,21 @@ async function generateResponse(message, userId, state) {
     try {
       const roomTypes = await RoomType.findAll({
         where: { isAvailable: true },
-        order: [['basePricePerNight', 'ASC']],
-        limit: 5
+        order: [["basePricePerNight", "ASC"]],
+        limit: 5,
       });
-      
+
       if (roomTypes.length > 0) {
-        let priceList = roomTypes.map(r =>
-          `• **${r.name}** - ₱${parseFloat(r.basePricePerNight).toLocaleString()}`
-        ).join('\n');
-        
+        const priceList = roomTypes
+          .map((r) => `• **${r.name}** - ₱${parseFloat(r.basePricePerNight).toLocaleString()}`)
+          .join("\n");
+
         return `💰 Our rates per accommodation:\n\n${priceList}\n\nWould you like me to **recommend** a room based on your budget?`;
       }
     } catch (error) {
-      console.error('Error fetching prices:', error);
+      console.error("Error fetching prices:", error);
     }
     return "💰 Our rates vary by room type and season. Type 'recommend' to find options within your budget!";
-  }
-
-  // Booking status inquiry — must be checked before the generic booking intent
-  if (
-    message.includes("my booking") ||
-    message.includes("booking status") ||
-    message.includes("check booking") ||
-    message.includes("check my booking") ||
-    message.includes("reservation status") ||
-    message.includes("status of my") ||
-    message.includes("booking id") ||
-    message.includes("booking number") ||
-    message.includes("track booking") ||
-    message.includes("track my booking") ||
-    message.includes("where is my booking")
-  ) {
-    state.step = 'asking_booking_id';
-    return "🔍 I can look up your booking for you!\n\nPlease enter your **Booking ID** (the number from your confirmation, e.g. **42**):";
   }
 
   // Booking inquiry
@@ -193,7 +268,7 @@ async function generateResponse(message, userId, state) {
   ) {
     try {
       const services = await Service.findAll({ limit: 5 });
-      let serviceList = services.map((s) => `• ${s.name}`).join("\n");
+      const serviceList = services.map((s) => `• ${s.name}`).join("\n");
       return `🎉 Our services include:\n${serviceList}\n\nWould you like more details about any service?`;
     } catch (error) {
       return "🎉 We offer various services including:\n• Entrance Fees (Adult ₱100 day / ₱150 night)\n• Entrance Fees (Kids 3-10 yrs ₱80 day / ₱120 night)\n• Infants & Toddlers (0-2 yrs): FREE\n• Speaker rental: ₱150\n\nWhich service interests you?";
@@ -324,19 +399,19 @@ async function handleRecommendationFlow(message, userId, state) {
       
       if (budget && budget > 0) {
         state.data.budget = budget;
-        state.step = 'showing_recommendations';
+        state.step = 'initial';
         return await generateRecommendations(state.data);
       }
       
       if (message.includes('budget') || message.includes('cheap') || message.includes('affordable')) {
         state.data.budget = 3000;
-        state.step = 'showing_recommendations';
+        state.step = 'initial';
         return await generateRecommendations(state.data);
       }
       
       if (message.includes('no limit') || message.includes('any') || message.includes("doesn't matter")) {
         state.data.budget = 999999;
-        state.step = 'showing_recommendations';
+        state.step = 'initial';
         return await generateRecommendations(state.data);
       }
       
@@ -488,7 +563,7 @@ async function getRoomDetails(roomName) {
     const room = await RoomType.findOne({
       where: { 
         name: { 
-          [Op.iLike]: `%${roomName}%` 
+          [Op.like]: `%${roomName}%` 
         } 
       }
     });
@@ -611,13 +686,15 @@ async function handleBookingStatusFlow(message, state) {
   }
 }
 
-// Get chat history (if stored)
+// Get chat history (in-memory per userId)
 export const getChatHistory = async (req, res) => {
   try {
+    const userId = req.query.userId;
+    const history = userId ? conversationStates.get(userId)?.history || [] : [];
     res.json({
       success: true,
       message: "Chat history retrieved",
-      history: []
+      history,
     });
   } catch (error) {
     res.status(500).json({ error: "Failed to retrieve chat history" });
