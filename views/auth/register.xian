@@ -1,15 +1,15 @@
 {{> head }}
-<body class="min-h-screen font-body flex items-center justify-center p-4 relative overflow-hidden"
+<body class="min-h-screen font-body flex flex-col p-4 py-8 relative overflow-x-hidden overflow-y-auto"
       style="background: linear-gradient(160deg,#1a1032 0%,#2d1b4e 50%,#1a1032 100%);">
 
   <!-- Animated canvas background -->
   <canvas id="waterCanvas" class="fixed inset-0 w-full h-full" style="z-index:0;"></canvas>
 
   <!-- Dot grid -->
-  <div class="absolute inset-0 pointer-events-none opacity-[.03]"
+  <div class="fixed inset-0 pointer-events-none opacity-[.03]"
        style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 36px 36px; z-index:1;"></div>
 
-  <div class="w-full max-w-md relative animate-fade-in-up" style="z-index:10;">
+  <div class="w-full max-w-md mx-auto my-auto relative animate-fade-in-up" style="z-index:10;">
 
     <!-- Back link -->
     <div class="mb-6 text-center">

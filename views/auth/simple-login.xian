@@ -1,9 +1,9 @@
 {{> head }}
-<body class="min-h-screen font-body flex items-center justify-center p-4 relative overflow-hidden">
+<body class="min-h-screen font-body flex flex-col p-4 py-8 relative overflow-x-hidden overflow-y-auto">
   <!-- Animated canvas background -->
   <canvas id="waterCanvas" class="fixed inset-0 w-full h-full" style="z-index:0;"></canvas>
 
-  <div class="w-full max-w-md relative" style="z-index:10;">
+  <div class="w-full max-w-md mx-auto my-auto relative" style="z-index:10;">
 
     <!-- Logo -->
     <div class="text-center mb-8 animate-fade-in-up">

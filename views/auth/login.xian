@@ -1,18 +1,18 @@
 {{> head }}
-<body class="min-h-screen font-body flex items-center justify-center p-4 relative overflow-hidden"
+<body class="min-h-screen font-body flex flex-col p-4 py-8 relative overflow-x-hidden overflow-y-auto"
       style="background: linear-gradient(160deg,#0a0f1e 0%,#0c2b27 50%,#0a0f1e 100%);">
 
   <!-- Dot grid -->
-  <div class="absolute inset-0 pointer-events-none opacity-[.04]"
+  <div class="fixed inset-0 pointer-events-none opacity-[.04]"
        style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 36px 36px; z-index:0;"></div>
 
   <!-- Ambient blobs -->
-  <div class="absolute -top-40 -right-40 w-[480px] h-[480px] rounded-full pointer-events-none"
+  <div class="fixed -top-40 -right-40 w-[480px] h-[480px] rounded-full pointer-events-none"
        style="background: radial-gradient(circle, rgba(20,184,166,.14) 0%, transparent 65%); filter: blur(60px); z-index:0;"></div>
-  <div class="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full pointer-events-none"
+  <div class="fixed -bottom-40 -left-40 w-[400px] h-[400px] rounded-full pointer-events-none"
        style="background: radial-gradient(circle, rgba(8,145,178,.12) 0%, transparent 65%); filter: blur(50px); z-index:0;"></div>
 
-  <div class="w-full max-w-2xl relative animate-fade-in-up" style="z-index:10;">
+  <div class="w-full max-w-2xl mx-auto my-auto relative animate-fade-in-up" style="z-index:10;">
 
     <!-- Brand header -->
     <div class="text-center mb-10">
