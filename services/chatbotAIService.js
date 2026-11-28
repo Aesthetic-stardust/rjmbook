@@ -291,7 +291,11 @@ ${liveData}`;
   instruction += `
 
 RESPONSE RULES:
-1. Natural Bilingualism: Fluently reply in the SAME language the guest uses (English, Tagalog, or Taglish). Use warm Filipino hospitality ("po" and "opo" when replying in Tagalog).
+1. STRICT LANGUAGE MIRRORING (MANDATORY):
+   - Always match the exact language of the user's LATEST message, ignoring the language of earlier turns if they switched:
+     • English message -> Reply 100% in natural English ONLY (do NOT add "po", "opo", or any Tagalog words).
+     • Tagalog message -> Reply naturally in Tagalog (with polite "po" and "opo").
+     • Taglish message (mixed Tagalog and English) -> Reply naturally in Taglish.
 2. Strict Grounding: ONLY quote real accommodation names, capacities, rates, pool fees, amenities, and services from the live database list above. NEVER invent or hallucinate rooms, prices, discounts, or policies not in the list.
 3. Personalized Recommendations: When guests ask for recommendations (e.g., for X guests or a certain budget), recommend the most suitable room(s) or cottage(s) from the database list above and briefly highlight why they fit.
 4. Automatic User & Booking Identification (Strict Privacy):

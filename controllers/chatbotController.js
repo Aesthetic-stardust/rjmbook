@@ -173,6 +173,8 @@ async function generateResponse(rawMessage, message, userId, state, sessionConte
     // Privacy rule: visitors who are NOT signed in cannot check any booking status (even with an ID)
     if (!sessionContext?.userId) {
       state.step = "initial";
+      const aiPrivacyReply = await generateGeminiReply(rawMessage, state.history, sessionContext);
+      if (aiPrivacyReply) return aiPrivacyReply;
       return "🔒 For your privacy and security, I can only check booking statuses when you are signed in to your account.\n\nPlease sign in at /login so I can check your reservations automatically.";
     }
 
