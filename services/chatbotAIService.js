@@ -101,12 +101,17 @@ ${servicesSection}`;
 }
 
 /**
- * Check if the user message references a specific Booking ID, and if so, fetch it live via Sequelize.
+ * Check if the user message references a specific Booking ID, and if so, fetch it ONLY if signed in and authorized.
  */
-async function getBookingContextIfMentioned(userMessage) {
+async function getBookingContextIfMentioned(userMessage, sessionContext = null) {
   if (!userMessage) return null;
   const idMatch = userMessage.match(/(?:booking|reservation|reserba|id|#)\s*#?\s*(\d{1,7})/i);
   if (!idMatch) return null;
+
+  // Never look up or expose booking statuses when signed out
+  if (!sessionContext?.userId) {
+    return `[PRIVACY RULE]: The visitor is NOT signed in. Even though they mentioned a booking ID, DO NOT answer or disclose any booking status. Politely tell them in their language that for privacy and security, they must sign in to their account at /login first to view their booking status.`;
+  }
 
   const bookingId = parseInt(idMatch[1], 10);
   if (!bookingId || isNaN(bookingId)) return null;
@@ -114,12 +119,26 @@ async function getBookingContextIfMentioned(userMessage) {
   try {
     const booking = await Booking.findByPk(bookingId, {
       include: [
-        { model: Room, include: [{ model: RoomType, attributes: ["name", "category"] }] }
+        { model: Room, include: [{ model: RoomType, attributes: ["name", "category"] }] },
+        { model: Guest, attributes: ["id", "userId", "email"] }
       ]
     });
 
     if (!booking) {
-      return `[BOOKING LOOKUP RESULT]: Booking ID #${bookingId} was NOT FOUND in the database. Tell the guest politely that Booking #${bookingId} does not exist and ask them to verify their booking confirmation number.`;
+      return `[BOOKING LOOKUP RESULT]: Booking ID #${bookingId} was NOT FOUND in the database. Tell the guest politely that Booking #${bookingId} does not exist under their account.`;
+    }
+
+    const isStaffOrAdmin = sessionContext.role === "admin" || sessionContext.role === "staff";
+    if (!isStaffOrAdmin) {
+      const ownsByUserId = booking.Guest?.userId && booking.Guest.userId === sessionContext.userId;
+      const ownsByEmail = Boolean(
+        sessionContext.userEmail &&
+        booking.Guest?.email &&
+        booking.Guest.email.toLowerCase() === sessionContext.userEmail.toLowerCase()
+      );
+      if (!ownsByUserId && !ownsByEmail) {
+        return `[PRIVACY RULE]: Booking #${bookingId} belongs to ANOTHER guest, NOT the signed-in user. NEVER reveal any details about it. Politely inform the user that for privacy reasons, you can only share booking statuses for reservations linked to their own signed-in account.`;
+      }
     }
 
     const roomName = booking.Room?.RoomType?.name || booking.Room?.name || "N/A";
@@ -192,7 +211,7 @@ async function getAuthenticatedUserContext(sessionContext) {
   if (!sessionContext?.userId) {
     return `[CURRENT VISITOR SESSION]:
 - Status: Not logged in (anonymous visitor).
-- Note: If they ask "check my booking" or "what is my booking status" without providing a Booking ID, invite them to either log in to their account (/login) so you can check automatically, OR provide their Booking ID number (e.g., #42).`;
+- STRICT PRIVACY RULE: Because the visitor is NOT signed in, NEVER disclose or check any booking status — even if they provide a Booking ID. Politely tell them in their language to sign in to their account (/login) first to view their booking status.`;
   }
 
   const info = await getLoggedInUserBookings(sessionContext);
@@ -275,11 +294,11 @@ RESPONSE RULES:
 1. Natural Bilingualism: Fluently reply in the SAME language the guest uses (English, Tagalog, or Taglish). Use warm Filipino hospitality ("po" and "opo" when replying in Tagalog).
 2. Strict Grounding: ONLY quote real accommodation names, capacities, rates, pool fees, amenities, and services from the live database list above. NEVER invent or hallucinate rooms, prices, discounts, or policies not in the list.
 3. Personalized Recommendations: When guests ask for recommendations (e.g., for X guests or a certain budget), recommend the most suitable room(s) or cottage(s) from the database list above and briefly highlight why they fit.
-4. Automatic User & Booking Identification:
+4. Automatic User & Booking Identification (Strict Privacy):
    - If [CURRENT LOGGED-IN USER] is provided above, you already know who they are! Address them warmly by their name when greeting or checking their bookings.
-   - If they ask about their booking status (e.g., "check my booking", "kamusta reservation ko", "what is my booking status") WITHOUT providing a Booking ID, DO NOT ask them for a Booking ID — immediately report the exact booking(s) listed in [THIS USER'S LIVE BOOKINGS IN DATABASE]!
+   - If they ask about their booking status WITHOUT providing a Booking ID, immediately report the exact booking(s) listed in [THIS USER'S LIVE BOOKINGS IN DATABASE].
    - If they have 0 bookings on record, let them know politely and invite them to book at /bookings/book.
-   - Only ask for a Booking ID if the visitor is NOT logged in and didn't provide an ID.
+   - NEVER share another guest's booking status. If a guest is NOT signed in ([CURRENT VISITOR SESSION]: Not logged in), NEVER answer about any booking status — even if they give you a Booking ID. Always tell them to sign in at /login first.
 5. Formatting: Use plain text with **bold** for key names/prices and "• " for bullet points. Keep replies concise and easy to read on mobile screens (under 180 words unless giving a detailed breakdown).
 6. Booking & Inquiries: Encourage guests to book at /bookings/book. For custom event packages or questions beyond the facts above, invite them to contact us directly at +63 919 378 9570 or rjm.beachresortph@gmail.com.`;
 
@@ -301,7 +320,7 @@ export async function generateGeminiReply(userMessage, history = [], sessionCont
 
   try {
     const [bookingContext, userContext] = await Promise.all([
-      getBookingContextIfMentioned(userMessage),
+      getBookingContextIfMentioned(userMessage, sessionContext),
       getAuthenticatedUserContext(sessionContext),
     ]);
     const systemInstruction = await buildSystemInstruction(bookingContext, userContext);

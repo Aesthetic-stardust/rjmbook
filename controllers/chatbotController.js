@@ -9,6 +9,7 @@ import { Room } from "../models/Room.js";
 import { RoomType } from "../models/RoomType.js";
 import { Service } from "../models/Service.js";
 import { Booking } from "../models/Booking.js";
+import { Guest } from "../models/Guest.js";
 import { generateGeminiReply, getLoggedInUserBookings } from "../services/chatbotAIService.js";
 
 // Store conversation state per user (in-memory for simplicity, can be moved to Redis/DB)
@@ -142,7 +143,7 @@ async function generateResponse(rawMessage, message, userId, state, sessionConte
 
   // Handle active booking status lookup flow
   if (state.step === "asking_booking_id") {
-    return await handleBookingStatusFlow(message, state);
+    return await handleBookingStatusFlow(message, state, sessionContext);
   }
 
   // Room details lookup ("details Family Hut")
@@ -169,18 +170,18 @@ async function generateResponse(rawMessage, message, userId, state, sessionConte
     message.includes("where is my booking");
 
   if (isBookingStatusQuery) {
-    // Support single-turn lookup if user already included an ID (e.g. "check my booking #42")
-    const inlineIdMatch = message.match(/(?:id|#|booking|number)\s*(\d+)/i);
-    if (inlineIdMatch) {
-      return await handleBookingStatusFlow(message, state);
+    // Privacy rule: visitors who are NOT signed in cannot check any booking status (even with an ID)
+    if (!sessionContext?.userId) {
+      state.step = "initial";
+      return "🔒 For your privacy and security, I can only check booking statuses when you are signed in to your account.\n\nPlease sign in at /login so I can check your reservations automatically.";
     }
 
-    // If NOT logged in, ask for Booking ID or invite them to log in
-    if (!sessionContext?.userId) {
-      state.step = "asking_booking_id";
-      return "🔍 I can look up your booking for you!\n\nPlease enter your **Booking ID** (the number from your confirmation, e.g. **42**), or sign in to your account at /login so I can check your bookings automatically.";
+    // Support single-turn lookup if signed-in user explicitly included an ID (ownership verified inside)
+    const inlineIdMatch = message.match(/(?:id|#|booking|number)\s*(\d+)/i);
+    if (inlineIdMatch) {
+      return await handleBookingStatusFlow(message, state, sessionContext);
     }
-    // If logged in, fall through to Gemini (or deterministic fallback) which already has their bookings!
+    // Otherwise fall through to Gemini (or deterministic fallback) which already has their bookings!
   }
 
   // Start guided recommendation wizard on explicit trigger (or when AI isn't configured)
@@ -642,8 +643,13 @@ async function getRoomDetails(roomName) {
   }
 }
 
-// Handle booking status lookup (multi-turn: ask for booking ID → query DB → return status)
-async function handleBookingStatusFlow(message, state) {
+// Handle booking status lookup (requires signed-in session and ownership verification)
+async function handleBookingStatusFlow(message, state, sessionContext = null) {
+  if (!sessionContext?.userId) {
+    state.step = 'initial';
+    return "🔒 For your privacy and security, please sign in to your account at /login to check your booking status.";
+  }
+
   // Extract booking ID — allow plain numbers or prefixes like "#42", "id 42", "booking 42"
   const idMatch = message.match(/(?:id|#|booking)?\s*(\d+)/i);
   const bookingId = idMatch ? parseInt(idMatch[1]) : null;
@@ -655,13 +661,29 @@ async function handleBookingStatusFlow(message, state) {
   try {
     const booking = await Booking.findByPk(bookingId, {
       include: [
-        { model: Room, include: [{ model: RoomType, attributes: ['name', 'category'] }] }
+        { model: Room, include: [{ model: RoomType, attributes: ['name', 'category'] }] },
+        { model: Guest, attributes: ['id', 'userId', 'email'] }
       ]
     });
 
     if (!booking) {
       state.step = 'initial';
-      return `😕 I couldn't find a booking with ID **#${bookingId}**.\n\nPlease double-check your confirmation number. If you need further help, contact us at **+63 919 378 9570**.`;
+      return `😕 I couldn't find a booking with ID **#${bookingId}** under your account.\n\nIf you need further help, contact us at **+63 919 378 9570**.`;
+    }
+
+    // Verify ownership unless staff/admin
+    const isStaffOrAdmin = sessionContext.role === 'admin' || sessionContext.role === 'staff';
+    if (!isStaffOrAdmin) {
+      const ownsByUserId = booking.Guest?.userId && booking.Guest.userId === sessionContext.userId;
+      const ownsByEmail = Boolean(
+        sessionContext.userEmail &&
+        booking.Guest?.email &&
+        booking.Guest.email.toLowerCase() === sessionContext.userEmail.toLowerCase()
+      );
+      if (!ownsByUserId && !ownsByEmail) {
+        state.step = 'initial';
+        return `🔒 For privacy reasons, I can only share booking statuses for reservations linked to your signed-in account. Booking **#${bookingId}** is not associated with your account.`;
+      }
     }
 
     // Reset state after successful lookup
