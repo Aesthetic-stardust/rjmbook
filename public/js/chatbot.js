@@ -83,6 +83,20 @@ class ChatbotWidget {
               </div>
             </div>
             <div class="header-actions">
+              <button type="button" class="chatbot-action-btn chatbot-fullscreen-btn" title="Toggle full screen" aria-label="Toggle full screen">
+                <svg class="icon-expand" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <polyline points="9 21 3 21 3 15"></polyline>
+                  <line x1="21" y1="3" x2="14" y2="10"></line>
+                  <line x1="3" y1="21" x2="10" y2="14"></line>
+                </svg>
+                <svg class="icon-minimize" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="4 14 10 14 10 20"></polyline>
+                  <polyline points="20 10 14 10 14 4"></polyline>
+                  <line x1="14" y1="10" x2="21" y2="3"></line>
+                  <line x1="3" y1="21" x2="10" y2="14"></line>
+                </svg>
+              </button>
               <button type="button" class="chatbot-action-btn chatbot-restart-btn" title="Restart conversation / Start over" aria-label="Restart chat">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="1 4 1 10 7 10"></polyline>
@@ -151,6 +165,7 @@ class ChatbotWidget {
   attachEventListeners() {
     const toggleBtn = document.querySelector(".chatbot-toggle");
     const closeBtn = document.querySelector(".chatbot-close-btn");
+    const fullscreenBtn = document.querySelector(".chatbot-fullscreen-btn");
     const restartBtn = document.querySelector(".chatbot-restart-btn");
     const form = document.querySelector(".chatbot-form");
     const quickChips = document.querySelectorAll(".quick-chip");
@@ -159,6 +174,7 @@ class ChatbotWidget {
 
     toggleBtn?.addEventListener("click", () => this.toggleChat());
     closeBtn?.addEventListener("click", () => this.closeChat());
+    fullscreenBtn?.addEventListener("click", () => this.toggleFullscreen());
     restartBtn?.addEventListener("click", () => this.restartConversation());
     form?.addEventListener("submit", (e) => this.handleFormSubmit(e));
 
@@ -196,6 +212,21 @@ class ChatbotWidget {
 
   toggleChat() {
     this.isOpen ? this.closeChat() : this.openChat();
+  }
+
+  toggleFullscreen() {
+    const chatWindow = document.querySelector(".chatbot-window");
+    const btn = document.querySelector(".chatbot-fullscreen-btn");
+    if (!chatWindow || !btn) return;
+
+    const isFullscreen = chatWindow.classList.toggle("fullscreen");
+    const expandIcon = btn.querySelector(".icon-expand");
+    const minimizeIcon = btn.querySelector(".icon-minimize");
+
+    if (expandIcon) expandIcon.style.display = isFullscreen ? "none" : "block";
+    if (minimizeIcon) minimizeIcon.style.display = isFullscreen ? "block" : "none";
+    btn.title = isFullscreen ? "Exit full screen" : "Full screen";
+    btn.setAttribute("aria-label", btn.title);
   }
 
   openChat() {
